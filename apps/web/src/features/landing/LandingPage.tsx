@@ -51,7 +51,7 @@ export const LandingPage: React.FC = () => {
               onClick={() => navigate("/login?mode=signup")}
               className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white border-0 shadow-lg shadow-violet-900/40 rounded-xl px-5"
             >
-              Try Free
+              Sign Up
             </Button>
           </div>
         </div>
@@ -85,7 +85,7 @@ export const LandingPage: React.FC = () => {
               rightIcon={<ArrowRight className="w-4 h-4" />}
               className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white border-0 shadow-xl shadow-violet-900/50 rounded-xl px-8 py-3 text-sm font-semibold"
             >
-              Start Free Trial
+              Sign Up
             </Button>
 
             <button

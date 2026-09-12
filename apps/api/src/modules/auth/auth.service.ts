@@ -11,12 +11,6 @@ const SEED_USERS: Record<string, AuthUser & { passwordHash?: string }> = {
     name: "Super Admin",
     email: "superadmin@taxflow.com",
     role: "SuperAdmin"
-  },
-  "admin@taxflow.com": {
-    id: "admin-seed-id",
-    name: "Firm Admin",
-    email: "admin@taxflow.com",
-    role: "Admin"
   }
 };
 
@@ -70,7 +64,7 @@ export class AuthService {
         throw new UnauthorizedError("Invalid email or password");
       }
     } else {
-      if (dto.password !== "Password123!") {
+      if (dto.password !== "Pass@123") {
         throw new UnauthorizedError("Invalid email or password");
       }
     }
@@ -105,7 +99,7 @@ export class AuthService {
     try {
       const existing = await prisma.user.findUnique({ where: { email: dto.email } });
       if (existing || SEED_USERS[dto.email]) {
-        throw new ConflictError("User with this email already exists. Please sign in.");
+        throw new ConflictError("An account with this email already exists. Please log in.");
       }
 
       let superAdminRole = await prisma.role.findFirst({

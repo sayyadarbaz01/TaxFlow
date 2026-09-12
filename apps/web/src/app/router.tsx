@@ -33,8 +33,15 @@ export const AppRouter: React.FC<AppRouterProps> = ({ user, onLoginSuccess, onLo
       {/* Public Landing Page */}
       <Route path="/" element={<LandingPage />} />
 
-      {/* Auth Login Page */}
-      <Route path="/login" element={!user ? <LoginPage onLoginSuccess={onLoginSuccess} /> : <Navigate to="/dashboard" replace />} />
+      {/* Auth Login & Signup Pages */}
+      <Route
+        path="/login"
+        element={!user ? <LoginPage initialMode="login" onLoginSuccess={onLoginSuccess} /> : <Navigate to="/dashboard" replace />}
+      />
+      <Route
+        path="/signup"
+        element={!user ? <LoginPage initialMode="signup" onLoginSuccess={onLoginSuccess} /> : <Navigate to="/dashboard" replace />}
+      />
 
       {/* Protected App Routes */}
       {user ? (
@@ -63,7 +70,7 @@ export const AppRouter: React.FC<AppRouterProps> = ({ user, onLoginSuccess, onLo
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
       ) : (
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       )}
     </Routes>
   );

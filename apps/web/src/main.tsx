@@ -11,20 +11,16 @@ const AppInit = () => {
   const [user, setUser] = useState<AuthUser | null>(() => {
     const savedToken = localStorage.getItem("accessToken");
     const savedUser = localStorage.getItem("authUser");
-    if (savedToken) {
-      if (savedUser) {
-        try {
-          return JSON.parse(savedUser);
-        } catch (e) {
-          // ignore error
+    if (savedToken && savedUser) {
+      try {
+        const parsed = JSON.parse(savedUser);
+        if (parsed && parsed.email) {
+          return parsed;
         }
+      } catch (e) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("authUser");
       }
-      return {
-        id: "superadmin-seed-id",
-        name: "Super Admin",
-        email: "superadmin@taxflow.com",
-        role: "SuperAdmin"
-      };
     }
     return null;
   });

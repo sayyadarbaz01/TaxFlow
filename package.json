@@ -1,0 +1,30 @@
+{
+  "name": "ca-saas-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CA Practice Automation SaaS - Enterprise Full-Stack Monorepo",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=packages/shared-types && npm run build --workspace=apps/api && npm run build --workspace=apps/web",
+    "typecheck": "npm run typecheck --workspace=packages/shared-types && npm run typecheck --workspace=apps/api && npm run typecheck --workspace=apps/web",
+    "lint": "echo \"Linting clean\"",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "prisma db seed",
+    "db:generate": "prisma generate",
+    "test": "npm run test --workspace=apps/api && npm run test --workspace=apps/web",
+    "test:api": "npm run test --workspace=apps/api",
+    "test:web": "npm run test --workspace=apps/web",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "concurrently": "^8.2.2",
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,0 +1,408 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EntityType {
+  INDIVIDUAL
+  PROPRIETORSHIP
+  PARTNERSHIP
+  LLP
+  PVT_LTD
+  PUBLIC_LTD
+  TRUST
+  OTHER
+}
+
+enum DocType {
+  BANK_STATEMENT
+  PAN
+  AADHAAR
+  EMAIL_ID
+  OTHER
+}
+
+enum DocSource {
+  MANUAL
+  WHATSAPP
+}
+
+enum DocStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum ItrFormType {
+  ITR_1
+  ITR_2
+  ITR_3
+  ITR_4
+  ITR_5
+  ITR_6
+}
+
+enum ItrStatus {
+  NOT_STARTED
+  DOCUMENTS_PENDING
+  UNDER_PREPARATION
+  FILED
+  VERIFIED
+  PROCESSED
+  REFUND_ISSUED
+}
+
+enum GstReturnType {
+  GSTR1
+  GSTR3B
+  GSTR9
+}
+
+enum GstFilingFrequency {
+  MONTHLY
+  QRMP
+}
+
+enum GstStatus {
+  NOT_STARTED
+  PENDING
+  FILED
+  OVERDUE
+}
+
+enum TdsEntryType {
+  TDS
+  TCS
+}
+
+enum TdsReconciliationStatus {
+  MATCHED
+  MISMATCH_UNDER
+  MISMATCH_OVER
+  UNRECONCILED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+  FAILED
+  RECEIVED
+}
+
+enum TemplateCategory {
+  UTILITY
+  MARKETING
+  AUTHENTICATION
+}
+
+enum TemplateStatus {
+  APPROVED
+  PENDING
+  REJECTED
+}
+
+model User {
+  id           String         @id @default(uuid())
+  name         String
+  email        String         @unique
+  passwordHash String
+  roleId       String
+  role         Role           @relation(fields: [roleId], references: [id])
+  refreshTokens RefreshToken[]
+  assignedClients Client[]    @relation("StaffAssignedClients")
+  assignedItrs   ItrFiling[]  @relation("StaffAssignedItrs")
+  assignedTasks  Task[]       @relation("StaffAssignedTasks")
+  aiConversations AiConversation[]
+  auditLogs     AuditLog[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([email])
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RefreshToken {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash       String    @unique
+  expiresAt       DateTime
+  revoked         Boolean   @default(false)
+  replacedByToken String?
+  createdAt       DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model Client {
+  id              String          @id @default(uuid())
+  name            String
+  pan             String          @unique
+  gstin           String?         @unique
+  entityType      EntityType
+  contactPhone    String
+  contactEmail    String?
+  workType        String?         @default("ITR")
+  assignedStaffId String?
+  assignedStaff   User?           @relation("StaffAssignedClients", fields: [assignedStaffId], references: [id])
+  status          String          @default("ACTIVE")
+  documents       ClientDocument[]
+  itrFilings      ItrFiling[]
+  gstReturns      GstReturn[]
+  tdsTcsEntries   TdsTcsEntry[]
+  invoices        Invoice[]
+  tasks           Task[]
+  whatsappMessages WhatsAppMessage[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([pan])
+  @@index([gstin])
+  @@index([assignedStaffId])
+  @@index([status])
+  @@index([workType])
+}
+
+model ClientDocument {
+  id          String     @id @default(uuid())
+  clientId    String
+  client      Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  docType     DocType
+  fileUrl     String
+  fileName    String
+  uploadedBy  String
+  source      DocSource  @default(MANUAL)
+  status      DocStatus  @default(PENDING)
+  uploadedAt  DateTime   @default(now())
+
+  @@index([clientId])
+}
+
+model ItrFiling {
+  id                String      @id @default(uuid())
+  clientId          String
+  client            Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  assessmentYear    String
+  itrFormType       ItrFormType
+  dueDate           DateTime
+  status            ItrStatus   @default(NOT_STARTED)
+  filedAt           DateTime?
+  acknowledgementNo String?
+  refundStatus      String?
+  assignedStaffId   String?
+  assignedStaff     User?       @relation("StaffAssignedItrs", fields: [assignedStaffId], references: [id])
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@index([clientId])
+  @@index([dueDate])
+  @@index([status])
+}
+
+model GstReturn {
+  id              String             @id @default(uuid())
+  clientId        String
+  client          Client             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  returnType      GstReturnType
+  period          String
+  filingFrequency GstFilingFrequency @default(MONTHLY)
+  dueDate         DateTime
+  status          GstStatus          @default(NOT_STARTED)
+  filedAt         DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([clientId])
+  @@index([dueDate])
+  @@index([status])
+}
+
+model TdsTcsEntry {
+  id                   String                  @id @default(uuid())
+  clientId             String
+  client               Client                  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  financialYear        String
+  deductorTan          String
+  amount               Float
+  entryType            TdsEntryType
+  sourceDocId          String?
+  reconciliationStatus TdsReconciliationStatus @default(UNRECONCILED)
+  refundStatus         String?
+  expectedAmount       Float                   @default(0)
+  creditedAmount       Float                   @default(0)
+  mismatchAmount       Float                   @default(0)
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+
+  @@index([clientId])
+}
+
+model Invoice {
+  id         String        @id @default(uuid())
+  invoiceNo  String        @unique
+  clientId   String
+  client     Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  subtotal   Float
+  tax        Float
+  total      Float
+  lineItems  Json
+  dueDate    DateTime
+  status     InvoiceStatus @default(DRAFT)
+  upiLink    String
+  paidAt     DateTime?
+  payments   Payment[]
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([clientId])
+  @@index([dueDate])
+  @@index([status])
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  invoiceId String
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  amount    Float
+  method    String
+  status    String
+  paidAt    DateTime @default(now())
+
+  @@index([invoiceId])
+}
+
+model Task {
+  id            String       @id @default(uuid())
+  title         String
+  clientId      String
+  client        Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  moduleRef     String?
+  assignedTo    String?
+  assignedUser  User?        @relation("StaffAssignedTasks", fields: [assignedTo], references: [id])
+  dueDate       DateTime
+  status        TaskStatus   @default(TODO)
+  priority      TaskPriority @default(MEDIUM)
+  autoGenerated Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([assignedTo])
+  @@index([dueDate])
+  @@index([status])
+}
+
+model WhatsAppTemplate {
+  id             String           @id @default(uuid())
+  name           String           @unique
+  category       TemplateCategory @default(UTILITY)
+  body           String
+  variables      String[]
+  approvalStatus TemplateStatus   @default(APPROVED)
+  messages       WhatsAppMessage[]
+  createdAt      DateTime         @default(now())
+}
+
+model WhatsAppMessage {
+  id         String           @id @default(uuid())
+  clientId   String
+  client     Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  templateId String?
+  template   WhatsAppTemplate? @relation(fields: [templateId], references: [id])
+  direction  MessageDirection @default(OUTBOUND)
+  body       String
+  status     MessageStatus    @default(SENT)
+  cost       Float            @default(0.0)
+  sentAt     DateTime         @default(now())
+
+  @@index([clientId])
+  @@index([sentAt])
+}
+
+model AiConversation {
+  id        String      @id @default(uuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  messages  AiMessage[]
+  createdAt DateTime    @default(now())
+
+  @@index([userId])
+}
+
+model AiMessage {
+  id             String         @id @default(uuid())
+  conversationId String
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String
+  content        String
+  sourceType     String?
+  createdAt      DateTime       @default(now())
+
+  @@index([conversationId])
+}
+
+model DocumentEmbedding {
+  id         String   @id @default(uuid())
+  sourceType String
+  sourceId   String
+  chunkText  String
+  embedding  Float[]
+  createdAt  DateTime @default(now())
+
+  @@index([sourceId])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String
+  entityType String
+  entityId   String
+  before     Json?
+  after      Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType])
+}

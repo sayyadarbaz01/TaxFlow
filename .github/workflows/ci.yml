@@ -1,0 +1,59 @@
+name: CA SaaS CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: ankane/pgvector:v0.5.1
+        env:
+          POSTGRES_DB: casaas_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgrespassword
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Monorepo Dependencies
+        run: npm ci
+
+      - name: Build Shared Types Package
+        run: npm run build --workspace=packages/shared-types
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Run Prisma Database Migrations
+        env:
+          DATABASE_URL: postgresql://postgres:postgrespassword@localhost:5432/casaas_db?schema=public
+        run: npx prisma db push
+
+      - name: Run Seed Data
+        env:
+          DATABASE_URL: postgresql://postgres:postgrespassword@localhost:5432/casaas_db?schema=public
+        run: npm run db:seed
+
+      - name: Run Backend Unit & Integration Tests
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://postgres:postgrespassword@localhost:5432/casaas_db?schema=public
+        run: npm run test:api
+
+      - name: Build Backend & Frontend
+        run: npm run build

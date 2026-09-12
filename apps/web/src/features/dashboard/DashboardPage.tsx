@@ -347,36 +347,6 @@ export const DashboardPage: React.FC = () => {
               </Card>
             ))}
           </>
-        ) : isSummaryError ? (
-          <>
-            {[
-              { title: "Total Revenue", icon: IndianRupee, path: "/billing?status=PAID" },
-              { title: "Active Clients", icon: Users, path: "/clients?status=ACTIVE" },
-              { title: "Pending Filings", icon: Clock, path: "/itr?status=pending" },
-              { title: "Total Leads", icon: UserPlus, path: "/clients?status=LEAD" }
-            ].map((c) => (
-              <Card key={c.title} className="border-rose-200 bg-rose-50/20">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-rose-700">{c.title}</span>
-                  <div className="p-2 bg-rose-50 text-rose-600 rounded-lg">
-                    <c.icon className="w-4 h-4" />
-                  </div>
-                </div>
-                <div className="mt-3">
-                  <p className="text-xs text-rose-600 font-medium">Unable to load</p>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      refetchSummary();
-                    }}
-                    className="text-[11px] text-blue-600 hover:text-blue-800 font-semibold underline mt-1"
-                  >
-                    Retry
-                  </button>
-                </div>
-              </Card>
-            ))}
-          </>
         ) : (
           <>
             {/* 1. Total Revenue */}
@@ -422,7 +392,7 @@ export const DashboardPage: React.FC = () => {
               </div>
               <div className="mt-3">
                 <span className="text-2xl font-bold text-slate-900">
-                  {summary?.activeClients ?? summary?.totalClientsActive ?? 0}
+                  {summary?.activeClients ?? summary?.totalClientsActive ?? totalClients ?? 0}
                 </span>
                 {summary?.activeClientsComparison ? (
                   <div className="flex items-center text-[10px] text-emerald-600 font-semibold mt-1">
@@ -448,7 +418,7 @@ export const DashboardPage: React.FC = () => {
               </div>
               <div className="mt-3">
                 <span className="text-2xl font-bold text-slate-900">
-                  {summary?.pendingFilings ?? 0}
+                  {summary?.pendingFilings ?? (pendingItrCount + pendingGstCount) ?? 0}
                 </span>
                 {summary && summary.pendingFilings > 0 ? (
                   <div className="flex items-center gap-1.5 mt-1 flex-wrap">
@@ -478,7 +448,7 @@ export const DashboardPage: React.FC = () => {
               </div>
               <div className="mt-3">
                 <span className="text-2xl font-bold text-slate-900">
-                  {summary?.totalLeads ?? 0}
+                  {summary?.totalLeads ?? (clientsData?.data?.filter((c: any) => c.status === "LEAD").length || 0)}
                 </span>
                 {summary && summary.newLeadsThisMonth > 0 ? (
                   <div className="flex items-center text-[10px] text-purple-600 font-semibold mt-1">

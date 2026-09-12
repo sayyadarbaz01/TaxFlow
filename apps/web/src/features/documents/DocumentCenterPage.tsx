@@ -96,7 +96,9 @@ export const DocumentCenterPage: React.FC = () => {
 
   const getDocActionUrl = (id: string, action: "view" | "download") => {
     const token = localStorage.getItem("accessToken") || "";
-    return `/api/documents/${id}/${action}${token ? `?token=${encodeURIComponent(token)}` : ""}`;
+    const rawApi = ((import.meta as any).env?.VITE_API_URL || "").trim().replace(/\/+$/, "");
+    const base = rawApi ? `${rawApi}/api` : "/api";
+    return `${base}/documents/${id}/${action}${token ? `?token=${encodeURIComponent(token)}` : ""}`;
   };
 
   const handleSelectClient = (id: string) => {

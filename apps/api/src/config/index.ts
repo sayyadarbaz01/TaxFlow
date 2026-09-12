@@ -1,7 +1,19 @@
 import dotenv from "dotenv";
 import path from "path";
+import fs from "fs";
 
-dotenv.config({ path: path.resolve(process.cwd(), "../../.env") });
+dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+
+const uploadDir = process.env.STORAGE_UPLOAD_DIR || path.resolve(process.cwd(), "storage");
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (e) {
+  // Directory fallback handled gracefully
+}
 
 export const config = {
   env: process.env.NODE_ENV || "development",
@@ -32,7 +44,7 @@ export const config = {
 
   storage: {
     provider: process.env.STORAGE_PROVIDER || "local",
-    uploadDir: path.resolve(process.cwd(), "../../storage"),
+    uploadDir,
     minioEndpoint: process.env.MINIO_ENDPOINT || "localhost",
     minioAccessKey: process.env.MINIO_ACCESS_KEY || "minioadmin",
     minioSecretKey: process.env.MINIO_SECRET_KEY || "minioadmin",

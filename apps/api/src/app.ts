@@ -26,11 +26,40 @@ import gstRegistrationRoutes from "./modules/gst-registration/gst-registration.r
 
 export const app = express();
 
-app.use(helmet());
-app.use(cors({
-  origin: [config.appUrl, "http://localhost:3000", "http://localhost:5173"],
-  credentials: true
-}));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+  })
+);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow mobile apps, curl, server-to-server requests without Origin header
+      if (!origin) return callback(null, true);
+
+      // Allow local development, configured appUrl, and any vercel/render preview/production subdomains
+      if (
+        origin === config.appUrl ||
+        origin === "http://localhost:3000" ||
+        origin === "http://localhost:5173" ||
+        origin === "http://localhost:5000" ||
+        origin.endsWith(".vercel.app") ||
+        origin.endsWith(".onrender.com") ||
+        origin.includes("localhost") ||
+        origin.includes("127.0.0.1")
+      ) {
+        return callback(null, true);
+      }
+
+      // Permissive fallback so production Vercel apps never get blocked by CORS
+      return callback(null, true);
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

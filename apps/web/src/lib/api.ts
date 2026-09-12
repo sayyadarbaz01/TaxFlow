@@ -7,10 +7,18 @@ import {
   CreateGstRegDTO
 } from "@ca-saas/shared-types";
 
+const getApiBaseUrl = (): string => {
+  const envUrl = (import.meta as any).env?.VITE_API_URL;
+  if (envUrl && typeof envUrl === "string" && envUrl.trim() !== "") {
+    return `${envUrl.trim().replace(/\/+$/, "")}/api`;
+  }
+  return "/api";
+};
+
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/api",
+    baseUrl: getApiBaseUrl(),
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("accessToken");
       if (token) {

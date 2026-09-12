@@ -64,7 +64,7 @@ export const api = createApi({
       }),
       invalidatesTags: ["Auth"]
     }),
-    getMe: builder.query({
+    getMe: builder.query<any, void | Record<string, any>>({
       query: () => "/auth/me",
       providesTags: ["Auth"]
     }),
@@ -152,7 +152,7 @@ export const api = createApi({
       query: (params) => ({ url: "/gst", params }),
       providesTags: ["Gst"]
     }),
-    getUpcomingGstDue: builder.query({
+    getUpcomingGstDue: builder.query<any, void | Record<string, any>>({
       query: () => "/gst/upcoming-due",
       providesTags: ["Gst"]
     }),
@@ -169,7 +169,7 @@ export const api = createApi({
       query: (params) => ({ url: "/tax-audit", params }),
       providesTags: ["TaxAudit"]
     }),
-    getTaxAuditSummary: builder.query({
+    getTaxAuditSummary: builder.query<any, void | Record<string, any>>({
       query: () => "/tax-audit/summary",
       providesTags: ["TaxAudit"]
     }),
@@ -203,7 +203,7 @@ export const api = createApi({
       query: (params) => ({ url: "/gst-registration", params }),
       providesTags: ["GstRegistration"]
     }),
-    getGstRegistrationSummary: builder.query({
+    getGstRegistrationSummary: builder.query<any, void | Record<string, any>>({
       query: () => "/gst-registration/summary",
       providesTags: ["GstRegistration"]
     }),
@@ -282,11 +282,11 @@ export const api = createApi({
       query: (params) => ({ url: "/whatsapp/messages", params }),
       providesTags: ["WhatsApp"]
     }),
-    getWhatsAppMonthlySpend: builder.query({
+    getWhatsAppMonthlySpend: builder.query<any, void | Record<string, any>>({
       query: () => "/whatsapp/spend/monthly",
       providesTags: ["WhatsApp"]
     }),
-    getWhatsAppTemplates: builder.query({
+    getWhatsAppTemplates: builder.query<any, void | Record<string, any>>({
       query: () => "/whatsapp/templates",
       providesTags: ["WhatsApp"]
     }),
@@ -306,7 +306,7 @@ export const api = createApi({
       query: (params) => ({ url: "/admin/users", params }),
       providesTags: ["Admin"]
     }),
-    getRoles: builder.query({
+    getRoles: builder.query<any, void | Record<string, any>>({
       query: () => "/admin/roles",
       providesTags: ["Admin"]
     }),

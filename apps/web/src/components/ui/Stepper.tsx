@@ -8,6 +8,8 @@ export interface StepItem {
   description?: string;
 }
 
+export type Step = StepItem;
+
 export interface StepperProps {
   steps: StepItem[];
   currentStepId: string;

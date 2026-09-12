@@ -213,29 +213,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 Sign In with Email
               </Button>
 
-              <div className="pt-4 border-t border-slate-800/80 space-y-2 text-center text-xs text-slate-400">
-                <p className="font-semibold text-slate-300 text-[11px]">Presets for Quick Testing:</p>
-                <div className="grid grid-cols-2 gap-2 text-[11px]">
-                  <button
-                    type="button"
-                    onClick={() => { setEmail("superadmin@taxflow.com"); setPassword("Password123!"); }}
-                    className="p-2 bg-slate-900 rounded-xl border border-slate-800 hover:border-slate-700 text-left transition-smooth"
-                  >
-                    <div className="font-bold text-violet-400">SuperAdmin</div>
-                    <div className="text-[10px] text-slate-400 truncate">superadmin@taxflow.com</div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { setEmail("admin@taxflow.com"); setPassword("Password123!"); }}
-                    className="p-2 bg-slate-900 rounded-xl border border-slate-800 hover:border-slate-700 text-left transition-smooth"
-                  >
-                    <div className="font-bold text-cyan-400">Admin</div>
-                    <div className="text-[10px] text-slate-400 truncate">admin@taxflow.com</div>
-                  </button>
-                </div>
-              </div>
-
               <p className="text-center text-xs text-slate-400 pt-2">
                 Don't have an account yet?{" "}
                 <button

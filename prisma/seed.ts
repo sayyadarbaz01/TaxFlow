@@ -44,33 +44,23 @@ async function main() {
     }
   });
 
-  // 4. Create Initial Clean Accounts
-  console.log("🌱 Creating clean initial accounts...");
-  const defaultPasswordHash = await argon2.hash("Password123!");
+  // 4. Create Only the SuperAdmin Account
+  console.log("🌱 Creating clean SuperAdmin account...");
+  const passwordHash = await argon2.hash("Pass@123");
 
   const superAdminUser = await prisma.user.create({
     data: {
       name: "Super Admin",
       email: "superadmin@taxflow.com",
-      passwordHash: defaultPasswordHash,
+      passwordHash,
       roleId: superAdminRole.id
-    }
-  });
-
-  const adminUser = await prisma.user.create({
-    data: {
-      name: "Firm Admin",
-      email: "admin@taxflow.com",
-      passwordHash: defaultPasswordHash,
-      roleId: adminRole.id
     }
   });
 
   console.log("=================================================");
   console.log("🎉 Database cleanly reset with zero dummy data!");
-  console.log("Initial Credentials:");
-  console.log(`  1. SuperAdmin: ${superAdminUser.email} / Password123!`);
-  console.log(`  2. Admin:      ${adminUser.email} / Password123!`);
+  console.log("Active Account:");
+  console.log(`  SuperAdmin: ${superAdminUser.email} / Pass@123`);
   console.log("=================================================");
 }
 

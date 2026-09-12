@@ -89,18 +89,18 @@ export const AddTaxAuditModal: React.FC<AddTaxAuditModalProps> = ({ isOpen, onCl
     <Modal isOpen={isOpen} onClose={onClose} title="Initiate Section 44AB Tax Audit Engagement" maxWidth="lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Info Banner */}
-        <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs text-purple-800 flex items-start gap-2.5">
-          <ShieldCheck className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
+        <div className="p-3 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 rounded-xl text-xs text-purple-800 dark:text-purple-300 flex items-start gap-2.5">
+          <ShieldCheck className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
           <div>
             <span className="font-semibold">Section 44AB Statutory Audit Engagement:</span>
-            <p className="text-purple-700 text-[11px] mt-0.5">
+            <p className="text-purple-700 dark:text-purple-400 text-[11px] mt-0.5">
               Applies to businesses with turnover exceeding ₹1 Cr (₹10 Cr if cash transactions ≤ 5%) and professionals with gross receipts &gt; ₹50 Lakhs. Form 3CA is applicable to corporate/LLP entities, and Form 3CB to proprietary/partnership entities.
             </p>
           </div>
         </div>
 
         {errorMsg && (
-          <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg font-medium flex items-center gap-2">
+          <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs rounded-lg font-medium flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
             <span>{errorMsg}</span>
           </div>
@@ -167,7 +167,7 @@ export const AddTaxAuditModal: React.FC<AddTaxAuditModalProps> = ({ isOpen, onCl
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+        <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>

@@ -201,15 +201,15 @@ export const ClientListPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Client Management CRM</h1>
-          <p className="text-xs text-slate-500 mt-1">Manage firm clients, compliance statuses, contacts, and staff assignments.</p>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Client Management CRM</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Manage firm clients, compliance statuses, contacts, and staff assignments.</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             onClick={() => navigate("/leads")}
-            leftIcon={<UserPlus className="w-4 h-4 text-purple-600" />}
-            className="border-purple-200 text-purple-700 hover:bg-purple-50 text-xs"
+            leftIcon={<UserPlus className="w-4 h-4 text-purple-600 dark:text-purple-400" />}
+            className="border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-xs"
           >
             Lead Clients Pipeline
           </Button>
@@ -220,7 +220,7 @@ export const ClientListPage: React.FC = () => {
       </div>
 
       {/* Status Segmented Tabs */}
-      <div className="flex items-center space-x-2 border-b border-slate-200 pb-2">
+      <div className="flex items-center space-x-2 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto">
         {[
           { id: "", label: "All Clients" },
           { id: "ACTIVE", label: "Active" },
@@ -232,10 +232,10 @@ export const ClientListPage: React.FC = () => {
             key={tab.id}
             onClick={() => setStatusFilter(tab.id)}
             className={clsx(
-              "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5",
+              "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap",
               statusFilter === tab.id
-                ? "bg-slate-900 text-white shadow-xs"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                ? "bg-slate-900 dark:bg-blue-600 text-white shadow-xs"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
             )}
           >
             {tab.label}
@@ -250,22 +250,22 @@ export const ClientListPage: React.FC = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs flex flex-wrap items-center gap-3">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
           <input
             type="text"
             placeholder="Filter clients by name, PAN, or GSTIN..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-9 pr-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <select
           value={workTypeFilter}
           onChange={(e) => setWorkTypeFilter(e.target.value)}
-          className="text-xs border border-slate-300 rounded-lg px-3 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+          className="text-xs border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
         >
           <option value="">All Services (Work Scope)</option>
           <option value="ITR">ITR (Income Tax)</option>
@@ -279,7 +279,7 @@ export const ClientListPage: React.FC = () => {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="text-xs border border-slate-300 rounded-lg px-3 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="text-xs border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
         >
           <option value="">All Statuses</option>
           <option value="ACTIVE">Active</option>
@@ -291,7 +291,7 @@ export const ClientListPage: React.FC = () => {
         <select
           value={entityFilter}
           onChange={(e) => setEntityFilter(e.target.value)}
-          className="text-xs border border-slate-300 rounded-lg px-3 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="text-xs border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
         >
           <option value="">All Entity Types</option>
           <option value="PVT_LTD">Pvt Ltd</option>

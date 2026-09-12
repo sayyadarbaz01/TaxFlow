@@ -91,7 +91,7 @@ export class DashboardService {
     }
 
     // 3. Pending Filings (ITR pending + GST returns pending)
-    const pendingItrStatuses = ["NOT_STARTED", "DOCUMENTS_PENDING", "UNDER_PREPARATION", "FILED"];
+    const pendingItrStatuses = ["NOT_STARTED", "DOCUMENTS_PENDING", "UNDER_PREPARATION"];
     const itrPendingWhere: any = {
       client: clientScope,
       status: { in: pendingItrStatuses }

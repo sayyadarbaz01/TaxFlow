@@ -63,12 +63,12 @@ export const UserManagementPage: React.FC = () => {
       header: "User Name",
       cell: (row) => (
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-xs">
+          <div className="w-8 h-8 rounded-full bg-slate-800 dark:bg-slate-700 text-white font-bold flex items-center justify-center text-xs">
             {row.name.charAt(0)}
           </div>
           <div>
-            <p className="font-semibold text-slate-900 text-xs">{row.name}</p>
-            <span className="text-[10px] text-slate-500">{row.email}</span>
+            <p className="font-semibold text-slate-900 dark:text-white text-xs">{row.name}</p>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400">{row.email}</span>
           </div>
         </div>
       )
@@ -79,7 +79,7 @@ export const UserManagementPage: React.FC = () => {
     },
     {
       header: "Joined Date",
-      cell: (row) => <span className="font-mono text-xs text-slate-700">{new Date(row.createdAt).toLocaleDateString()}</span>
+      cell: (row) => <span className="font-mono text-xs text-slate-700 dark:text-slate-300">{new Date(row.createdAt).toLocaleDateString()}</span>
     }
   ];
 
@@ -87,8 +87,8 @@ export const UserManagementPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">User Administration</h1>
-          <p className="text-xs text-slate-500 mt-1">Manage firm user accounts with SuperAdmin and Admin roles.</p>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">User Administration</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Manage firm user accounts with SuperAdmin and Admin roles.</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)} leftIcon={<Plus className="w-4 h-4" />}>
           Add User
@@ -101,12 +101,12 @@ export const UserManagementPage: React.FC = () => {
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add Firm User" maxWidth="md">
         <form onSubmit={handleCreateUser} className="space-y-4">
           {errorMsg && (
-            <div className="p-2.5 bg-rose-50 text-rose-700 text-xs rounded-lg font-medium">
+            <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs rounded-lg font-medium">
               {errorMsg}
             </div>
           )}
           {successMsg && (
-            <div className="p-2.5 bg-emerald-50 text-emerald-700 text-xs rounded-lg font-medium">
+            <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs rounded-lg font-medium">
               {successMsg}
             </div>
           )}
@@ -147,7 +147,7 @@ export const UserManagementPage: React.FC = () => {
             ]}
           />
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
             <Button variant="secondary" size="sm" type="button" onClick={() => setIsModalOpen(false)}>
               Cancel
             </Button>

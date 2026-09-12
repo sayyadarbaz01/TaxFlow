@@ -1,32 +1,205 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: light;
+  }
+  .dark, [data-theme="dark"] {
+    color-scheme: dark;
+  }
+
   body {
     background-color: #f8fafc;
     color: #0f172a;
     font-family: Inter, system-ui, -apple-system, sans-serif;
   }
+  .dark body, body.dark {
+    background-color: #090d16;
+    color: #f8fafc;
+  }
 }
 
-/* Custom Scrollbars */
+/* ==========================================================================
+   UNIVERSAL THEME ENGINE
+   Guarantees 100% Light & Dark Mode rendering across all pages & components
+   ========================================================================== */
+
+/* 1. Root & Body Backgrounds */
+html.dark,
+body.dark,
+.dark,
+[data-theme="dark"] {
+  background-color: #090d16 !important;
+  color: #f8fafc !important;
+}
+
+/* 2. Neutral Background Surfaces */
+.dark .bg-white,
+[data-theme="dark"] .bg-white,
+.dark [class*="bg-white"]:not([class*="text-white"]):not([class*="hover:bg-white"]):not([class*="ring-white"]) {
+  background-color: #0f172a !important;
+}
+
+.dark .bg-white\/90,
+[data-theme="dark"] .bg-white\/90 {
+  background-color: rgba(15, 23, 42, 0.92) !important;
+}
+
+.dark .bg-slate-50,
+[data-theme="dark"] .bg-slate-50 {
+  background-color: #090d16 !important;
+}
+
+.dark .bg-slate-100,
+[data-theme="dark"] .bg-slate-100 {
+  background-color: #172033 !important;
+}
+
+.dark .bg-slate-100\/70,
+[data-theme="dark"] .bg-slate-100\/70 {
+  background-color: rgba(15, 23, 42, 0.75) !important;
+}
+
+.dark .bg-slate-200,
+[data-theme="dark"] .bg-slate-200 {
+  background-color: #1e293b !important;
+}
+
+/* 3. Text Contrast */
+.dark .text-slate-900,
+[data-theme="dark"] .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+.dark .text-slate-800,
+[data-theme="dark"] .text-slate-800,
+.dark .text-slate-700,
+[data-theme="dark"] .text-slate-700 {
+  color: #e2e8f0 !important;
+}
+
+.dark .text-slate-600,
+[data-theme="dark"] .text-slate-600 {
+  color: #94a3b8 !important;
+}
+
+.dark .text-slate-500,
+[data-theme="dark"] .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* 4. Borders & Dividers */
+.dark .border-slate-100,
+[data-theme="dark"] .border-slate-100,
+.dark .border-slate-200,
+[data-theme="dark"] .border-slate-200,
+.dark .border-slate-300,
+[data-theme="dark"] .border-slate-300 {
+  border-color: #1e293b !important;
+}
+
+.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #1e293b !important;
+}
+
+/* 5. Inputs, Selects, and Form Controls */
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+.dark select,
+.dark textarea,
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder,
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* 6. Landing Page Hero Gradient in Dark Mode */
+.dark .from-white,
+[data-theme="dark"] .from-white {
+  --tw-gradient-from: #090d16 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(9 13 22 / 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.dark .via-slate-50,
+[data-theme="dark"] .via-slate-50 {
+  --tw-gradient-to: rgb(15 23 42 / 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), #0f172a var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+.dark .to-slate-100,
+[data-theme="dark"] .to-slate-100 {
+  --tw-gradient-to: #090d16 var(--tw-gradient-to-position) !important;
+}
+
+/* 7. Hover States in Dark Mode */
+.dark .hover\:bg-slate-50:hover,
+[data-theme="dark"] .hover\:bg-slate-50:hover,
+.dark .hover\:bg-slate-100:hover,
+[data-theme="dark"] .hover\:bg-slate-100:hover {
+  background-color: #1e293b !important;
+}
+
+.dark .hover\:text-slate-900:hover,
+[data-theme="dark"] .hover\:text-slate-900:hover {
+  color: #ffffff !important;
+}
+
+/* 8. Modern Custom Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+html.dark *,
+body.dark *,
+[data-theme="dark"] * {
+  scrollbar-color: #334155 transparent;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 4px;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Smooth Transitions */
+.dark ::-webkit-scrollbar-thumb,
+body.dark ::-webkit-scrollbar-thumb,
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover,
+body.dark ::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* 9. Smooth Transitions */
 .transition-smooth {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }

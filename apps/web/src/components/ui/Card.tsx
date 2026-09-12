@@ -12,7 +12,7 @@ export const Card: React.FC<CardProps> = React.memo(({ children, className, onCl
     <div
       onClick={onClick}
       className={clsx(
-        "bg-white rounded-xl border border-slate-200 shadow-sm p-5 transition-smooth hover:border-slate-300",
+        "bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 shadow-2xs p-4 sm:p-5 transition-smooth hover:border-slate-300 dark:hover:border-slate-700",
         onClick && "cursor-pointer hover:shadow-md",
         className
       )}
@@ -21,3 +21,4 @@ export const Card: React.FC<CardProps> = React.memo(({ children, className, onCl
     </div>
   );
 });
+

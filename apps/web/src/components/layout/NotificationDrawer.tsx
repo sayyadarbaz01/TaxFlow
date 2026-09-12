@@ -34,7 +34,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
           message: `${g.clientName} return is due on ${g.dueDate}.`,
           time: "Statutory Deadline",
           icon: Clock,
-          color: "text-rose-600 bg-rose-50"
+          color: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50"
         });
       });
   }
@@ -51,7 +51,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
           message: `${t.clientName} • Due ${t.dueDate}`,
           time: t.priority,
           icon: FileText,
-          color: "text-amber-600 bg-amber-50"
+          color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50"
         });
       });
   }
@@ -68,7 +68,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
           message: `${i.clientName} (₹${i.total.toLocaleString("en-IN")}) overdue since ${i.dueDate}`,
           time: "Overdue",
           icon: CreditCard,
-          color: "text-rose-600 bg-rose-50"
+          color: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50"
         });
       });
   }
@@ -77,12 +77,12 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
     <Drawer isOpen={isOpen} onClose={onClose} title="Activity Notifications">
       {notifications.length === 0 ? (
         <div className="py-16 text-center space-y-3">
-          <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
+          <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-800">Zero Pending Notifications</h4>
-            <p className="text-[11px] text-slate-500 mt-1 max-w-xs mx-auto">
+            <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">Zero Pending Notifications</h4>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto">
               All firm filings, client requests, and invoices are up to date.
             </p>
           </div>
@@ -94,17 +94,17 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
             return (
               <div
                 key={n.id}
-                className="p-3 rounded-lg border border-slate-200 bg-white shadow-2xs hover:border-slate-300 transition-smooth flex items-start space-x-3"
+                className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-850 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-smooth flex items-start space-x-3"
               >
                 <div className={`p-2 rounded-lg mt-0.5 ${n.color}`}>
                   <Icon className="w-4 h-4" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-bold text-slate-900">{n.title}</h4>
-                    <span className="text-[10px] text-slate-400 font-semibold">{n.time}</span>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">{n.title}</h4>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold">{n.time}</span>
                   </div>
-                  <p className="text-xs text-slate-600 mt-0.5">{n.message}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">{n.message}</p>
                 </div>
               </div>
             );
@@ -114,3 +114,4 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
     </Drawer>
   );
 };
+

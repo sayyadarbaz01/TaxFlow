@@ -37,8 +37,8 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStepId, onStepCl
                   className={clsx(
                     "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-smooth shadow-xs border",
                     isCompleted && "bg-emerald-600 border-emerald-600 text-white",
-                    isCurrent && "bg-blue-600 border-blue-600 text-white ring-4 ring-blue-100",
-                    !isCompleted && !isCurrent && "bg-slate-100 border-slate-300 text-slate-500"
+                    isCurrent && "bg-blue-600 border-blue-600 text-white ring-4 ring-blue-100 dark:ring-blue-900/50",
+                    !isCompleted && !isCurrent && "bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400"
                   )}
                 >
                   {isCompleted ? <Check className="w-4 h-4" /> : idx + 1}
@@ -46,7 +46,7 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStepId, onStepCl
                 <span
                   className={clsx(
                     "mt-2 text-[11px] font-semibold tracking-tight",
-                    isCurrent ? "text-blue-700 font-bold" : isCompleted ? "text-slate-800" : "text-slate-400"
+                    isCurrent ? "text-blue-700 dark:text-blue-400 font-bold" : isCompleted ? "text-slate-800 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"
                   )}
                 >
                   {step.label}
@@ -56,7 +56,7 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStepId, onStepCl
                 <div
                   className={clsx(
                     "h-0.5 flex-1 mx-1 rounded-full transition-smooth",
-                    idx < currentIndex ? "bg-emerald-500" : "bg-slate-200"
+                    idx < currentIndex ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-700"
                   )}
                 />
               )}

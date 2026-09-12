@@ -42,28 +42,28 @@ export const GstDashboardPage: React.FC = () => {
       cell: (row) => (
         <div>
           <div className="flex items-center gap-1.5">
-            <p className="font-semibold text-slate-900 text-xs">{row.clientName}</p>
+            <p className="font-semibold text-slate-900 dark:text-white text-xs">{row.clientName}</p>
             {row.workType === "ITR + GST" && (
-              <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                 ITR + GST
               </span>
             )}
           </div>
-          <span className="text-[10px] font-mono text-slate-500">{row.period}</span>
+          <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">{row.period}</span>
         </div>
       )
     },
     {
       header: "Return Type",
       cell: (row) => (
-        <span className="font-bold text-xs px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+        <span className="font-bold text-xs px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
           {row.returnType} ({row.filingFrequency})
         </span>
       )
     },
     {
       header: "Due Date",
-      cell: (row) => <span className="font-mono text-xs font-semibold text-slate-800">{row.dueDate}</span>
+      cell: (row) => <span className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">{row.dueDate}</span>
     },
     {
       header: "Filing Status",
@@ -82,7 +82,7 @@ export const GstDashboardPage: React.FC = () => {
             Mark Filed (GSP Adapter)
           </Button>
         ) : (
-          <span className="text-xs text-emerald-600 font-semibold flex items-center gap-1">
+          <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
             <CheckCircle2 className="w-3.5 h-3.5" /> Filed ({new Date(row.filedAt!).toLocaleDateString()})
           </span>
         )
@@ -95,8 +95,8 @@ export const GstDashboardPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">GST Compliance Center</h1>
-          <p className="text-xs text-slate-500 mt-1">Recurring GSTR-1, GSTR-3B, PMT-06, and GSTR-9 statutory return schedules.</p>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">GST Compliance Center</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Recurring GSTR-1, GSTR-3B, PMT-06, and GSTR-9 statutory return schedules.</p>
         </div>
       </div>
 
@@ -121,14 +121,16 @@ export const GstDashboardPage: React.FC = () => {
       </Card>
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-2 text-xs">
-        <div className="flex space-x-2">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-2 text-xs">
+        <div className="flex space-x-2 overflow-x-auto pb-1">
           {["", "due", "PENDING", "OVERDUE", "FILED"].map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-smooth ${
-                statusFilter === st ? "bg-rose-600 text-white shadow-xs" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
+              className={`px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-smooth ${
+                statusFilter === st
+                  ? "bg-rose-600 text-white shadow-xs"
+                  : "bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
               {st === "due" ? "Due / Approaching" : st || "All Statuses"}
@@ -136,13 +138,15 @@ export const GstDashboardPage: React.FC = () => {
           ))}
         </div>
 
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 overflow-x-auto pb-1">
           {["", "GSTR1", "GSTR3B", "GSTR9"].map((rt) => (
             <button
               key={rt}
               onClick={() => setReturnTypeFilter(rt)}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-smooth ${
-                returnTypeFilter === rt ? "bg-indigo-600 text-white shadow-xs" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
+              className={`px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-smooth ${
+                returnTypeFilter === rt
+                  ? "bg-indigo-600 text-white shadow-xs"
+                  : "bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
               {rt || "All Forms"}

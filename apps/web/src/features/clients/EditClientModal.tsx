@@ -130,7 +130,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClos
     <Modal isOpen={isOpen} onClose={onClose} title={`Edit Client: ${client?.name || ""}`} maxWidth="lg">
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         {errorMsg && (
-          <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg font-medium">
+          <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs rounded-lg font-medium">
             {errorMsg}
           </div>
         )}
@@ -222,7 +222,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClos
           />
         </div>
 
-        <div className="flex justify-end gap-2 pt-4 border-t border-slate-100">
+        <div className="flex justify-end gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
           <Button variant="secondary" size="sm" type="button" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>

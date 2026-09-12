@@ -76,18 +76,18 @@ export const AddGstRegistrationModal: React.FC<AddGstRegistrationModalProps> = (
     <Modal isOpen={isOpen} onClose={onClose} title="New GST Registration Application (Form GST REG-01)" maxWidth="lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Info Banner */}
-        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2.5">
-          <FileBadge className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+        <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5">
+          <FileBadge className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
           <div>
             <span className="font-semibold">New GST Network (GSTN) Onboarding:</span>
-            <p className="text-amber-800 text-[11px] mt-0.5">
+            <p className="text-amber-800 dark:text-amber-300 text-[11px] mt-0.5">
               Tracks the lifecycle from Part A (TRN generation) through Part B (ARN submission & Aadhaar authentication) to final registration certificate (Form GST REG-06).
             </p>
           </div>
         </div>
 
         {errorMsg && (
-          <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg font-medium flex items-center gap-2">
+          <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs rounded-lg font-medium flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
             <span>{errorMsg}</span>
           </div>
@@ -189,7 +189,7 @@ export const AddGstRegistrationModal: React.FC<AddGstRegistrationModalProps> = (
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+        <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>

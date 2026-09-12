@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import { store } from "./app/store";
 import { AppRouter } from "./app/router";
 import { AuthUser } from "@ca-saas/shared-types";
+import { ThemeProvider } from "./context/ThemeContext";
 import "./index.css";
 
 const AppInit = () => {
@@ -47,7 +48,9 @@ const AppInit = () => {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <AppInit />
+      <ThemeProvider>
+        <AppInit />
+      </ThemeProvider>
     </Provider>
   </React.StrictMode>
 );

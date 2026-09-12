@@ -146,18 +146,18 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, onClose }) =
     <Modal isOpen={isOpen} onClose={handleClose} title="Add New Lead Client" maxWidth="lg">
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         {/* Banner */}
-        <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs text-purple-800 flex items-start gap-2.5">
-          <UserPlus className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
+        <div className="p-3 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 rounded-xl text-xs text-purple-800 dark:text-purple-300 flex items-start gap-2.5">
+          <UserPlus className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
           <div>
             <span className="font-semibold">Prospective Client Intake:</span>
-            <p className="text-purple-700 text-[11px] mt-0.5">
-              This client will be saved with status <span className="font-semibold bg-purple-200/60 px-1 py-0.5 rounded text-purple-900">LEAD</span>. You can track communication, schedule follow-ups, and convert them to an Active Client once engaged.
+            <p className="text-purple-700 dark:text-purple-400 text-[11px] mt-0.5">
+              This client will be saved with status <span className="font-semibold bg-purple-200/60 dark:bg-purple-900/60 px-1 py-0.5 rounded text-purple-900 dark:text-purple-200">LEAD</span>. You can track communication, schedule follow-ups, and convert them to an Active Client once engaged.
             </p>
           </div>
         </div>
 
         {errorMsg && (
-          <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg font-medium flex items-center gap-2">
+          <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs rounded-lg font-medium flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
             <span>{errorMsg}</span>
           </div>
@@ -204,13 +204,13 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, onClose }) =
 
           <div className="sm:col-span-2 space-y-1.5">
             <div className="flex items-center justify-between">
-              <label className="block text-xs font-medium text-slate-700">Permanent Account Number (PAN)</label>
-              <label className="flex items-center gap-1.5 cursor-pointer text-[11px] text-purple-700 font-medium hover:text-purple-900">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Permanent Account Number (PAN)</label>
+              <label className="flex items-center gap-1.5 cursor-pointer text-[11px] text-purple-700 dark:text-purple-400 font-medium hover:text-purple-900 dark:hover:text-purple-300">
                 <input
                   type="checkbox"
                   checked={isProvisionalPan}
                   onChange={(e) => handleProvisionalToggle(e.target.checked)}
-                  className="rounded border-slate-300 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5"
+                  className="rounded border-slate-300 dark:border-slate-700 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5"
                 />
                 <Sparkles className="w-3 h-3 text-purple-500" />
                 <span>Provisional Lead (No PAN yet)</span>
@@ -254,7 +254,7 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, onClose }) =
           />
         </div>
 
-        <div className="flex justify-end gap-2 pt-4 border-t border-slate-100">
+        <div className="flex justify-end gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
           <Button variant="secondary" size="sm" type="button" onClick={handleClose} disabled={isLoading}>
             Cancel
           </Button>

@@ -147,12 +147,12 @@ export const TaxAuditPage: React.FC = () => {
       header: "Client & Entity",
       cell: (row) => (
         <div>
-          <p className="font-bold text-slate-900 text-xs">{row.clientName}</p>
+          <p className="font-bold text-slate-900 dark:text-white text-xs">{row.clientName}</p>
           <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="font-mono text-[11px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded font-medium">
+            <span className="font-mono text-[11px] text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded font-medium">
               {row.pan}
             </span>
-            <span className="text-[10px] text-slate-400 font-medium">({row.entityType})</span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">({row.entityType})</span>
           </div>
         </div>
       )
@@ -164,13 +164,13 @@ export const TaxAuditPage: React.FC = () => {
           <span
             className={`font-semibold text-xs px-2 py-0.5 rounded-full ${
               row.formType === "FORM_3CA_3CD"
-                ? "bg-purple-100 text-purple-800 border border-purple-200"
-                : "bg-blue-100 text-blue-800 border border-blue-200"
+                ? "bg-purple-100 dark:bg-purple-950/50 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60"
+                : "bg-blue-100 dark:bg-blue-950/50 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60"
             }`}
           >
             {row.formType === "FORM_3CA_3CD" ? "Form 3CA-3CD" : "Form 3CB-3CD"}
           </span>
-          <p className="text-[10px] text-slate-400 mt-0.5">{row.assessmentYear}</p>
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{row.assessmentYear}</p>
         </div>
       )
     },
@@ -178,12 +178,12 @@ export const TaxAuditPage: React.FC = () => {
       header: "Turnover & Cash %",
       cell: (row) => (
         <div>
-          <p className="font-mono text-xs font-semibold text-slate-800">
+          <p className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">
             ₹{(row.turnover / 10000000).toFixed(2)} Cr
           </p>
           <span
             className={`text-[10px] font-medium px-1.5 py-0.2 rounded inline-block mt-0.5 ${
-              row.isCashLimitCompliant ? "text-emerald-700 bg-emerald-50" : "text-amber-700 bg-amber-50 font-bold"
+              row.isCashLimitCompliant ? "text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50" : "text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 font-bold"
             }`}
           >
             Cash: {row.cashTxnPercentage}% {row.isCashLimitCompliant ? "(≤5% OK)" : "(>5% Alert)"}
@@ -195,10 +195,10 @@ export const TaxAuditPage: React.FC = () => {
       header: "Statutory Due Date",
       cell: (row) => (
         <div>
-          <span className="font-mono text-xs font-medium text-slate-700 flex items-center gap-1">
+          <span className="font-mono text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1">
             <Calendar className="w-3.5 h-3.5 text-slate-400" /> {row.dueDate}
           </span>
-          <span className="text-[10px] text-amber-600 font-medium">Sec 44AB Report</span>
+          <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">Sec 44AB Report</span>
         </div>
       )
     },
@@ -207,11 +207,11 @@ export const TaxAuditPage: React.FC = () => {
       cell: (row) => (
         <div>
           <StatusBadge status={row.stage} />
-          <p className="text-[10px] text-slate-500 mt-1 font-medium">
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">
             3CD: {row.verifiedClausesCount} / {row.totalClausesCount} verified
           </p>
           {row.udin && (
-            <span className="font-mono text-[9px] text-purple-700 bg-purple-50 px-1 py-0.2 rounded mt-0.5 block font-bold truncate max-w-[140px]">
+            <span className="font-mono text-[9px] text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/50 px-1 py-0.2 rounded mt-0.5 block font-bold truncate max-w-[140px]">
               UDIN: {row.udin}
             </span>
           )}
@@ -221,7 +221,7 @@ export const TaxAuditPage: React.FC = () => {
     {
       header: "Assigned Auditor",
       cell: (row) => (
-        <span className="text-xs text-slate-700 font-medium">
+        <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">
           {row.assignedAuditorName || "Unassigned"}
         </span>
       )
@@ -243,7 +243,7 @@ export const TaxAuditPage: React.FC = () => {
             <Button
               size="sm"
               variant="outline"
-              className="text-[11px] h-7 px-2 text-purple-700 border-purple-200 hover:bg-purple-50"
+              className="text-[11px] h-7 px-2 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 hover:bg-purple-50 dark:hover:bg-purple-950/40"
               onClick={() => setClauseModalAudit(row)}
             >
               Clauses
@@ -259,7 +259,7 @@ export const TaxAuditPage: React.FC = () => {
               </Button>
             )}
             {row.stage === "CLIENT_ACCEPTED" && (
-              <span className="text-xs text-emerald-600 font-semibold flex items-center gap-1">
+              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Completed
               </span>
             )}
@@ -275,14 +275,14 @@ export const TaxAuditPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
               Section 44AB Tax Audit Center
             </h1>
-            <span className="bg-purple-100 text-purple-800 text-[11px] font-bold px-2 py-0.5 rounded-full border border-purple-200">
+            <span className="bg-purple-100 dark:bg-purple-950/50 text-purple-800 dark:text-purple-300 text-[11px] font-bold px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-800/60">
               Form 3CA / 3CB / 3CD
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Statutory tax audit preparation, clause-by-clause review (Clauses 1–44), UDIN tracking, and IT portal filing.
           </p>
         </div>
@@ -298,45 +298,45 @@ export const TaxAuditPage: React.FC = () => {
 
       {/* KPI Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <Card className="bg-white">
+        <Card className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Total Audit Engagements</span>
-            <ClipboardCheck className="w-4 h-4 text-purple-600" />
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Audit Engagements</span>
+            <ClipboardCheck className="w-4 h-4 text-purple-600 dark:text-purple-400" />
           </div>
-          <p className="text-2xl font-bold text-slate-900 mt-2">{summary.totalEngagements}</p>
-          <span className="text-[11px] text-slate-400 mt-0.5 block">AY 2026-27 Engagements</span>
+          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-2">{summary.totalEngagements}</p>
+          <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 block">AY 2026-27 Engagements</span>
         </Card>
 
-        <Card className="bg-white">
+        <Card className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Form 3CA / 3CD (Corporate)</span>
-            <FileSpreadsheet className="w-4 h-4 text-purple-600" />
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Form 3CA / 3CD (Corporate)</span>
+            <FileSpreadsheet className="w-4 h-4 text-purple-600 dark:text-purple-400" />
           </div>
-          <p className="text-2xl font-bold text-purple-700 mt-2">{summary.form3CA3CDCount}</p>
-          <span className="text-[11px] text-slate-400 mt-0.5 block">Pvt Ltd & LLP Entities</span>
+          <p className="text-2xl font-bold text-purple-700 dark:text-purple-400 mt-2">{summary.form3CA3CDCount}</p>
+          <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 block">Pvt Ltd & LLP Entities</span>
         </Card>
 
-        <Card className="bg-white">
+        <Card className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Form 3CB / 3CD (Non-Corp)</span>
-            <FileText className="w-4 h-4 text-blue-600" />
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Form 3CB / 3CD (Non-Corp)</span>
+            <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           </div>
-          <p className="text-2xl font-bold text-blue-700 mt-2">{summary.form3CB3CDCount}</p>
-          <span className="text-[11px] text-slate-400 mt-0.5 block">Firms & Proprietorships</span>
+          <p className="text-2xl font-bold text-blue-700 dark:text-blue-400 mt-2">{summary.form3CB3CDCount}</p>
+          <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 block">Firms & Proprietorships</span>
         </Card>
 
-        <Card className="bg-white border-amber-200">
+        <Card className="bg-white dark:bg-slate-900 border-amber-200 dark:border-amber-800/60">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Pending UDIN / Filing</span>
-            <AlertTriangle className="w-4 h-4 text-amber-500" />
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Pending UDIN / Filing</span>
+            <AlertTriangle className="w-4 h-4 text-amber-500 dark:text-amber-400" />
           </div>
-          <p className="text-2xl font-bold text-amber-600 mt-2">{summary.pendingUdinCount}</p>
-          <span className="text-[11px] text-amber-700 mt-0.5 block font-medium">Due Date: 30 Sept 2026</span>
+          <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2">{summary.pendingUdinCount}</p>
+          <span className="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5 block font-medium">Due Date: 30 Sept 2026</span>
         </Card>
       </div>
 
       {/* Statutory Due Date Countdown Banner */}
-      <Card className="bg-gradient-to-r from-slate-900 to-purple-950 text-white p-4">
+      <Card className="bg-gradient-to-r from-slate-900 via-slate-900 to-purple-950 text-white p-4 border-slate-800">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-500/20 rounded-lg border border-purple-400/30">
@@ -363,20 +363,20 @@ export const TaxAuditPage: React.FC = () => {
 
       {/* Selected Audit Stepper Inspector */}
       {selectedAudit && (
-        <Card className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200">
-          <div className="flex items-center justify-between pb-3 border-b border-purple-200/60">
+        <Card className="bg-gradient-to-r from-purple-50/60 to-indigo-50/60 dark:from-slate-900 dark:to-purple-950/40 border-purple-200 dark:border-purple-900/60">
+          <div className="flex items-center justify-between pb-3 border-b border-purple-200/60 dark:border-purple-800/60">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-slate-900">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                   {selectedAudit.clientName} — {selectedAudit.assessmentYear} ({selectedAudit.formType})
                 </h3>
-                <span className="text-xs font-mono bg-purple-200/60 text-purple-900 font-semibold px-2 py-0.5 rounded">
+                <span className="text-xs font-mono bg-purple-200/60 dark:bg-purple-900/60 text-purple-900 dark:text-purple-200 font-semibold px-2 py-0.5 rounded">
                   {selectedAudit.pan}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-600 mt-0.5">
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
                 Turnover: ₹{(selectedAudit.turnover / 10000000).toFixed(2)} Cr • Cash %: {selectedAudit.cashTxnPercentage}% • Statutory Due Date: {selectedAudit.dueDate}
-                {selectedAudit.udin && <span className="ml-2 font-bold text-purple-800">UDIN: {selectedAudit.udin}</span>}
+                {selectedAudit.udin && <span className="ml-2 font-bold text-purple-800 dark:text-purple-300">UDIN: {selectedAudit.udin}</span>}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -395,7 +395,7 @@ export const TaxAuditPage: React.FC = () => {
       )}
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
         {/* Stage Filter Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
           {[
@@ -413,7 +413,7 @@ export const TaxAuditPage: React.FC = () => {
               className={`px-3 py-1.5 rounded-lg font-medium transition-smooth whitespace-nowrap ${
                 stageFilter === tab.id
                   ? "bg-purple-600 text-white font-semibold shadow-xs"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-750 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               {tab.label}
@@ -430,14 +430,14 @@ export const TaxAuditPage: React.FC = () => {
               placeholder="Search Client or PAN..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="text-xs pl-8 pr-3 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-purple-500 w-44"
+              className="text-xs pl-8 pr-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500 w-44"
             />
           </div>
 
           <select
             value={formTypeFilter}
             onChange={(e) => setFormTypeFilter(e.target.value)}
-            className="text-xs py-1.5 px-2.5 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+            className="text-xs py-1.5 px-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-purple-500"
           >
             <option value="ALL">All Form Types</option>
             <option value="FORM_3CA_3CD">Form 3CA-3CD (Corp)</option>
@@ -466,14 +466,14 @@ export const TaxAuditPage: React.FC = () => {
           maxWidth="2xl"
         >
           <div className="space-y-4">
-            <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs text-purple-900 flex items-center justify-between">
+            <div className="p-3 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 rounded-xl text-xs text-purple-900 dark:text-purple-200 flex items-center justify-between">
               <div>
                 <span className="font-bold">Form 3CD Statutory Audit Working Papers</span>
-                <p className="text-[11px] text-purple-700 mt-0.5">
+                <p className="text-[11px] text-purple-700 dark:text-purple-400 mt-0.5">
                   Assessment Year: {clauseModalAudit.assessmentYear} • Form: {clauseModalAudit.formType}
                 </p>
               </div>
-              <span className="text-xs font-bold bg-purple-200/80 text-purple-900 px-2.5 py-1 rounded-full">
+              <span className="text-xs font-bold bg-purple-200/80 dark:bg-purple-900/80 text-purple-900 dark:text-purple-200 px-2.5 py-1 rounded-full">
                 {clausesData?.data?.filter((c: any) => c.status === "VERIFIED").length || 0} /{" "}
                 {clausesData?.data?.length || 9} Verified
               </span>
@@ -483,19 +483,19 @@ export const TaxAuditPage: React.FC = () => {
               {clausesData?.data?.map((clause: any) => (
                 <div
                   key={clause.clauseNumber}
-                  className="p-3 rounded-lg border border-slate-200 bg-white hover:border-purple-300 transition-smooth"
+                  className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-850 hover:border-purple-300 dark:hover:border-purple-700 transition-smooth"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                        <span className="font-mono font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/50 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800/60">
                           Clause {clause.clauseNumber}
                         </span>
-                        <span className="text-[10px] text-slate-500 font-medium">{clause.category}</span>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">{clause.category}</span>
                       </div>
-                      <h4 className="font-semibold text-slate-900 mt-1">{clause.title}</h4>
+                      <h4 className="font-semibold text-slate-900 dark:text-white mt-1">{clause.title}</h4>
                       {clause.remarks && (
-                        <p className="text-[11px] text-slate-600 bg-slate-50 p-1.5 rounded mt-1 border border-slate-100">
+                        <p className="text-[11px] text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 p-1.5 rounded mt-1 border border-slate-100 dark:border-slate-750">
                           Auditor Note: {clause.remarks}
                         </p>
                       )}
@@ -505,10 +505,10 @@ export const TaxAuditPage: React.FC = () => {
                       onClick={() => handleClauseStatusToggle(clause.clauseNumber, clause.status)}
                       className={`px-2.5 py-1 rounded text-xs font-semibold shrink-0 transition-smooth ${
                         clause.status === "VERIFIED"
-                          ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+                          ? "bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900"
                           : clause.status === "FLAGGED"
-                          ? "bg-rose-100 text-rose-800 hover:bg-rose-200"
-                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                          ? "bg-rose-100 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300 hover:bg-rose-200 dark:hover:bg-rose-900"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                       }`}
                     >
                       {clause.status === "VERIFIED"
@@ -522,7 +522,7 @@ export const TaxAuditPage: React.FC = () => {
               ))}
             </div>
 
-            <div className="flex justify-end pt-3 border-t border-slate-200">
+            <div className="flex justify-end pt-3 border-t border-slate-200 dark:border-slate-800">
               <Button onClick={() => setClauseModalAudit(null)}>Close Checklist</Button>
             </div>
           </div>
@@ -538,9 +538,9 @@ export const TaxAuditPage: React.FC = () => {
           maxWidth="md"
         >
           <div className="space-y-4 text-xs">
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
-              <span className="font-semibold text-slate-700">Transitioning Stage:</span>
-              <div className="flex items-center gap-2 mt-1 font-bold text-slate-900">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+              <span className="font-semibold text-slate-700 dark:text-slate-300">Transitioning Stage:</span>
+              <div className="flex items-center gap-2 mt-1 font-bold text-slate-900 dark:text-white">
                 <StatusBadge status={advanceModalAudit.stage} />
                 <ArrowRight className="w-4 h-4 text-slate-400" />
                 <StatusBadge status={targetStage} />
@@ -548,14 +548,14 @@ export const TaxAuditPage: React.FC = () => {
             </div>
 
             {advanceError && (
-              <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg font-medium">
+              <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs rounded-lg font-medium">
                 {advanceError}
               </div>
             )}
 
             {targetStage === "UDIN_GENERATED" && (
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-slate-700">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
                   Enter 18-Character ICAI UDIN:
                 </label>
                 <div className="relative">
@@ -574,7 +574,7 @@ export const TaxAuditPage: React.FC = () => {
 
             {targetStage === "PORTAL_FILED" && (
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-slate-700">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
                   Income Tax e-Filing Acknowledgement Number:
                 </label>
                 <Input
@@ -587,7 +587,7 @@ export const TaxAuditPage: React.FC = () => {
               </div>
             )}
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
               <Button variant="outline" onClick={() => setAdvanceModalAudit(null)}>
                 Cancel
               </Button>

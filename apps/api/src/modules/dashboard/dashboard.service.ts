@@ -2,8 +2,33 @@ import { prisma } from "../../lib/db";
 import { scopeToAssignedClients } from "../../lib/permissions";
 import { AuthUser, DashboardSummaryResponse, DailyActivityRecord } from "@ca-saas/shared-types";
 
+interface SummaryCacheEntry {
+  data: DashboardSummaryResponse;
+  expiresAt: number;
+}
+
+const summaryCache = new Map<string, SummaryCacheEntry>();
+
 export class DashboardService {
+  public static invalidateCache(userId?: string) {
+    if (userId) {
+      for (const key of summaryCache.keys()) {
+        if (key.startsWith(userId)) {
+          summaryCache.delete(key);
+        }
+      }
+    } else {
+      summaryCache.clear();
+    }
+  }
+
   public static async getSummary(user: AuthUser): Promise<DashboardSummaryResponse> {
+    const cacheKey = `${user.id}_${user.role}`;
+    const cached = summaryCache.get(cacheKey);
+    if (cached && Date.now() < cached.expiresAt) {
+      return cached.data;
+    }
+
     const clientScope = scopeToAssignedClients(user, {});
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -229,7 +254,7 @@ export class DashboardService {
       });
     }
 
-    return {
+    const result: DashboardSummaryResponse = {
       // 4 Main KPI Cards
       totalRevenue,
       totalRevenueThisMonth,
@@ -263,5 +288,12 @@ export class DashboardService {
       outstandingFeesOverdue,
       outstandingFeesComparison: null
     };
+
+    summaryCache.set(cacheKey, {
+      data: result,
+      expiresAt: Date.now() + 15000 // 15s cache TTL
+    });
+
+    return result;
   }
 }

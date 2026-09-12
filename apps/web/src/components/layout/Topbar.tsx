@@ -11,7 +11,7 @@ export interface TopbarProps {
   onOpenAi: () => void;
 }
 
-export const Topbar: React.FC<TopbarProps> = ({
+export const Topbar: React.FC<TopbarProps> = React.memo(({
   user,
   onLogout,
   onOpenCmdK,
@@ -98,4 +98,4 @@ export const Topbar: React.FC<TopbarProps> = ({
       </div>
     </header>
   );
-};
+});

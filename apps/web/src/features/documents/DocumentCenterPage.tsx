@@ -34,6 +34,7 @@ import { Card } from "../../components/ui/Card";
 import { Input } from "../../components/ui/Input";
 import { Modal } from "../../components/ui/Modal";
 import { ClientDocumentRecord, DocType } from "@ca-saas/shared-types";
+import { useDebounce } from "../../lib/useDebounce";
 
 export const DocumentCenterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ export const DocumentCenterPage: React.FC = () => {
 
   const [activeView, setActiveView] = useState<"client" | "grouped">("client");
   const [clientSearch, setClientSearch] = useState("");
+  const debouncedClientSearch = useDebounce(clientSearch, 250);
   const [selectedClientId, setSelectedClientId] = useState<string>("");
 
   // Document upload form state
@@ -58,7 +60,7 @@ export const DocumentCenterPage: React.FC = () => {
 
   // Fetch clients list for selector
   const { data: clientsData, isLoading: isClientsLoading } = useGetClientsQuery({
-    search: clientSearch || undefined,
+    search: debouncedClientSearch || undefined,
     limit: 50
   });
 

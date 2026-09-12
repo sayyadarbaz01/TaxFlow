@@ -17,6 +17,9 @@ const getApiBaseUrl = (): string => {
 
 export const api = createApi({
   reducerPath: "api",
+  keepUnusedDataFor: 300,
+  refetchOnFocus: false,
+  refetchOnReconnect: false,
   baseQuery: fetchBaseQuery({
     baseUrl: getApiBaseUrl(),
     prepareHeaders: (headers) => {

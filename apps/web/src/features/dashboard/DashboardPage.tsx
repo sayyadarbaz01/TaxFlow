@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import {
   Users,
@@ -64,45 +64,66 @@ export const DashboardPage: React.FC = () => {
   const [isPendingModalOpen, setIsPendingModalOpen] = useState(false);
   const [pendingFilterTab, setPendingFilterTab] = useState<"ALL" | "GST" | "ITR">("ALL");
   const [pendingSearch, setPendingSearch] = useState("");
-  const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null);
 
-  // Derived Client & Filing Lists
-  const totalClients = clientsData?.total || clientsData?.data?.length || 0;
-
-  const pendingItrList = (itrData?.data || []).filter(
-    (i: any) => i.status !== "FILED" && i.status !== "PROCESSED" && i.status !== "VERIFIED"
+  // Derived Client & Filing Lists with useMemo to eliminate redundant renders
+  const totalClients = useMemo(
+    () => clientsData?.total || clientsData?.data?.length || 0,
+    [clientsData?.total, clientsData?.data]
   );
+
+  const pendingItrList = useMemo(() => {
+    return (itrData?.data || []).filter(
+      (i: any) => i.status !== "FILED" && i.status !== "PROCESSED" && i.status !== "VERIFIED"
+    );
+  }, [itrData?.data]);
   const pendingItrCount = pendingItrList.length;
 
-  const pendingGstList = (gstData?.data || []).filter((g: any) => g.status !== "FILED");
+  const pendingGstList = useMemo(() => {
+    return (gstData?.data || []).filter((g: any) => g.status !== "FILED");
+  }, [gstData?.data]);
   const pendingGstCount = pendingGstList.length;
 
-  const overdueInvoices = (invoiceData?.data || []).filter((inv: any) => inv.status === "OVERDUE");
+  const overdueInvoices = useMemo(() => {
+    return (invoiceData?.data || []).filter((inv: any) => inv.status === "OVERDUE");
+  }, [invoiceData?.data]);
 
-  // Tasks Analysis
-  const allTasks = tasksData?.data || [];
-  const completedTasks = allTasks.filter((t: any) => t.status === "DONE");
-  const pendingTasks = allTasks.filter((t: any) => t.status !== "DONE");
+  // Tasks Analysis with useMemo
+  const allTasks = useMemo(() => tasksData?.data || [], [tasksData?.data]);
+  const completedTasks = useMemo(
+    () => allTasks.filter((t: any) => t.status === "DONE"),
+    [allTasks]
+  );
+  const pendingTasks = useMemo(
+    () => allTasks.filter((t: any) => t.status !== "DONE"),
+    [allTasks]
+  );
 
   // Daily Priorities Progress Counter
-  const totalDailyActions =
-    pendingTasks.length + pendingGstList.length + pendingItrList.length + overdueInvoices.length;
+  const totalDailyActions = useMemo(
+    () => pendingTasks.length + pendingGstList.length + pendingItrList.length + overdueInvoices.length,
+    [pendingTasks.length, pendingGstList.length, pendingItrList.length, overdueInvoices.length]
+  );
   const completedDailyCount = completedTasks.length;
   const totalDailyCount = totalDailyActions + completedDailyCount;
-  const dailyProgressPercent =
-    totalDailyCount > 0 ? Math.round((completedDailyCount / totalDailyCount) * 100) : 100;
+  const dailyProgressPercent = useMemo(
+    () => (totalDailyCount > 0 ? Math.round((completedDailyCount / totalDailyCount) * 100) : 100),
+    [totalDailyCount, completedDailyCount]
+  );
 
-  // Task Toggle Handler
-  const handleToggleTask = async (taskId: string, currentStatus: string) => {
-    try {
-      const nextStatus = currentStatus === "DONE" ? "TODO" : "DONE";
-      await updateTaskStatus({ id: taskId, status: nextStatus }).unwrap();
-      refetchSummary();
-      refetchTasks();
-    } catch (err) {
-      console.error("Error toggling task status:", err);
-    }
-  };
+  // Task Toggle Handler wrapped in useCallback
+  const handleToggleTask = useCallback(
+    async (taskId: string, currentStatus: string) => {
+      try {
+        const nextStatus = currentStatus === "DONE" ? "TODO" : "DONE";
+        await updateTaskStatus({ id: taskId, status: nextStatus }).unwrap();
+        refetchSummary();
+        refetchTasks();
+      } catch (err) {
+        console.error("Error toggling task status:", err);
+      }
+    },
+    [updateTaskStatus, refetchSummary, refetchTasks]
+  );
 
   // Weekly Activity Graph Data
   const daysShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

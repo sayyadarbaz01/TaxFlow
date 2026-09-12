@@ -7,7 +7,7 @@ export interface CardProps {
   onClick?: () => void;
 }
 
-export const Card: React.FC<CardProps> = ({ children, className, onClick }) => {
+export const Card: React.FC<CardProps> = React.memo(({ children, className, onClick }) => {
   return (
     <div
       onClick={onClick}
@@ -20,4 +20,4 @@ export const Card: React.FC<CardProps> = ({ children, className, onClick }) => {
       {children}
     </div>
   );
-};
+});

@@ -14,7 +14,7 @@ export interface TableProps<T> {
   emptyText?: string;
 }
 
-export function Table<T>({ columns, data, isLoading = false, emptyText = "No records found" }: TableProps<T>) {
+function TableInner<T>({ columns, data, isLoading = false, emptyText = "No records found" }: TableProps<T>) {
   return (
     <div className="w-full overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
       <table className="w-full text-left text-xs border-collapse">
@@ -46,7 +46,7 @@ export function Table<T>({ columns, data, isLoading = false, emptyText = "No rec
             </tr>
           ) : (
             data.map((row, rIdx) => (
-              <tr key={rIdx} className="hover:bg-slate-50/80 transition-smooth">
+              <tr key={(row as any)?.id || rIdx} className="hover:bg-slate-50/80 transition-smooth">
                 {columns.map((col, cIdx) => (
                   <td key={cIdx} className={`px-4 py-3 ${col.className || ""}`}>
                     {col.cell ? col.cell(row) : col.accessorKey ? String(row[col.accessorKey] ?? "") : null}
@@ -60,3 +60,5 @@ export function Table<T>({ columns, data, isLoading = false, emptyText = "No rec
     </div>
   );
 }
+
+export const Table = React.memo(TableInner) as typeof TableInner;

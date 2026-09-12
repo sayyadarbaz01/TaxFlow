@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import compression from "compression";
 import cookieParser from "cookie-parser";
 import { config } from "./config";
 import { errorHandler } from "./middleware/errorHandler";
@@ -60,6 +61,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
   })
 );
+app.use(compression({ threshold: 1024 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

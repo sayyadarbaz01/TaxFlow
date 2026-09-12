@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Search, Plus, User, Eye, Phone, Mail, Filter, Pencil, Trash2, UserPlus, CheckCircle2 } from "lucide-react";
 import { clsx } from "clsx";
@@ -7,6 +7,7 @@ import { Table, Column } from "../../components/ui/Table";
 import { StatusBadge } from "../../components/ui/StatusBadge";
 import { useGetClientsQuery, useUpdateClientMutation } from "../../lib/api";
 import { ClientRecord } from "@ca-saas/shared-types";
+import { useDebounce } from "../../lib/useDebounce";
 import { ClientOnboardingModal } from "./ClientOnboardingModal";
 import { EditClientModal } from "./EditClientModal";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
@@ -33,28 +34,34 @@ export const ClientListPage: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const handleConvertToActive = async (client: ClientRecord) => {
-    try {
-      setConvertingId(client.id);
-      await updateClient({
-        id: client.id,
-        status: "ACTIVE"
-      }).unwrap();
-    } catch (err) {
-      console.error("Failed to convert client:", err);
-    } finally {
-      setConvertingId(null);
-    }
-  };
+  const handleConvertToActive = useCallback(
+    async (client: ClientRecord) => {
+      try {
+        setConvertingId(client.id);
+        await updateClient({
+          id: client.id,
+          status: "ACTIVE"
+        }).unwrap();
+      } catch (err) {
+        console.error("Failed to convert client:", err);
+      } finally {
+        setConvertingId(null);
+      }
+    },
+    [updateClient]
+  );
+
+  const debouncedSearch = useDebounce(search, 250);
 
   const { data, isLoading } = useGetClientsQuery({
-    search,
+    search: debouncedSearch,
     status: statusFilter,
     entityType: entityFilter,
     workType: workTypeFilter || undefined
   });
 
-  const columns: Column<ClientRecord>[] = [
+  const columns: Column<ClientRecord>[] = useMemo(
+    () => [
     {
       header: "Client Name",
       accessorKey: "name",
@@ -187,7 +194,7 @@ export const ClientListPage: React.FC = () => {
         </div>
       )
     }
-  ];
+  ], [convertingId, handleConvertToActive, navigate]);
 
   return (
     <div className="space-y-6">

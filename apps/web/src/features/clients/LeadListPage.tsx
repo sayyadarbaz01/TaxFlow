@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   UserPlus,
@@ -20,6 +20,7 @@ import { Table, Column } from "../../components/ui/Table";
 import { StatusBadge } from "../../components/ui/StatusBadge";
 import { useGetClientsQuery, useUpdateClientMutation } from "../../lib/api";
 import { ClientRecord } from "@ca-saas/shared-types";
+import { useDebounce } from "../../lib/useDebounce";
 import { AddLeadModal } from "./AddLeadModal";
 import { EditClientModal } from "./EditClientModal";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
@@ -35,9 +36,11 @@ export const LeadListPage: React.FC = () => {
 
   const navigate = useNavigate();
 
+  const debouncedSearch = useDebounce(search, 250);
+
   // Query only clients with status "LEAD"
   const { data, isLoading } = useGetClientsQuery({
-    search,
+    search: debouncedSearch,
     status: "LEAD",
     entityType: entityFilter,
     workType: workTypeFilter || undefined
@@ -45,29 +48,33 @@ export const LeadListPage: React.FC = () => {
 
   const [updateClient] = useUpdateClientMutation();
 
-  const leads = data?.data || [];
+  const leads = useMemo(() => data?.data || [], [data?.data]);
 
-  // Metrics
+  // Metrics with useMemo
   const totalLeads = leads.length;
-  const itrLeads = leads.filter((l: any) => l.workType === "ITR").length;
-  const gstLeads = leads.filter((l: any) => l.workType === "GST").length;
-  const comboLeads = leads.filter((l: any) => l.workType === "ITR + GST").length;
+  const itrLeads = useMemo(() => leads.filter((l: any) => l.workType === "ITR").length, [leads]);
+  const gstLeads = useMemo(() => leads.filter((l: any) => l.workType === "GST").length, [leads]);
+  const comboLeads = useMemo(() => leads.filter((l: any) => l.workType === "ITR + GST").length, [leads]);
 
-  const handleConvertToActive = async (lead: ClientRecord) => {
-    try {
-      setConvertingId(lead.id);
-      await updateClient({
-        id: lead.id,
-        status: "ACTIVE"
-      }).unwrap();
-    } catch (err) {
-      console.error("Failed to convert lead to active client:", err);
-    } finally {
-      setConvertingId(null);
-    }
-  };
+  const handleConvertToActive = useCallback(
+    async (lead: ClientRecord) => {
+      try {
+        setConvertingId(lead.id);
+        await updateClient({
+          id: lead.id,
+          status: "ACTIVE"
+        }).unwrap();
+      } catch (err) {
+        console.error("Failed to convert lead to active client:", err);
+      } finally {
+        setConvertingId(null);
+      }
+    },
+    [updateClient]
+  );
 
-  const columns: Column<ClientRecord>[] = [
+  const columns: Column<ClientRecord>[] = useMemo(
+    () => [
     {
       header: "Lead / Prospect Name",
       accessorKey: "name",
@@ -210,7 +217,7 @@ export const LeadListPage: React.FC = () => {
         </div>
       )
     }
-  ];
+  ], [convertingId, handleConvertToActive, navigate]);
 
   return (
     <div className="space-y-6">

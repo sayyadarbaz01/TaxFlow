@@ -28,7 +28,7 @@ export interface SidebarProps {
   onToggleCollapse: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ user, isCollapsed, onToggleCollapse }) => {
+export const Sidebar: React.FC<SidebarProps> = React.memo(({ user, isCollapsed, onToggleCollapse }) => {
   const groups = [
     {
       title: "WORKSPACE",
@@ -171,4 +171,4 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, isCollapsed, onToggleCol
       )}
     </aside>
   );
-};
+});

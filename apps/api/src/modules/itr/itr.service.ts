@@ -57,7 +57,7 @@ export class ItrService {
     return formatPaginatedResponse(formatted, total, page, pageSize);
   }
 
-  public static async getFilingById(id: string, user: AuthUser) {
+  public static async getFilingById(id: string, _user: AuthUser) {
     const filing = await prisma.itrFiling.findUnique({
       where: { id },
       include: { client: true, assignedStaff: true }

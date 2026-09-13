@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import { config } from "./config";
 import { errorHandler } from "./middleware/errorHandler";
 import { requestLogger } from "./middleware/requestLogger";
+import { performanceProfiler } from "./middleware/performanceProfiler";
 
 import authRoutes from "./modules/auth/auth.routes";
 import clientsRoutes from "./modules/clients/clients.routes";
@@ -65,6 +66,7 @@ app.use(compression({ threshold: 1024 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(performanceProfiler);
 app.use(requestLogger);
 
 // Static file serving for uploaded document storage

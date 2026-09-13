@@ -13,70 +13,8 @@ import {
 const inMemoryGstRegistrations: Map<string, GstRegistrationRecord> = new Map();
 
 export class GstRegistrationService {
-  private static initialized = false;
-
   private static async ensureInitialized() {
-    if (this.initialized) return;
-
-    try {
-      // Find clients or leads with workType 'GST Registration' or no GSTIN
-      const clients = await prisma.client.findMany({
-        where: {
-          OR: [
-            { workType: "GST Registration" },
-            { gstin: null }
-          ]
-        },
-        include: {
-          assignedStaff: { select: { id: true, name: true } }
-        },
-        take: 8
-      });
-
-      for (const client of clients) {
-        const regId = `gstreg-${client.id.substring(0, 8)}`;
-        const trn = `TRN26${Math.floor(1000000000 + Math.random() * 9000000000)}`;
-        const hasArn = Math.random() > 0.4;
-        const arn = hasArn ? `AA270926${Math.floor(100000 + Math.random() * 900000)}Z` : null;
-
-        const stage: GstRegStage = hasArn
-          ? Math.random() > 0.5 ? "ARN_SUBMITTED" : "AADHAAR_AUTH"
-          : "TRN_GENERATED";
-
-        const reg: GstRegistrationRecord = {
-          id: regId,
-          businessName: client.name,
-          pan: client.pan,
-          entityType: client.entityType,
-          registrationType: "REGULAR",
-          state: "Maharashtra (27)",
-          jurisdictionWard: "Ward-IV, Division-B",
-          trn,
-          arn,
-          stage,
-          submissionDate: hasArn ? "2026-09-02" : null,
-          aadhaarAuthStatus: stage === "AADHAAR_AUTH" ? "VERIFIED" : "PENDING",
-          queryNoticeRef: null,
-          queryNoticeDate: null,
-          queryReplyDate: null,
-          gstin: null,
-          approvalDate: null,
-          contactPhone: client.contactPhone,
-          contactEmail: client.contactEmail || "accounts@business.in",
-          assignedStaffId: client.assignedStaffId || null,
-          assignedStaffName: client.assignedStaff?.name || "Tax Associate",
-          clientId: client.id,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
-
-        inMemoryGstRegistrations.set(reg.id, reg);
-      }
-
-      this.initialized = true;
-    } catch (err) {
-      console.warn("GstRegistration initialization fallback: Database connection deferred.", err);
-    }
+    // Store starts completely clean; data is created via createApplication
   }
 
   public static async listApplications(_user: AuthUser, query: Record<string, any>) {

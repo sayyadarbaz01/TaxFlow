@@ -90,65 +90,8 @@ const inMemoryAudits: Map<string, TaxAuditRecord> = new Map();
 const auditClausesMap: Map<string, TaxAuditClauseItem[]> = new Map();
 
 export class TaxAuditService {
-  private static initialized = false;
-
   private static async ensureInitialized() {
-    if (this.initialized) return;
-
-    try {
-      // Find active clients with workType 'Tax Audit' or PVT_LTD/LLP
-      const clients = await prisma.client.findMany({
-        where: {
-          status: "ACTIVE",
-          OR: [
-            { workType: "Tax Audit" },
-            { entityType: "PVT_LTD" },
-            { entityType: "LLP" }
-          ]
-        },
-        include: {
-          assignedStaff: { select: { id: true, name: true } }
-        },
-        take: 10
-      });
-
-      for (const client of clients) {
-        const isCorp = client.entityType === "PVT_LTD" || client.entityType === "LLP";
-        const auditId = `audit-${client.id.substring(0, 8)}`;
-        const turnover = isCorp ? 24500000 : 12500000;
-        const cashTxnPercentage = isCorp ? 1.8 : 3.2;
-
-        const audit: TaxAuditRecord = {
-          id: auditId,
-          clientId: client.id,
-          clientName: client.name,
-          pan: client.pan,
-          entityType: client.entityType,
-          assessmentYear: "AY 2026-27",
-          formType: isCorp ? "FORM_3CA_3CD" : "FORM_3CB_3CD",
-          turnover,
-          cashTxnPercentage,
-          isCashLimitCompliant: cashTxnPercentage <= 5.0,
-          stage: "FORM_3CD_PREP",
-          dueDate: "2026-09-30",
-          udin: null,
-          acknowledgementNo: null,
-          assignedAuditorId: client.assignedStaffId || null,
-          assignedAuditorName: client.assignedStaff?.name || "Senior Auditor",
-          verifiedClausesCount: 5,
-          totalClausesCount: DEFAULT_3CD_CLAUSES.length,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
-
-        inMemoryAudits.set(audit.id, audit);
-        auditClausesMap.set(audit.id, JSON.parse(JSON.stringify(DEFAULT_3CD_CLAUSES)));
-      }
-
-      this.initialized = true;
-    } catch (err) {
-      console.warn("TaxAudit initialization fallback: Database connection deferred.", err);
-    }
+    // Stores start completely clean; data is created via createEngagement
   }
 
   public static async listEngagements(_user: AuthUser, query: Record<string, any>) {

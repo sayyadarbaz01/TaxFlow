@@ -46,21 +46,22 @@ export class WhatsAppService {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const result = await prisma.whatsAppMessage.aggregate({
-      where: {
-        sentAt: { gte: firstDay },
-        direction: "OUTBOUND"
-      },
-      _sum: { cost: true },
-      _count: { id: true }
-    });
-
-    const categoryBreakdown = await prisma.whatsAppMessage.groupBy({
-      by: ["direction", "status"],
-      where: { sentAt: { gte: firstDay } },
-      _count: { id: true },
-      _sum: { cost: true }
-    });
+    const [result, categoryBreakdown] = await Promise.all([
+      prisma.whatsAppMessage.aggregate({
+        where: {
+          sentAt: { gte: firstDay },
+          direction: "OUTBOUND"
+        },
+        _sum: { cost: true },
+        _count: { id: true }
+      }),
+      prisma.whatsAppMessage.groupBy({
+        by: ["direction", "status"],
+        where: { sentAt: { gte: firstDay } },
+        _count: { id: true },
+        _sum: { cost: true }
+      })
+    ]);
 
     return {
       month: now.toLocaleString("default", { month: "long", year: "numeric" }),
@@ -71,7 +72,7 @@ export class WhatsAppService {
   }
 
   public static async listTemplates() {
-    return prisma.whatsAppTemplate.findMany({
+    return await prisma.whatsAppTemplate.findMany({
       orderBy: { createdAt: "desc" }
     });
   }

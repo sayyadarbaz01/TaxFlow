@@ -12,6 +12,22 @@ declare global {
   }
 }
 
+interface CachedUser {
+  user: AuthUser;
+  expiresAt: number;
+}
+
+const userAuthCache = new Map<string, CachedUser>();
+const AUTH_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+export function invalidateUserAuthCache(userId?: string) {
+  if (userId) {
+    userAuthCache.delete(userId);
+  } else {
+    userAuthCache.clear();
+  }
+}
+
 export async function requireAuth(req: Request, res: Response, next: NextFunction) {
   try {
     let token: string | undefined;
@@ -27,6 +43,13 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     }
 
     const payload = verifyAccessToken(token);
+
+    // Fast-path: Check in-memory user cache
+    const cached = payload.userId ? userAuthCache.get(payload.userId) : null;
+    if (cached && Date.now() < cached.expiresAt) {
+      req.user = cached.user;
+      return next();
+    }
 
     let user: any = null;
     try {
@@ -75,6 +98,13 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
       email: user.email,
       role: user.role.name as any
     };
+
+    if (user.id) {
+      userAuthCache.set(user.id, {
+        user: req.user,
+        expiresAt: Date.now() + AUTH_CACHE_TTL_MS
+      });
+    }
 
     next();
   } catch (err) {

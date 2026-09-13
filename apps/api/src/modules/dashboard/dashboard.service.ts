@@ -36,33 +36,96 @@ export class DashboardService {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
-    // 1. Total Revenue (Aggregate of paid invoices & successful payments)
-    const [paidInvoicesAgg, paidThisMonthAgg, paidLastMonthAgg] = await Promise.all([
+    const clientWhere: any = { ...clientScope, status: "ACTIVE" };
+    const pendingItrStatuses = ["NOT_STARTED", "DOCUMENTS_PENDING", "UNDER_PREPARATION"];
+    const itrPendingWhere: any = {
+      client: clientScope,
+      status: { in: pendingItrStatuses }
+    };
+    const gstPendingWhere: any = {
+      client: clientScope,
+      status: { not: "FILED" }
+    };
+    const leadWhere: any = { ...clientScope, status: "LEAD" };
+    const sevenDaysAgo = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
+
+    // Parallelize all 17 independent queries into a single Promise.all roundtrip
+    const [
+      paidInvoicesAgg,
+      paidThisMonthAgg,
+      paidLastMonthAgg,
+      totalClientsActive,
+      prevClients,
+      itrPending,
+      itrOverdue,
+      gstReturnsPending,
+      gstReturnsOverdue,
+      gstReturnsDue,
+      totalLeads,
+      newLeadsThisMonth,
+      prevLeads,
+      invoices,
+      recentItrs,
+      recentGsts,
+      recentTasks
+    ] = await Promise.all([
+      // 1. Revenue aggregates
       prisma.invoice.aggregate({
-        where: {
-          client: clientScope,
-          status: "PAID"
-        },
+        where: { client: clientScope, status: "PAID" },
         _sum: { total: true }
       }),
       prisma.invoice.aggregate({
-        where: {
-          client: clientScope,
-          status: "PAID",
-          paidAt: { gte: startOfMonth }
-        },
+        where: { client: clientScope, status: "PAID", paidAt: { gte: startOfMonth } },
         _sum: { total: true }
       }),
       prisma.invoice.aggregate({
-        where: {
-          client: clientScope,
-          status: "PAID",
-          paidAt: { gte: startOfLastMonth, lt: startOfMonth }
-        },
+        where: { client: clientScope, status: "PAID", paidAt: { gte: startOfLastMonth, lt: startOfMonth } },
         _sum: { total: true }
+      }),
+      // 2. Active clients counts
+      prisma.client.count({ where: clientWhere }),
+      prisma.client.count({ where: { ...clientWhere, createdAt: { lt: startOfMonth } } }),
+      // 3. ITR filings counts
+      prisma.itrFiling.count({ where: itrPendingWhere }),
+      prisma.itrFiling.count({ where: { ...itrPendingWhere, dueDate: { lt: todayStart } } }),
+      // 4. GST returns counts
+      prisma.gstReturn.count({ where: gstPendingWhere }),
+      prisma.gstReturn.count({ where: { client: clientScope, status: { not: "FILED" }, dueDate: { lt: todayStart } } }),
+      prisma.gstReturn.count({ where: { client: clientScope, status: { not: "FILED" }, dueDate: { lte: in7Days } } }),
+      // 5. Leads counts
+      prisma.client.count({ where: leadWhere }),
+      prisma.client.count({ where: { ...leadWhere, createdAt: { gte: startOfMonth } } }),
+      prisma.client.count({ where: { ...leadWhere, createdAt: { lt: startOfMonth } } }),
+      // 6. Outstanding invoices
+      prisma.invoice.findMany({
+        where: { client: clientScope, status: { in: ["SENT", "OVERDUE", "DRAFT"] } },
+        select: {
+          id: true,
+          total: true,
+          dueDate: true,
+          status: true,
+          payments: {
+            where: { status: { in: ["SUCCESS", "PAID", "COMPLETED"] } },
+            select: { amount: true }
+          }
+        }
+      }),
+      // 7. Recent activity for past 7 days
+      prisma.itrFiling.findMany({
+        where: { client: clientScope, updatedAt: { gte: sevenDaysAgo } },
+        select: { updatedAt: true, status: true }
+      }),
+      prisma.gstReturn.findMany({
+        where: { client: clientScope, updatedAt: { gte: sevenDaysAgo } },
+        select: { updatedAt: true, status: true }
+      }),
+      prisma.task.findMany({
+        where: { client: clientScope, updatedAt: { gte: sevenDaysAgo } },
+        select: { updatedAt: true, status: true }
       })
     ]);
 
+    // 1. Revenue calculations
     const totalRevenue = paidInvoicesAgg._sum.total || 0;
     const totalRevenueThisMonth = paidThisMonthAgg._sum.total || 0;
     const totalRevenueLastMonth = paidLastMonthAgg._sum.total || 0;
@@ -75,78 +138,22 @@ export class DashboardService {
       totalRevenueComparison = `₹${totalRevenueThisMonth.toLocaleString("en-IN")} this month`;
     }
 
-    // 2. Active Clients
-    const clientWhere: any = { ...clientScope, status: "ACTIVE" };
-    const totalClientsActive = await prisma.client.count({
-      where: clientWhere
-    });
-
+    // 2. Active Clients comparison
     let activeClientsComparison: string | null = null;
-    const prevClients = await prisma.client.count({
-      where: { ...clientWhere, createdAt: { lt: startOfMonth } }
-    });
     if (prevClients > 0 && prevClients !== totalClientsActive) {
       const diff = Math.round(((totalClientsActive - prevClients) / prevClients) * 100);
       activeClientsComparison = `${diff >= 0 ? "+" : ""}${diff}% vs last month`;
     }
 
-    // 3. Pending Filings (ITR pending + GST returns pending)
-    const pendingItrStatuses = ["NOT_STARTED", "DOCUMENTS_PENDING", "UNDER_PREPARATION"];
-    const itrPendingWhere: any = {
-      client: clientScope,
-      status: { in: pendingItrStatuses }
-    };
-
-    const [itrPending, itrOverdue] = await Promise.all([
-      prisma.itrFiling.count({ where: itrPendingWhere }),
-      prisma.itrFiling.count({
-        where: { ...itrPendingWhere, dueDate: { lt: todayStart } }
-      })
-    ]);
-
-    const gstPendingWhere: any = {
-      client: clientScope,
-      status: { not: "FILED" }
-    };
-
-    const [gstReturnsPending, gstReturnsOverdue, gstReturnsDue] = await Promise.all([
-      prisma.gstReturn.count({ where: gstPendingWhere }),
-      prisma.gstReturn.count({
-        where: {
-          client: clientScope,
-          status: { not: "FILED" },
-          dueDate: { lt: todayStart }
-        }
-      }),
-      prisma.gstReturn.count({
-        where: {
-          client: clientScope,
-          status: { not: "FILED" },
-          dueDate: { lte: in7Days }
-        }
-      })
-    ]);
-
+    // 3. Pending Filings calculations
     const pendingFilings = itrPending + gstReturnsPending;
     const pendingFilingsOverdue = itrOverdue + gstReturnsOverdue;
-
     let pendingFilingsComparison: string | null = null;
     if (pendingFilingsOverdue > 0) {
       pendingFilingsComparison = `${pendingFilingsOverdue} overdue`;
     }
 
-    // 4. Total Leads
-    const leadWhere: any = { ...clientScope, status: "LEAD" };
-    const [totalLeads, newLeadsThisMonth, prevLeads] = await Promise.all([
-      prisma.client.count({ where: leadWhere }),
-      prisma.client.count({
-        where: { ...leadWhere, createdAt: { gte: startOfMonth } }
-      }),
-      prisma.client.count({
-        where: { ...leadWhere, createdAt: { lt: startOfMonth } }
-      })
-    ]);
-
+    // 4. Leads comparison
     let totalLeadsComparison: string | null = null;
     if (prevLeads > 0 && prevLeads !== totalLeads) {
       const diff = Math.round(((totalLeads - prevLeads) / prevLeads) * 100);
@@ -155,31 +162,9 @@ export class DashboardService {
       totalLeadsComparison = `${newLeadsThisMonth} new this month`;
     }
 
-    // 5. Outstanding Fees & Overdue Outstanding Fees (For backward compatibility / widgets)
-    const invoices = await prisma.invoice.findMany({
-      where: {
-        client: clientScope,
-        status: { in: ["SENT", "OVERDUE", "DRAFT"] }
-      },
-      select: {
-        id: true,
-        total: true,
-        dueDate: true,
-        status: true,
-        payments: {
-          where: {
-            status: { in: ["SUCCESS", "PAID", "COMPLETED"] }
-          },
-          select: {
-            amount: true
-          }
-        }
-      }
-    });
-
+    // 5. Outstanding Fees & Overdue Outstanding Fees
     let outstandingFees = 0;
     let outstandingFeesOverdue = 0;
-
     for (const inv of invoices) {
       const paidAmount = inv.payments.reduce((sum, p) => sum + p.amount, 0);
       const balance = Math.max(0, inv.total - paidAmount);
@@ -191,66 +176,42 @@ export class DashboardService {
       }
     }
 
-    // 6. Weekly Activity (Past 7 days up to today)
+    // 6. Optimized O(N) Weekly Activity grouping using date-keyed Map
+    const filingsByDate = new Map<string, number>();
+    const tasksByDate = new Map<string, number>();
+
+    for (const itr of recentItrs) {
+      if (itr.status === "FILED" || itr.status === "PROCESSED" || itr.status === "VERIFIED") {
+        const d = itr.updatedAt.toISOString().split("T")[0];
+        filingsByDate.set(d, (filingsByDate.get(d) || 0) + 1);
+      }
+    }
+
+    for (const gst of recentGsts) {
+      if (gst.status === "FILED") {
+        const d = gst.updatedAt.toISOString().split("T")[0];
+        filingsByDate.set(d, (filingsByDate.get(d) || 0) + 1);
+      }
+    }
+
+    for (const t of recentTasks) {
+      if (t.status === "DONE") {
+        const d = t.updatedAt.toISOString().split("T")[0];
+        tasksByDate.set(d, (tasksByDate.get(d) || 0) + 1);
+      }
+    }
+
     const weeklyActivity: DailyActivityRecord[] = [];
-    const sevenDaysAgo = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
-
-    const [recentItrs, recentGsts, recentTasks] = await Promise.all([
-      prisma.itrFiling.findMany({
-        where: {
-          client: clientScope,
-          updatedAt: { gte: sevenDaysAgo }
-        },
-        select: { updatedAt: true, status: true }
-      }),
-      prisma.gstReturn.findMany({
-        where: {
-          client: clientScope,
-          updatedAt: { gte: sevenDaysAgo }
-        },
-        select: { updatedAt: true, status: true }
-      }),
-      prisma.task.findMany({
-        where: {
-          client: clientScope,
-          updatedAt: { gte: sevenDaysAgo }
-        },
-        select: { updatedAt: true, status: true }
-      })
-    ]);
-
     for (let i = 6; i >= 0; i--) {
       const dayDate = new Date(todayStart.getTime() - i * 24 * 60 * 60 * 1000);
-      const nextDate = new Date(dayDate.getTime() + 24 * 60 * 60 * 1000);
       const dayLabel = dayDate.toLocaleDateString("en-US", { weekday: "short" });
       const dateStr = dayDate.toISOString().split("T")[0];
-
-      const filingsCount =
-        recentItrs.filter(
-          (itr) =>
-            itr.updatedAt >= dayDate &&
-            itr.updatedAt < nextDate &&
-            (itr.status === "FILED" || itr.status === "PROCESSED" || itr.status === "VERIFIED")
-        ).length +
-        recentGsts.filter(
-          (gst) =>
-            gst.updatedAt >= dayDate &&
-            gst.updatedAt < nextDate &&
-            gst.status === "FILED"
-        ).length;
-
-      const tasksCount = recentTasks.filter(
-        (t) =>
-          t.updatedAt >= dayDate &&
-          t.updatedAt < nextDate &&
-          t.status === "DONE"
-      ).length;
 
       weeklyActivity.push({
         day: dayLabel,
         date: dateStr,
-        filings: filingsCount,
-        tasks: tasksCount
+        filings: filingsByDate.get(dateStr) || 0,
+        tasks: tasksByDate.get(dateStr) || 0
       });
     }
 

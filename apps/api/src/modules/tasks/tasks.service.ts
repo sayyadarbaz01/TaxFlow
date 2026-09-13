@@ -18,8 +18,6 @@ export class TasksService {
     if (status) whereCondition.status = status;
     if (assignedTo) whereCondition.assignedTo = assignedTo;
 
-
-
     const [tasks, total] = await Promise.all([
       prisma.task.findMany({
         where: whereCondition,

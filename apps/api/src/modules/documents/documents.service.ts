@@ -77,9 +77,9 @@ export class DocumentsService {
    * Grouped Documents view for Admin / CA overview
    */
   public static async getGroupedByClient(user: AuthUser, query: Record<string, any>) {
-    const clientScope = scopeToAssignedClients(user, {});
     const search = query.search as string;
 
+    const clientScope = scopeToAssignedClients(user, {});
     const clientWhere: any = {
       ...clientScope,
       status: "ACTIVE"
@@ -142,6 +142,8 @@ export class DocumentsService {
   }
 
   public static async getClientChecklist(clientId: string, user: AuthUser) {
+    const requiredTypes: DocType[] = ["PAN", "BANK_STATEMENT", "AADHAAR", "EMAIL_ID"];
+
     await verifyClientAccess(user, clientId);
 
     const client = await prisma.client.findUnique({
@@ -149,7 +151,6 @@ export class DocumentsService {
     });
     if (!client) throw new NotFoundError("Client not found");
 
-    const requiredTypes: DocType[] = ["PAN", "BANK_STATEMENT", "AADHAAR", "EMAIL_ID"];
     const uploadedDocs = await prisma.clientDocument.findMany({
       where: { clientId },
       orderBy: { uploadedAt: "desc" }

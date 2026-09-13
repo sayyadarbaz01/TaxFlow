@@ -200,6 +200,7 @@ model Client {
   @@index([assignedStaffId])
   @@index([status])
   @@index([workType])
+  @@index([assignedStaffId, status])
 }
 
 model ClientDocument {
@@ -236,6 +237,8 @@ model ItrFiling {
   @@index([clientId])
   @@index([dueDate])
   @@index([status])
+  @@index([status, dueDate])
+  @@index([clientId, status])
 }
 
 model GstReturn {
@@ -254,6 +257,8 @@ model GstReturn {
   @@index([clientId])
   @@index([dueDate])
   @@index([status])
+  @@index([status, dueDate])
+  @@index([clientId, status])
 }
 
 model TdsTcsEntry {
@@ -296,6 +301,8 @@ model Invoice {
   @@index([clientId])
   @@index([dueDate])
   @@index([status])
+  @@index([status, paidAt])
+  @@index([status, dueDate])
 }
 
 model Payment {
@@ -328,6 +335,7 @@ model Task {
   @@index([assignedTo])
   @@index([dueDate])
   @@index([status])
+  @@index([assignedTo, status, dueDate])
 }
 
 model WhatsAppTemplate {

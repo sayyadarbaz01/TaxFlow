@@ -40,7 +40,7 @@ export class AdminService {
   }
 
   public static async getRoles() {
-    return prisma.role.findMany({
+    return await prisma.role.findMany({
       orderBy: { name: "asc" }
     });
   }

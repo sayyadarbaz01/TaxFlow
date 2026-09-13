@@ -50,7 +50,7 @@ export class BillingService {
     return formatPaginatedResponse(formatted, total, page, pageSize);
   }
 
-  public static async getInvoiceById(id: string, user: AuthUser) {
+  public static async getInvoiceById(id: string, _user: AuthUser) {
     const invoice = await prisma.invoice.findUnique({
       where: { id },
       include: { client: true }
@@ -94,7 +94,7 @@ export class BillingService {
     return invoice;
   }
 
-  public static async markPaid(id: string, method = "UPI", user: AuthUser) {
+  public static async markPaid(id: string, _method = "UPI", _user: AuthUser) {
     const updated = await prisma.invoice.update({
       where: { id },
       data: { status: "PAID", paidAt: new Date() }

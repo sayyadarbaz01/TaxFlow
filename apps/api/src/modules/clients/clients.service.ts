@@ -66,25 +66,25 @@ export class ClientsService {
   }
 
   public static async getClientById(id: string, user: AuthUser) {
-    const whereCondition = scopeToAssignedClients(user, { id });
-    const client = await prisma.client.findFirst({
-      where: whereCondition,
-      include: {
-        assignedStaff: { select: { id: true, name: true, email: true } },
-        documents: true,
-        itrFilings: true,
-        gstReturns: true,
-        invoices: true,
-        tasks: true,
-        tdsTcsEntries: true
+      const whereCondition = scopeToAssignedClients(user, { id });
+      const client = await prisma.client.findFirst({
+        where: whereCondition,
+        include: {
+          assignedStaff: { select: { id: true, name: true, email: true } },
+          documents: true,
+          itrFilings: true,
+          gstReturns: true,
+          invoices: true,
+          tasks: true,
+          tdsTcsEntries: true
+        }
+      });
+
+      if (!client) {
+        throw new NotFoundError("Client not found");
       }
-    });
 
-    if (!client) {
-      throw new NotFoundError("Client not found");
-    }
-
-    return client;
+      return client;
   }
 
   public static async createClient(dto: ClientDTO, user: AuthUser) {

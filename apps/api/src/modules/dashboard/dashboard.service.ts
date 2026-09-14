@@ -1,7 +1,7 @@
 import { prisma, isDbCircuitOpen } from "../../lib/db";
 import { scopeToAssignedClients } from "../../lib/permissions";
 import { AuthUser, DashboardSummaryResponse, DailyActivityRecord } from "@ca-saas/shared-types";
-import { memoryClients } from "../clients/clients.service";
+import { memoryClients, memoryTasks } from "../clients/clients.service";
 import { logger } from "../../lib/logger";
 
 interface SummaryCacheEntry {
@@ -25,40 +25,57 @@ export class DashboardService {
   }
 
   public static getFallbackSummary(): DashboardSummaryResponse {
-    const activeCount = memoryClients.filter(c => c.status === "ACTIVE").length;
+    const activeClientsList = memoryClients.filter(c => c.status === "ACTIVE");
+    const activeCount = activeClientsList.length;
     const leadCount = memoryClients.filter(c => c.status === "LEAD").length;
+
+    const itrPendingCount = activeClientsList.filter(
+      c => c.workType?.includes("ITR") || c.workType === "Tax Audit"
+    ).length;
+    const gstPendingCount = activeClientsList.filter(
+      c => c.workType?.includes("GST")
+    ).length;
+    const totalPendingFilings = itrPendingCount + gstPendingCount;
+
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const weeklyActivity: DailyActivityRecord[] = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today.getTime() - i * 86400000);
+      const dayStr = days[d.getDay()];
+      const dateStr = d.toISOString().split("T")[0];
+      weeklyActivity.push({
+        day: dayStr,
+        date: dateStr,
+        filings: 0,
+        tasks: 0
+      });
+    }
+
     return {
-      totalRevenue: 284500,
-      totalRevenueThisMonth: 64200,
-      totalRevenueComparison: "+12.5%",
-      activeClients: activeCount || 3,
-      activeClientsComparison: "+5.2%",
-      pendingFilings: 12,
-      pendingFilingsOverdue: 2,
-      pendingFilingsComparison: "-3.8%",
-      totalLeads: leadCount || 4,
-      newLeadsThisMonth: 2,
-      totalLeadsComparison: "+8.0%",
-      weeklyActivity: [
-        { day: "Mon", date: "2026-09-08", filings: 3, tasks: 5 },
-        { day: "Tue", date: "2026-09-09", filings: 4, tasks: 6 },
-        { day: "Wed", date: "2026-09-10", filings: 2, tasks: 4 },
-        { day: "Thu", date: "2026-09-11", filings: 5, tasks: 7 },
-        { day: "Fri", date: "2026-09-12", filings: 6, tasks: 8 },
-        { day: "Sat", date: "2026-09-13", filings: 1, tasks: 2 },
-        { day: "Sun", date: "2026-09-14", filings: 0, tasks: 1 }
-      ],
-      totalClients: activeCount || 3,
-      totalClientsActive: activeCount || 3,
-      totalClientsComparison: "+5.2%",
-      itrPending: 8,
-      itrOverdue: 1,
+      totalRevenue: 0,
+      totalRevenueThisMonth: 0,
+      totalRevenueComparison: null,
+      activeClients: activeCount,
+      activeClientsComparison: activeCount > 0 ? "+100%" : null,
+      pendingFilings: totalPendingFilings,
+      pendingFilingsOverdue: 0,
+      pendingFilingsComparison: null,
+      totalLeads: leadCount,
+      newLeadsThisMonth: leadCount,
+      totalLeadsComparison: null,
+      weeklyActivity,
+      totalClients: activeCount + leadCount,
+      totalClientsActive: activeCount,
+      totalClientsComparison: activeCount > 0 ? "+100%" : null,
+      itrPending: itrPendingCount,
+      itrOverdue: 0,
       itrComparison: null,
-      gstReturnsDue: 4,
-      gstReturnsOverdue: 1,
+      gstReturnsDue: gstPendingCount,
+      gstReturnsOverdue: 0,
       gstComparison: null,
-      outstandingFees: 48000,
-      outstandingFeesOverdue: 12000,
+      outstandingFees: 0,
+      outstandingFeesOverdue: 0,
       outstandingFeesComparison: null
     };
   }

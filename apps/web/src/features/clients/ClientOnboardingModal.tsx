@@ -169,13 +169,18 @@ export const ClientOnboardingModal: React.FC<ClientOnboardingModalProps> = ({ is
       handleClose();
     } catch (err: any) {
       const apiErr = err.data?.error;
-      if (apiErr?.details && typeof apiErr.details === "object") {
+      if (apiErr?.details && typeof apiErr.details === "object" && !Array.isArray(apiErr.details)) {
         const detailMsgs = Object.entries(apiErr.details)
+          .filter(([_, msgs]) => msgs)
           .map(([field, msgs]) => `${field.toUpperCase()}: ${Array.isArray(msgs) ? msgs.join(", ") : msgs}`)
           .join(" | ");
         setErrorMsg(detailMsgs || apiErr.message || "Failed to create client");
+      } else if (apiErr?.message) {
+        setErrorMsg(apiErr.message);
+      } else if (typeof err.data === "string" && err.data.includes("<!DOCTYPE")) {
+        setErrorMsg("API gateway temporarily unreachable. Please check your backend connection.");
       } else {
-        setErrorMsg(apiErr?.message || "Failed to create client");
+        setErrorMsg(err.message || "Failed to create client. Please try again.");
       }
     }
   };

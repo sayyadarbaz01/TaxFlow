@@ -71,6 +71,57 @@ export function errorHandler(err: any, req: Request, res: Response, _next: NextF
     });
   }
 
+  // Handle Prisma-specific database errors
+  if (err?.code === "P2002") {
+    const target = err.meta?.target;
+    const targetStr = Array.isArray(target) ? target.join(", ") : String(target || "");
+    const fieldMsg = targetStr ? ` (${targetStr.toUpperCase()})` : "";
+    return res.status(409).json({
+      error: {
+        code: "CONFLICT",
+        message: `A record with this unique identifier${fieldMsg} already exists.`,
+        details: err.meta
+      }
+    });
+  }
+
+  if (err?.code === "P2003") {
+    return res.status(400).json({
+      error: {
+        code: "INVALID_RELATION",
+        message: "Referenced entity does not exist or foreign key constraint failed.",
+        details: err.meta
+      }
+    });
+  }
+
+  if (err?.code === "P2025") {
+    return res.status(404).json({
+      error: {
+        code: "NOT_FOUND",
+        message: "Requested database record was not found.",
+        details: err.meta
+      }
+    });
+  }
+
+  const isDbUnavailable =
+    err?.code === "P1001" ||
+    err?.code === "P1000" ||
+    err?.code === "P1002" ||
+    err?.name === "PrismaClientInitializationError" ||
+    err?.message?.includes("DatabaseCircuitOpen") ||
+    err?.message?.includes("Can't reach database server");
+
+  if (isDbUnavailable) {
+    return res.status(503).json({
+      error: {
+        code: "DATABASE_UNAVAILABLE",
+        message: "Database service is temporarily unavailable. Please retry in a few moments."
+      }
+    });
+  }
+
   logger.error({ err }, "Unhandled Server Error");
 
   return res.status(500).json({

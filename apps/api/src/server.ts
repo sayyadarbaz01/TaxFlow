@@ -7,16 +7,16 @@ async function startServer() {
   try {
     const connectPromise = prisma.$connect();
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Database connection timeout")), 1500)
+      setTimeout(() => reject(new Error("Database connection timeout")), 10_000)
     );
     await Promise.race([connectPromise, timeoutPromise]);
     resetDbCircuit();
     logger.info("Connected to PostgreSQL database successfully via Prisma");
   } catch (err: any) {
-    tripDbCircuit(600_000);
+    tripDbCircuit(30_000);
     logger.warn(
       { message: err.message },
-      "PostgreSQL database offline or unreachable. High-speed circuit breaker activated (6ms-42ms latency mode)."
+      "PostgreSQL database connection slow or offline. Circuit breaker active with 30s auto-retry."
     );
   }
 
@@ -26,13 +26,13 @@ async function startServer() {
       try {
         const pingPromise = prisma.$queryRaw`SELECT 1`;
         const pingTimeout = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Database probe timeout")), 1500)
+          setTimeout(() => reject(new Error("Database probe timeout")), 5_000)
         );
         await Promise.race([pingPromise, pingTimeout]);
         resetDbCircuit();
         logger.info("PostgreSQL database connection restored. Circuit reset to live database.");
       } catch {
-        tripDbCircuit(600_000);
+        tripDbCircuit(30_000);
       }
     }
   }, 30_000).unref();

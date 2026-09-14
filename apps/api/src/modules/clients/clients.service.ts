@@ -88,23 +88,63 @@ export class ClientsService {
   }
 
   public static async createClient(dto: ClientDTO, user: AuthUser) {
-    const client = await prisma.client.create({
-      data: {
-        name: dto.name,
-        pan: dto.pan,
-        gstin: dto.gstin || null,
-        entityType: dto.entityType as any,
-        contactPhone: dto.contactPhone,
-        contactEmail: dto.contactEmail || null,
-        workType: dto.workType || "ITR",
-        assignedStaffId: dto.assignedStaffId || user.id,
-        status: dto.status || "ACTIVE"
-      } as any
-    });
+    const pan = dto.pan.trim().toUpperCase();
+    const gstin = dto.gstin?.trim() ? dto.gstin.trim().toUpperCase() : null;
 
-    await ClientsService.syncClientFilings(client);
-    eventBus.publish("CLIENT_CREATED", { clientId: client.id });
-    return client;
+    // Safely verify assigned staff exists in DB to prevent P2003 foreign key constraint violation
+    let assignedStaffId: string | null = null;
+    const targetStaffId = dto.assignedStaffId || user?.id;
+    if (targetStaffId && targetStaffId !== "superadmin-seed-id") {
+      try {
+        const staffExists = await prisma.user.findUnique({
+          where: { id: targetStaffId },
+          select: { id: true }
+        });
+        if (staffExists) {
+          assignedStaffId = staffExists.id;
+        }
+      } catch {
+        assignedStaffId = null;
+      }
+    }
+
+    try {
+      const client = await prisma.client.create({
+        data: {
+          name: dto.name.trim(),
+          pan,
+          gstin,
+          entityType: dto.entityType as any,
+          contactPhone: dto.contactPhone.trim(),
+          contactEmail: dto.contactEmail?.trim() ? dto.contactEmail.trim().toLowerCase() : null,
+          workType: dto.workType || "ITR",
+          assignedStaffId,
+          status: dto.status || "ACTIVE"
+        } as any
+      });
+
+      try {
+        await ClientsService.syncClientFilings(client);
+      } catch (syncErr) {
+        // Non-fatal statutory sync failure should not block client creation
+      }
+
+      eventBus.publish("CLIENT_CREATED", { clientId: client.id });
+      return client;
+    } catch (err: any) {
+      if (err.code === "P2002") {
+        const target = err.meta?.target;
+        const targetStr = Array.isArray(target) ? target.join(",") : String(target || "");
+        if (targetStr.includes("pan")) {
+          throw new ConflictError("A client with this PAN number already exists.");
+        }
+        if (targetStr.includes("gstin")) {
+          throw new ConflictError("A client with this GSTIN already exists.");
+        }
+        throw new ConflictError("A client with matching unique identifiers (PAN or GSTIN) already exists.");
+      }
+      throw err;
+    }
   }
 
   public static async updateClient(id: string, dto: Partial<ClientDTO>, _user: AuthUser) {
@@ -122,7 +162,21 @@ export class ClientsService {
     if (dto.workType) updateData.workType = dto.workType;
     if (dto.contactPhone) updateData.contactPhone = dto.contactPhone.trim();
     if (dto.contactEmail !== undefined) updateData.contactEmail = dto.contactEmail?.trim() ? dto.contactEmail.trim().toLowerCase() : null;
-    if (dto.assignedStaffId !== undefined) updateData.assignedStaffId = dto.assignedStaffId ? dto.assignedStaffId : null;
+    if (dto.assignedStaffId !== undefined) {
+      if (dto.assignedStaffId && dto.assignedStaffId !== "superadmin-seed-id") {
+        try {
+          const staffExists = await prisma.user.findUnique({
+            where: { id: dto.assignedStaffId },
+            select: { id: true }
+          });
+          updateData.assignedStaffId = staffExists ? staffExists.id : null;
+        } catch {
+          updateData.assignedStaffId = null;
+        }
+      } else {
+        updateData.assignedStaffId = null;
+      }
+    }
 
     try {
       const updated = await prisma.client.update({
@@ -167,6 +221,22 @@ export class ClientsService {
           formType: client.entityType === "PVT_LTD" ? "ITR_6" : "ITR_3",
           isAuditRequired: client.entityType === "PVT_LTD" || workType === "Tax Audit"
         });
+
+        let staffForItr: string | null = null;
+        if (client.assignedStaffId && client.assignedStaffId !== "superadmin-seed-id") {
+          try {
+            const userExists = await prisma.user.findUnique({
+              where: { id: client.assignedStaffId },
+              select: { id: true }
+            });
+            if (userExists) {
+              staffForItr = userExists.id;
+            }
+          } catch {
+            staffForItr = null;
+          }
+        }
+
         await prisma.itrFiling.create({
           data: {
             clientId: client.id,
@@ -174,7 +244,7 @@ export class ClientsService {
             itrFormType: client.entityType === "PVT_LTD" ? "ITR_6" : "ITR_3",
             dueDate: defaultItrDueDate,
             status: "DOCUMENTS_PENDING",
-            assignedStaffId: client.assignedStaffId || null
+            assignedStaffId: staffForItr
           }
         });
       }

@@ -1,3 +1,10 @@
+databases:
+  - name: taxflow-postgres
+    databaseName: casaas_db
+    user: postgres
+    plan: free
+    region: oregon
+
 services:
   - type: web
     name: taxflow-api
@@ -10,7 +17,9 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: taxflow-postgres
+          property: connectionString
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET

@@ -731,3 +731,4 @@ Whenever a significant architectural, API, database, feature, dependency, perfor
 | 2026-09-13 | Initial comprehensive repository analysis & context creation | All Sections (0 - 35) |
 | 2026-09-13 | Performance Optimization: Sub-10ms Circuit Breaker & Resilient Fallback Engine | Performance, Lib, DB Architecture |
 | 2026-09-14 | Fix Production Add Client: Safe assignedStaffId foreign key check, P2002 conflict handling, 10s DB timeouts, non-locking probe, and Prisma error mappings | Clients, DB, Error Handling, Deployment |
+| 2026-09-14 | Resilient Database Fallback: In-memory store fallback for Clients and Dashboard when DB is offline; auto-provision PostgreSQL in render.yaml | Clients, Dashboard, Deployment |

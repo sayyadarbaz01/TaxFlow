@@ -1,6 +1,6 @@
 export interface ItrRuleInput {
   assessmentYear: string; // e.g. "AY 2026-27"
-  formType: "ITR_1" | "ITR_2" | "ITR_3" | "ITR_4" | "ITR_5" | "ITR_6";
+  formType: "ITR_1" | "ITR_2" | "ITR_3" | "ITR_4" | "ITR_5" | "ITR_6" | "ITR_7";
   isAuditRequired?: boolean;
   isTransferPricing?: boolean;
   filingCategory?: "ORIGINAL" | "BELATED" | "REVISED" | "UPDATED";

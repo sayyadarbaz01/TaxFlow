@@ -52,6 +52,17 @@ export class TasksService {
           updatedAt: t.updatedAt.toISOString()
         }));
 
+        if (formatted.length === 0 && memoryTasks.length > 0) {
+          let memFiltered = [...memoryTasks];
+          if (clientId) memFiltered = memFiltered.filter(t => t.clientId === clientId);
+          if (status) memFiltered = memFiltered.filter(t => t.status === status);
+          if (assignedTo) memFiltered = memFiltered.filter(t => t.assignedTo === assignedTo);
+          if (memFiltered.length > 0) {
+            const paginated = memFiltered.slice(skip, skip + pageSize);
+            return formatPaginatedResponse(paginated, memFiltered.length, page, pageSize);
+          }
+        }
+
         return formatPaginatedResponse(formatted, total, page, pageSize);
       } catch (err: any) {
         logger.warn({ err: err.message }, "Tasks DB query failed, falling back to memoryTasks");

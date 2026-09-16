@@ -70,7 +70,14 @@ export type ClientWorkType = z.infer<typeof ClientWorkTypeEnum>;
 
 export const ClientSchema = z.object({
   name: z.string().min(2, "Client name is required"),
-  pan: z.string().regex(PAN_REGEX, "Invalid PAN format (e.g. ABCDE1234F)"),
+  pan: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .refine((val) => !val || PAN_REGEX.test(val), { message: "Invalid PAN format (e.g. ABCDE1234F)" })
+    .optional()
+    .or(z.literal(""))
+    .nullable(),
   gstin: z.string().regex(GSTIN_REGEX, "Invalid GSTIN format").optional().or(z.literal("")),
   entityType: EntityTypeEnum,
   contactPhone: z.string().min(10, "Valid phone number required"),
@@ -84,7 +91,7 @@ export type ClientDTO = z.infer<typeof ClientSchema>;
 export interface ClientRecord {
   id: string;
   name: string;
-  pan: string;
+  pan?: string | null;
   gstin?: string | null;
   entityType: EntityType;
   contactPhone: string;
@@ -94,6 +101,7 @@ export interface ClientRecord {
   assignedStaffName?: string | null;
   status: "ACTIVE" | "INACTIVE" | "ONBOARDING" | "LEAD";
   complianceRisk?: "LOW" | "MEDIUM" | "HIGH";
+  services?: ClientServiceRecord[];
   createdAt: string;
   updatedAt: string;
 }
@@ -119,7 +127,7 @@ export interface ClientDocumentRecord {
 }
 
 // ITR Compliance
-export const ItrFormTypeEnum = z.enum(["ITR_1", "ITR_2", "ITR_3", "ITR_4", "ITR_5", "ITR_6"]);
+export const ItrFormTypeEnum = z.enum(["ITR_1", "ITR_2", "ITR_3", "ITR_4", "ITR_5", "ITR_6", "ITR_7"]);
 export type ItrFormType = z.infer<typeof ItrFormTypeEnum>;
 
 export const ItrStatusEnum = z.enum([
@@ -169,6 +177,54 @@ export interface GstReturnRecord {
   dueDate: string;
   status: "NOT_STARTED" | "PENDING" | "FILED" | "OVERDUE";
   filedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Client Service / Work Items Management
+export const ServiceTypeEnum = z.enum([
+  "INCOME_TAX_RETURN",
+  "GST_RETURN",
+  "GST_REGISTRATION"
+]);
+export type ServiceType = z.infer<typeof ServiceTypeEnum>;
+
+export const ServicePaymentStatusEnum = z.enum([
+  "PENDING",
+  "PAID",
+  "PARTIAL",
+  "WAIVED"
+]);
+export type ServicePaymentStatus = z.infer<typeof ServicePaymentStatusEnum>;
+
+export const ServiceWorkStatusEnum = z.enum([
+  "NOT_STARTED",
+  "IN_PROGRESS",
+  "COMPLETED",
+  "ON_HOLD"
+]);
+export type ServiceWorkStatus = z.infer<typeof ServiceWorkStatusEnum>;
+
+export const ClientServiceSchema = z.object({
+  serviceType: ServiceTypeEnum,
+  serviceName: z.string().optional(),
+  fee: z.number().min(0, "Fee cannot be negative").default(0),
+  paymentStatus: ServicePaymentStatusEnum.default("PENDING"),
+  workStatus: ServiceWorkStatusEnum.default("NOT_STARTED"),
+  serviceData: z.record(z.any()).optional().nullable()
+});
+export type ClientServiceDTO = z.infer<typeof ClientServiceSchema>;
+
+export interface ClientServiceRecord {
+  id: string;
+  clientId: string;
+  clientName?: string;
+  serviceType: ServiceType;
+  serviceName?: string | null;
+  fee: number;
+  paymentStatus: ServicePaymentStatus;
+  workStatus: ServiceWorkStatus;
+  serviceData?: Record<string, any> | null;
   createdAt: string;
   updatedAt: string;
 }

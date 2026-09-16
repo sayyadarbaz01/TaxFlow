@@ -154,7 +154,7 @@ export class ClientsService {
     if (search) {
       filtered = filtered.filter(c =>
         c.name.toLowerCase().includes(search) ||
-        c.pan.toLowerCase().includes(search) ||
+        (c.pan && c.pan.toLowerCase().includes(search)) ||
         (c.gstin && c.gstin.toLowerCase().includes(search))
       );
     }
@@ -173,6 +173,7 @@ export class ClientsService {
           include: {
             assignedStaff: { select: { id: true, name: true, email: true } },
             documents: true,
+            services: true,
             itrFilings: true,
             gstReturns: true,
             invoices: true,
@@ -195,6 +196,7 @@ export class ClientsService {
       ...memClient,
       assignedStaff: { id: user.id, name: user.name, email: user.email },
       documents: [],
+      services: [],
       itrFilings: [],
       gstReturns: [],
       invoices: [],
@@ -204,13 +206,21 @@ export class ClientsService {
   }
 
   public static async createClient(dto: ClientDTO, user: AuthUser) {
-    const pan = dto.pan.trim().toUpperCase();
+    const pan = dto.pan?.trim() ? dto.pan.trim().toUpperCase() : null;
     const gstin = dto.gstin?.trim() ? dto.gstin.trim().toUpperCase() : null;
 
-    // Check duplicates in in-memory store
-    const dupInMemory = memoryClients.find(c => c.pan === pan || (gstin && c.gstin === gstin));
-    if (dupInMemory) {
-      throw new ConflictError(dupInMemory.pan === pan ? "A client with this PAN number already exists." : "A client with this GSTIN already exists.");
+    // Check duplicates in in-memory store only when identifier is present
+    if (pan || gstin) {
+      const dupInMemory = memoryClients.find(
+        c => (pan && c.pan === pan) || (gstin && c.gstin === gstin)
+      );
+      if (dupInMemory) {
+        throw new ConflictError(
+          pan && dupInMemory.pan === pan
+            ? "A client with this PAN number already exists."
+            : "A client with this GSTIN already exists."
+        );
+      }
     }
 
     if (!isDbCircuitOpen()) {
@@ -258,7 +268,7 @@ export class ClientsService {
         const syncedRecord: ClientRecord = {
           id: client.id,
           name: client.name,
-          pan: client.pan,
+          pan: client.pan || null,
           gstin: client.gstin,
           entityType: client.entityType as any,
           contactPhone: client.contactPhone,
@@ -322,7 +332,15 @@ export class ClientsService {
     const updateData: any = {};
     if (dto.name) updateData.name = dto.name.trim();
     if (dto.entityType) updateData.entityType = dto.entityType as any;
-    if (dto.pan) updateData.pan = dto.pan.trim().toUpperCase();
+    if (dto.pan !== undefined) {
+      updateData.pan = dto.pan?.trim() ? dto.pan.trim().toUpperCase() : null;
+      if (updateData.pan) {
+        const dupInMemory = memoryClients.find(c => c.id !== id && c.pan === updateData.pan);
+        if (dupInMemory) {
+          throw new ConflictError("A client with this PAN number already exists.");
+        }
+      }
+    }
     if (dto.gstin !== undefined) updateData.gstin = dto.gstin?.trim() ? dto.gstin.trim().toUpperCase() : null;
     if (dto.status) updateData.status = dto.status as any;
     if (dto.workType) updateData.workType = dto.workType;

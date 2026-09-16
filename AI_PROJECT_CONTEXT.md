@@ -319,6 +319,10 @@ errorHandler [Catches unhandled errors & maps to HTTP status]
 | `GET` | `/api/clients/:id` | Full client dossier | Auth | Path: `id` | `Client` with relations | `Clients` |
 | `PUT` | `/api/clients/:id` | Update client details | Auth | Partial `ClientDTO` | Updated `Client` | Invalidates `Clients` |
 | `DELETE` | `/api/clients/:id` | Delete client & cascade | SuperAdmin | Path: `id` | `{ message }` | Invalidates `Clients` |
+| `GET` | `/api/clients/:id/services` | List independent client services | Auth | Path: `id` | `ClientServiceRecord[]` | `ClientServices` |
+| `POST` | `/api/clients/:id/services` | Add service (ITR, GST, GST Reg) | Auth | `ClientServiceSchema` DTO | `ClientServiceRecord` | Invalidates `ClientServices` |
+| `PUT` | `/api/clients/:id/services/:serviceId` | Update service fee / status | Auth | Partial `ClientServiceDTO` | `ClientServiceRecord` | Invalidates `ClientServices` |
+| `DELETE` | `/api/clients/:id/services/:serviceId` | Delete individual service | Auth | Path: `id, serviceId` | `{ success: true }` | Invalidates `ClientServices` |
 | `GET` | `/api/documents` | List uploaded documents | Auth | Query: `clientId, docType, search` | `PaginatedResult<ClientDocumentRecord>` | `Documents` |
 | `POST` | `/api/documents/upload` | Upload client file | Auth | `multipart/form-data`: `file, clientId, docType` | Created `ClientDocument` | Invalidates `Documents` |
 | `GET` | `/api/documents/:id/download` | Stream secure document file | Auth | Path: `id` | Binary File Stream | None |
@@ -353,9 +357,10 @@ errorHandler [Catches unhandled errors & maps to HTTP status]
 - **`User`**: System identity (`id`, `name`, `email`, `passwordHash`, `roleId`, timestamps). Relations to `Role`, `RefreshToken`, `Client` (assigned staff), `ItrFiling`, `Task`, `AuditLog`.
 - **`Role`**: Authorization roles (`id`, `name` [`SuperAdmin`, `Admin`, `Staff`, `Client`], `description`).
 - **`RefreshToken`**: Stored SHA-256 token hashes for refresh rotation (`id`, `userId`, `tokenHash`, `expiresAt`, `revoked`).
-- **`Client`**: Central practice entity (`id`, `name`, `pan` [unique], `gstin` [unique], `entityType`, `contactPhone`, `contactEmail`, `workType`, `assignedStaffId`, `status` [`ACTIVE`, `LEAD`, `INACTIVE`]).
+- **`Client`**: Central practice entity (`id`, `name`, `pan` [optional unique], `gstin` [unique], `entityType`, `contactPhone`, `contactEmail`, `workType`, `assignedStaffId`, `status` [`ACTIVE`, `LEAD`, `INACTIVE`]). Allows lead intake without PAN.
+- **`ClientService`**: Multiple independent services per client (`id`, `clientId`, `serviceType` [`INCOME_TAX_RETURN`, `GST_RETURN`, `GST_REGISTRATION`], `serviceName`, `fee`, `paymentStatus` [`PENDING`, `PAID`, `PARTIAL`, `WAIVED`], `workStatus` [`NOT_STARTED`, `IN_PROGRESS`, `COMPLETED`, `ON_HOLD`], `serviceData` [ITR Form 1-7, GST period, TRN/ARN]).
 - **`ClientDocument`**: Uploaded KYC/financial docs (`id`, `clientId`, `docType` [PAN, BANK_STATEMENT, AADHAAR], `fileUrl`, `fileName`, `uploadedBy`, `status`).
-- **`ItrFiling`**: Statutory ITR record (`id`, `clientId`, `assessmentYear`, `itrFormType` [ITR_1..6], `dueDate`, `status` [NOT_STARTED..FILED], `acknowledgementNo`).
+- **`ItrFiling`**: Statutory ITR record (`id`, `clientId`, `assessmentYear`, `itrFormType` [ITR_1..7], `dueDate`, `status` [NOT_STARTED..FILED], `acknowledgementNo`).
 - **`GstReturn`**: GST periodic return (`id`, `clientId`, `returnType` [GSTR1, GSTR3B, GSTR9], `period`, `filingFrequency`, `dueDate`, `status`).
 - **`TdsTcsEntry`**: Form 26AS line item (`id`, `clientId`, `financialYear`, `deductorTan`, `amount`, `reconciliationStatus`).
 - **`Invoice`**: Practice bill (`id`, `invoiceNo` [unique], `clientId`, `subtotal`, `tax`, `total`, `lineItems`, `dueDate`, `status` [DRAFT, SENT, PAID, OVERDUE], `upiLink`).

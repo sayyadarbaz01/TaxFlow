@@ -45,6 +45,7 @@ enum ItrFormType {
   ITR_4
   ITR_5
   ITR_6
+  ITR_7
 }
 
 enum ItrStatus {
@@ -176,7 +177,7 @@ model RefreshToken {
 model Client {
   id              String          @id @default(uuid())
   name            String
-  pan             String          @unique
+  pan             String?         @unique
   gstin           String?         @unique
   entityType      EntityType
   contactPhone    String
@@ -186,6 +187,7 @@ model Client {
   assignedStaff   User?           @relation("StaffAssignedClients", fields: [assignedStaffId], references: [id])
   status          String          @default("ACTIVE")
   documents       ClientDocument[]
+  services        ClientService[]
   itrFilings      ItrFiling[]
   gstReturns      GstReturn[]
   tdsTcsEntries   TdsTcsEntry[]
@@ -259,6 +261,25 @@ model GstReturn {
   @@index([status])
   @@index([status, dueDate])
   @@index([clientId, status])
+}
+
+model ClientService {
+  id            String   @id @default(uuid())
+  clientId      String
+  client        Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  serviceType   String   // INCOME_TAX_RETURN | GST_RETURN | GST_REGISTRATION
+  serviceName   String?
+  fee           Float    @default(0)
+  paymentStatus String   @default("PENDING") // PENDING | PAID | PARTIAL | WAIVED
+  workStatus    String   @default("NOT_STARTED") // NOT_STARTED | IN_PROGRESS | COMPLETED | ON_HOLD
+  serviceData   Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([serviceType])
+  @@index([workStatus])
+  @@index([paymentStatus])
 }
 
 model TdsTcsEntry {

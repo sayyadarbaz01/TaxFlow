@@ -4,7 +4,9 @@ import {
   TaxAuditRecord,
   CreateTaxAuditDTO,
   GstRegistrationRecord,
-  CreateGstRegDTO
+  CreateGstRegDTO,
+  ClientServiceDTO,
+  ClientServiceRecord
 } from "@ca-saas/shared-types";
 
 const getApiBaseUrl = (): string => {
@@ -38,6 +40,7 @@ export const api = createApi({
     "Gst",
     "TaxAudit",
     "GstRegistration",
+    "ClientServices",
     "Tds",
     "Invoices",
     "Tasks",
@@ -102,6 +105,35 @@ export const api = createApi({
         method: "DELETE"
       }),
       invalidatesTags: ["Clients", "Itr", "Gst", "Tasks", "Invoices"]
+    }),
+
+    // Client Services / Independent Work Items
+    getClientServices: builder.query<ClientServiceRecord[], string>({
+      query: (clientId) => `/clients/${clientId}/services`,
+      providesTags: ["ClientServices", "Clients"]
+    }),
+    addClientService: builder.mutation<ClientServiceRecord, { clientId: string; data: ClientServiceDTO }>({
+      query: ({ clientId, data }) => ({
+        url: `/clients/${clientId}/services`,
+        method: "POST",
+        body: data
+      }),
+      invalidatesTags: ["ClientServices", "Clients", "Itr", "Gst"]
+    }),
+    updateClientService: builder.mutation<ClientServiceRecord, { clientId: string; serviceId: string; data: Partial<ClientServiceDTO> }>({
+      query: ({ clientId, serviceId, data }) => ({
+        url: `/clients/${clientId}/services/${serviceId}`,
+        method: "PUT",
+        body: data
+      }),
+      invalidatesTags: ["ClientServices", "Clients", "Itr", "Gst"]
+    }),
+    deleteClientService: builder.mutation<{ success: boolean }, { clientId: string; serviceId: string }>({
+      query: ({ clientId, serviceId }) => ({
+        url: `/clients/${clientId}/services/${serviceId}`,
+        method: "DELETE"
+      }),
+      invalidatesTags: ["ClientServices", "Clients"]
     }),
 
     // Documents
@@ -343,6 +375,10 @@ export const {
   useCreateClientMutation,
   useUpdateClientMutation,
   useDeleteClientMutation,
+  useGetClientServicesQuery,
+  useAddClientServiceMutation,
+  useUpdateClientServiceMutation,
+  useDeleteClientServiceMutation,
   useGetDocumentsQuery,
   useGetDocumentsGroupedQuery,
   useGetDocumentChecklistQuery,

@@ -17,13 +17,21 @@ import {
   Download,
   Trash2,
   AlertCircle,
-  FolderOpen
+  FolderOpen,
+  Briefcase,
+  Layers,
+  Edit2,
+  Check
 } from "lucide-react";
 import {
   useGetClientByIdQuery,
   useUploadDocumentMutation,
   useDeleteDocumentMutation,
-  useGetDocumentChecklistQuery
+  useGetDocumentChecklistQuery,
+  useGetClientServicesQuery,
+  useAddClientServiceMutation,
+  useUpdateClientServiceMutation,
+  useDeleteClientServiceMutation
 } from "../../lib/api";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
@@ -32,7 +40,14 @@ import { StatusBadge } from "../../components/ui/StatusBadge";
 import { Table, Column } from "../../components/ui/Table";
 import { Modal } from "../../components/ui/Modal";
 import { Input } from "../../components/ui/Input";
-import { DocType } from "@ca-saas/shared-types";
+import { Select } from "../../components/ui/Select";
+import {
+  DocType,
+  ClientServiceRecord,
+  ServiceType,
+  ServicePaymentStatus,
+  ServiceWorkStatus
+} from "@ca-saas/shared-types";
 
 export const ClientDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -51,6 +66,32 @@ export const ClientDetailPage: React.FC = () => {
 
   const { data: client, isLoading, refetch } = useGetClientByIdQuery(id);
   const { data: checklistData } = useGetDocumentChecklistQuery(id || "", { skip: !id });
+
+  // Client Services state & hooks
+  const { data: servicesData = [], refetch: refetchServices } = useGetClientServicesQuery(id || "", { skip: !id });
+  const [addClientService, { isLoading: isAddingService }] = useAddClientServiceMutation();
+  const [updateClientService, { isLoading: isUpdatingService }] = useUpdateClientServiceMutation();
+  const [deleteClientService, { isLoading: isDeletingService }] = useDeleteClientServiceMutation();
+
+  const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false);
+  const [serviceType, setServiceType] = useState<ServiceType>("INCOME_TAX_RETURN");
+  const [itrFormType, setItrFormType] = useState<string>("ITR_1");
+  const [assessmentYear, setAssessmentYear] = useState<string>("AY 2026-27");
+  const [gstReturnType, setGstReturnType] = useState<string>("GSTR3B");
+  const [gstPeriod, setGstPeriod] = useState<string>("August 2026");
+  const [gstRegType, setGstRegType] = useState<string>("REGULAR");
+  const [gstTrn, setGstTrn] = useState<string>("");
+  const [gstState, setGstState] = useState<string>("Maharashtra (27)");
+  const [serviceFee, setServiceFee] = useState<number>(5000);
+  const [servicePaymentStatus, setServicePaymentStatus] = useState<ServicePaymentStatus>("PENDING");
+  const [serviceWorkStatus, setServiceWorkStatus] = useState<ServiceWorkStatus>("NOT_STARTED");
+  const [serviceError, setServiceError] = useState<string>("");
+
+  const [editingService, setEditingService] = useState<ClientServiceRecord | null>(null);
+  const [editFee, setEditFee] = useState<number>(0);
+  const [editPaymentStatus, setEditPaymentStatus] = useState<ServicePaymentStatus>("PENDING");
+  const [editWorkStatus, setEditWorkStatus] = useState<ServiceWorkStatus>("NOT_STARTED");
+  const [serviceToDelete, setServiceToDelete] = useState<ClientServiceRecord | null>(null);
 
   const [uploadDocument, { isLoading: isUploading }] = useUploadDocumentMutation();
   const [deleteDocument, { isLoading: isDeleting }] = useDeleteDocumentMutation();
@@ -108,8 +149,82 @@ export const ClientDetailPage: React.FC = () => {
     }
   };
 
+  const handleAddService = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!client) return;
+    setServiceError("");
+    try {
+      let serviceData: Record<string, any> = {};
+      if (serviceType === "INCOME_TAX_RETURN") {
+        serviceData = { itrFormType, assessmentYear };
+      } else if (serviceType === "GST_RETURN") {
+        serviceData = { returnType: gstReturnType, period: gstPeriod };
+      } else if (serviceType === "GST_REGISTRATION") {
+        serviceData = { registrationType: gstRegType, trn: gstTrn || undefined, state: gstState };
+      }
+
+      await addClientService({
+        clientId: client.id,
+        data: {
+          serviceType,
+          fee: Number(serviceFee) || 0,
+          paymentStatus: servicePaymentStatus,
+          workStatus: serviceWorkStatus,
+          serviceData
+        }
+      }).unwrap();
+
+      setIsAddServiceModalOpen(false);
+      refetchServices();
+    } catch (err: any) {
+      setServiceError(err.data?.error?.message || "Failed to add service.");
+    }
+  };
+
+  const handleOpenEditService = (svc: ClientServiceRecord) => {
+    setEditingService(svc);
+    setEditFee(svc.fee);
+    setEditPaymentStatus(svc.paymentStatus);
+    setEditWorkStatus(svc.workStatus);
+  };
+
+  const handleUpdateService = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!client || !editingService) return;
+    try {
+      await updateClientService({
+        clientId: client.id,
+        serviceId: editingService.id,
+        data: {
+          fee: Number(editFee) || 0,
+          paymentStatus: editPaymentStatus,
+          workStatus: editWorkStatus
+        }
+      }).unwrap();
+      setEditingService(null);
+      refetchServices();
+    } catch (err: any) {
+      alert(err.data?.error?.message || "Failed to update service.");
+    }
+  };
+
+  const handleDeleteService = async () => {
+    if (!client || !serviceToDelete) return;
+    try {
+      await deleteClientService({
+        clientId: client.id,
+        serviceId: serviceToDelete.id
+      }).unwrap();
+      setServiceToDelete(null);
+      refetchServices();
+    } catch (err: any) {
+      alert(err.data?.error?.message || "Failed to delete service.");
+    }
+  };
+
   const tabs = [
     { id: "overview", label: "Overview" },
+    { id: "services", label: "Services & Work Items", badge: servicesData.length },
     { id: "documents", label: "Documents Vault", badge: client.documents?.length },
     { id: "itr", label: "ITR Filings", badge: client.itrFilings?.length },
     { id: "gst", label: "GST Returns", badge: client.gstReturns?.length },
@@ -258,7 +373,63 @@ export const ClientDetailPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <Card>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3">Compliance Snapshot</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Active Engagements & Services</h3>
+                <Button size="sm" variant="outline" leftIcon={<Plus className="w-3.5 h-3.5" />} onClick={() => setIsAddServiceModalOpen(true)}>
+                  Add Service
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs mb-4">
+                <div className="p-3 bg-blue-50/60 dark:bg-blue-950/40 rounded-lg border border-blue-200 dark:border-blue-900/60">
+                  <span className="text-blue-700 dark:text-blue-400 font-medium">Independent Services</span>
+                  <p className="font-bold text-slate-900 dark:text-white text-base mt-1">{servicesData.length} Active</p>
+                </div>
+                <div className="p-3 bg-emerald-50/60 dark:bg-emerald-950/40 rounded-lg border border-emerald-200 dark:border-emerald-900/60">
+                  <span className="text-emerald-700 dark:text-emerald-400 font-medium">Total Agreed Fees</span>
+                  <p className="font-bold text-slate-900 dark:text-white text-base mt-1">
+                    ₹{servicesData.reduce((acc, s) => acc + (s.fee || 0), 0).toLocaleString("en-IN")}
+                  </p>
+                </div>
+                <div className="p-3 bg-purple-50/60 dark:bg-purple-950/40 rounded-lg border border-purple-200 dark:border-purple-900/60">
+                  <span className="text-purple-700 dark:text-purple-400 font-medium">Completed Work</span>
+                  <p className="font-bold text-slate-900 dark:text-white text-base mt-1">
+                    {servicesData.filter(s => s.workStatus === "COMPLETED").length} / {servicesData.length || 1}
+                  </p>
+                </div>
+              </div>
+              {servicesData.length > 0 ? (
+                <div className="space-y-2">
+                  {servicesData.slice(0, 3).map((svc) => (
+                    <div key={svc.id} className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                          svc.serviceType === "INCOME_TAX_RETURN" ? "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300" :
+                          svc.serviceType === "GST_RETURN" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300" :
+                          "bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300"
+                        }`}>
+                          {svc.serviceType === "INCOME_TAX_RETURN" ? "ITR" : svc.serviceType === "GST_RETURN" ? "GST" : "GST REG"}
+                        </span>
+                        <span className="font-semibold text-slate-900 dark:text-white">{svc.serviceName}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="font-mono font-bold text-slate-800 dark:text-slate-200">₹{svc.fee.toLocaleString("en-IN")}</span>
+                        <StatusBadge status={svc.workStatus} />
+                      </div>
+                    </div>
+                  ))}
+                  {servicesData.length > 3 && (
+                    <button onClick={() => setActiveTab("services")} className="text-xs text-blue-600 dark:text-blue-400 font-medium hover:underline pt-1">
+                      View all {servicesData.length} client services →
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs text-slate-400 italic py-2">No independent client services registered yet. Click 'Add Service' to attach ITR, GST Return, or GST Registration.</p>
+              )}
+            </Card>
+
+            <Card>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3">Statutory Snapshot</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700/60">
                   <span className="text-slate-500 dark:text-slate-400 font-medium">Active ITR</span>
@@ -291,6 +462,192 @@ export const ClientDetailPage: React.FC = () => {
                 </div>
               </div>
             </Card>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: SERVICES & WORK ITEMS (MULTIPLE INDEPENDENT SERVICES) */}
+      {activeTab === "services" && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Briefcase className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                Multiple Client Services & Engagements
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Each service (Income Tax Return, GST Return, GST Registration) has independent fees, payment status, and work status.
+              </p>
+            </div>
+            <Button
+              size="sm"
+              leftIcon={<Plus className="w-4 h-4" />}
+              onClick={() => setIsAddServiceModalOpen(true)}
+            >
+              Add Service
+            </Button>
+          </div>
+
+          {/* Metrics summary cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+            <Card className="p-4 bg-blue-50/50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/60">
+              <span className="text-slate-500 dark:text-slate-400 font-medium">Total Engagements</span>
+              <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">{servicesData.length} Services</p>
+            </Card>
+            <Card className="p-4 bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/60">
+              <span className="text-slate-500 dark:text-slate-400 font-medium">Total Agreed Fees</span>
+              <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">
+                ₹{servicesData.reduce((sum, s) => sum + (s.fee || 0), 0).toLocaleString("en-IN")}
+              </p>
+            </Card>
+            <Card className="p-4 bg-amber-50/50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/60">
+              <span className="text-slate-500 dark:text-slate-400 font-medium">Pending Payments</span>
+              <p className="text-lg font-bold text-amber-700 dark:text-amber-400 mt-1">
+                {servicesData.filter(s => s.paymentStatus === "PENDING").length} Services
+              </p>
+            </Card>
+            <Card className="p-4 bg-purple-50/50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-900/60">
+              <span className="text-slate-500 dark:text-slate-400 font-medium">In Progress Work</span>
+              <p className="text-lg font-bold text-purple-700 dark:text-purple-400 mt-1">
+                {servicesData.filter(s => s.workStatus === "IN_PROGRESS").length} Active
+              </p>
+            </Card>
+          </div>
+
+          {/* Services List Table */}
+          <div className="space-y-3">
+            {servicesData.length > 0 ? (
+              servicesData.map((service) => (
+                <div
+                  key={service.id}
+                  className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-smooth"
+                >
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    {/* Left: Service Type & Details */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
+                            service.serviceType === "INCOME_TAX_RETURN"
+                              ? "bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+                              : service.serviceType === "GST_RETURN"
+                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+                              : "bg-purple-100 text-purple-800 dark:bg-purple-950/70 dark:text-purple-300 border border-purple-200 dark:border-purple-800"
+                          }`}
+                        >
+                          {service.serviceType === "INCOME_TAX_RETURN"
+                            ? "Income Tax Return"
+                            : service.serviceType === "GST_RETURN"
+                            ? "GST Return"
+                            : "GST Registration"}
+                        </span>
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white">{service.serviceName}</h4>
+                      </div>
+
+                      {/* Service specific metadata */}
+                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-600 dark:text-slate-400">
+                        {service.serviceType === "INCOME_TAX_RETURN" && (
+                          <>
+                            <span className="font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-800/60">
+                              Form: {service.serviceData?.itrFormType?.replace("_", "-") || "ITR-1"}
+                            </span>
+                            <span>Assessment Year: <strong className="text-slate-800 dark:text-slate-200">{service.serviceData?.assessmentYear || "AY 2026-27"}</strong></span>
+                            {service.serviceData?.acknowledgementNo && (
+                              <span>Ack: <strong className="font-mono text-slate-800 dark:text-slate-200">{service.serviceData.acknowledgementNo}</strong></span>
+                            )}
+                          </>
+                        )}
+                        {service.serviceType === "GST_RETURN" && (
+                          <>
+                            <span className="font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/60">
+                              Return: {service.serviceData?.returnType || "GSTR3B"}
+                            </span>
+                            <span>Period: <strong className="text-slate-800 dark:text-slate-200">{service.serviceData?.period || "Current"}</strong></span>
+                          </>
+                        )}
+                        {service.serviceType === "GST_REGISTRATION" && (
+                          <>
+                            <span className="font-semibold text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/50 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800/60">
+                              Type: {service.serviceData?.registrationType || "Regular"}
+                            </span>
+                            {service.serviceData?.trn && (
+                              <span>TRN: <strong className="font-mono text-slate-800 dark:text-slate-200">{service.serviceData.trn}</strong></span>
+                            )}
+                            {service.serviceData?.state && (
+                              <span>State: <strong className="text-slate-800 dark:text-slate-200">{service.serviceData.state}</strong></span>
+                            )}
+                          </>
+                        )}
+                        <span className="text-slate-400">• Added on {new Date(service.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+
+                    {/* Right: Independent Fee, Payment Status, Work Status, Actions */}
+                    <div className="flex flex-wrap items-center gap-4 text-xs">
+                      <div>
+                        <span className="text-[10px] text-slate-400 block">Service Fee</span>
+                        <span className="font-mono font-bold text-sm text-slate-900 dark:text-white">
+                          ₹{service.fee?.toLocaleString("en-IN")}
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] text-slate-400 block">Payment Status</span>
+                        <span
+                          className={`inline-block font-semibold text-[11px] px-2 py-0.5 rounded border ${
+                            service.paymentStatus === "PAID"
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800"
+                              : service.paymentStatus === "PARTIAL"
+                              ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800"
+                              : service.paymentStatus === "WAIVED"
+                              ? "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
+                              : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800"
+                          }`}
+                        >
+                          {service.paymentStatus}
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] text-slate-400 block">Work Status</span>
+                        <StatusBadge status={service.workStatus} />
+                      </div>
+
+                      <div className="flex items-center gap-1.5 pt-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleOpenEditService(service)}
+                          className="h-8 px-2.5 text-xs"
+                        >
+                          <Edit2 className="w-3 h-3 mr-1" />
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          onClick={() => setServiceToDelete(service)}
+                          className="h-8 px-2 text-xs"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center rounded-xl border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                <Briefcase className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">No Services Added Yet</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
+                  Attach independent services like Income Tax Return (ITR-1 to 7), GST Return, or GST Registration for this client.
+                </p>
+                <Button size="sm" className="mt-4" onClick={() => setIsAddServiceModalOpen(true)}>
+                  Add First Service
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -554,7 +911,7 @@ export const ClientDetailPage: React.FC = () => {
         </Modal>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal for Documents */}
       {docToDelete && (
         <Modal
           isOpen={true}
@@ -577,6 +934,245 @@ export const ClientDetailPage: React.FC = () => {
           </div>
         </Modal>
       )}
+
+      {/* Add Service Modal */}
+      {isAddServiceModalOpen && (
+        <Modal
+          isOpen={isAddServiceModalOpen}
+          onClose={() => setIsAddServiceModalOpen(false)}
+          title="Add Client Service / Work Item"
+          maxWidth="md"
+        >
+          <form onSubmit={handleAddService} className="space-y-4 text-xs">
+            {serviceError && (
+              <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 rounded-lg flex items-center gap-2 font-medium">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                <span>{serviceError}</span>
+              </div>
+            )}
+
+            {/* Service Type Selection */}
+            <Select
+              label="Select Service Type"
+              value={serviceType}
+              onChange={(e) => setServiceType(e.target.value as ServiceType)}
+              options={[
+                { value: "INCOME_TAX_RETURN", label: "Income Tax Return (ITR)" },
+                { value: "GST_RETURN", label: "GST Return Filing (GSTR-1 / 3B / 9)" },
+                { value: "GST_REGISTRATION", label: "GST Registration & Setup" }
+              ]}
+            />
+
+            {/* Income Tax Return Specific Options */}
+            {serviceType === "INCOME_TAX_RETURN" && (
+              <div className="p-3 bg-blue-50/50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/60 rounded-xl space-y-3">
+                <h4 className="font-bold text-blue-900 dark:text-blue-200 text-xs">ITR Configuration</h4>
+                <Select
+                  label="Select ITR Form"
+                  value={itrFormType}
+                  onChange={(e) => setItrFormType(e.target.value)}
+                  options={[
+                    { value: "ITR_1", label: "ITR-1 (Sahaj - Salary / 1 House Property)" },
+                    { value: "ITR_2", label: "ITR-2 (Capital Gains / Multiple Properties / Foreign Assets)" },
+                    { value: "ITR_3", label: "ITR-3 (Business & Professional Profits - Proprietary)" },
+                    { value: "ITR_4", label: "ITR-4 (Sugam - Presumptive Scheme 44AD/44ADA/44AE)" },
+                    { value: "ITR_5", label: "ITR-5 (LLP, Association of Persons, BOI)" },
+                    { value: "ITR_6", label: "ITR-6 (Companies other than claiming exemption under Sec 11)" },
+                    { value: "ITR_7", label: "ITR-7 (Trusts, Political Parties, Colleges, Sec 139 Entities)" }
+                  ]}
+                />
+                <Select
+                  label="Assessment Year"
+                  value={assessmentYear}
+                  onChange={(e) => setAssessmentYear(e.target.value)}
+                  options={[
+                    { value: "AY 2026-27", label: "AY 2026-27 (Current Assessment Year)" },
+                    { value: "AY 2025-26", label: "AY 2025-26 (Prior Assessment Year)" }
+                  ]}
+                />
+              </div>
+            )}
+
+            {/* GST Return Specific Options */}
+            {serviceType === "GST_RETURN" && (
+              <div className="p-3 bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/60 rounded-xl space-y-3">
+                <h4 className="font-bold text-emerald-900 dark:text-emerald-200 text-xs">GST Return Configuration</h4>
+                <Select
+                  label="GST Return Type"
+                  value={gstReturnType}
+                  onChange={(e) => setGstReturnType(e.target.value)}
+                  options={[
+                    { value: "GSTR3B", label: "GSTR-3B (Monthly Summary Return)" },
+                    { value: "GSTR1", label: "GSTR-1 (Outward Supplies Statement)" },
+                    { value: "GSTR9", label: "GSTR-9 (Annual Return)" }
+                  ]}
+                />
+                <Input
+                  label="Filing Period / Month"
+                  placeholder="e.g. August 2026 or Q2 2026"
+                  value={gstPeriod}
+                  onChange={(e) => setGstPeriod(e.target.value)}
+                />
+              </div>
+            )}
+
+            {/* GST Registration Specific Options */}
+            {serviceType === "GST_REGISTRATION" && (
+              <div className="p-3 bg-purple-50/50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/60 rounded-xl space-y-3">
+                <h4 className="font-bold text-purple-900 dark:text-purple-200 text-xs">GST Registration Configuration</h4>
+                <Select
+                  label="Registration Category"
+                  value={gstRegType}
+                  onChange={(e) => setGstRegType(e.target.value)}
+                  options={[
+                    { value: "REGULAR", label: "Regular Taxpayer" },
+                    { value: "COMPOSITION", label: "Composition Scheme" },
+                    { value: "ISD", label: "Input Service Distributor (ISD)" },
+                    { value: "NON_RESIDENT", label: "Non-Resident Taxable Entity" }
+                  ]}
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    label="State / Circle"
+                    value={gstState}
+                    onChange={(e) => setGstState(e.target.value)}
+                  />
+                  <Input
+                    label="TRN Number (Optional)"
+                    placeholder="e.g. TRN2609..."
+                    value={gstTrn}
+                    onChange={(e) => setGstTrn(e.target.value.toUpperCase())}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Common Independent Fee, Payment Status & Work Status */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <Input
+                label="Agreed Fee (₹)"
+                type="number"
+                min="0"
+                value={serviceFee}
+                onChange={(e) => setServiceFee(Number(e.target.value))}
+                required
+              />
+
+              <Select
+                label="Payment Status"
+                value={servicePaymentStatus}
+                onChange={(e) => setServicePaymentStatus(e.target.value as ServicePaymentStatus)}
+                options={[
+                  { value: "PENDING", label: "Pending" },
+                  { value: "PAID", label: "Paid" },
+                  { value: "PARTIAL", label: "Partial" },
+                  { value: "WAIVED", label: "Waived" }
+                ]}
+              />
+
+              <Select
+                label="Work Status"
+                value={serviceWorkStatus}
+                onChange={(e) => setServiceWorkStatus(e.target.value as ServiceWorkStatus)}
+                options={[
+                  { value: "NOT_STARTED", label: "Not Started" },
+                  { value: "IN_PROGRESS", label: "In Progress" },
+                  { value: "COMPLETED", label: "Completed" },
+                  { value: "ON_HOLD", label: "On Hold" }
+                ]}
+              />
+            </div>
+
+            <div className="flex justify-end space-x-2 pt-4 border-t border-slate-200 dark:border-slate-800">
+              <Button type="button" variant="outline" onClick={() => setIsAddServiceModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" isLoading={isAddingService} leftIcon={<Plus className="w-3.5 h-3.5" />}>
+                Add Independent Service
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Edit Service Modal */}
+      {editingService && (
+        <Modal
+          isOpen={true}
+          onClose={() => setEditingService(null)}
+          title={`Edit Service: ${editingService.serviceName}`}
+          maxWidth="sm"
+        >
+          <form onSubmit={handleUpdateService} className="space-y-4 text-xs">
+            <Input
+              label="Agreed Fee (₹)"
+              type="number"
+              min="0"
+              value={editFee}
+              onChange={(e) => setEditFee(Number(e.target.value))}
+              required
+            />
+
+            <Select
+              label="Payment Status"
+              value={editPaymentStatus}
+              onChange={(e) => setEditPaymentStatus(e.target.value as ServicePaymentStatus)}
+              options={[
+                { value: "PENDING", label: "Pending" },
+                { value: "PAID", label: "Paid" },
+                { value: "PARTIAL", label: "Partial" },
+                { value: "WAIVED", label: "Waived" }
+              ]}
+            />
+
+            <Select
+              label="Work Status"
+              value={editWorkStatus}
+              onChange={(e) => setEditWorkStatus(e.target.value as ServiceWorkStatus)}
+              options={[
+                { value: "NOT_STARTED", label: "Not Started" },
+                { value: "IN_PROGRESS", label: "In Progress" },
+                { value: "COMPLETED", label: "Completed" },
+                { value: "ON_HOLD", label: "On Hold" }
+              ]}
+            />
+
+            <div className="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+              <Button type="button" variant="outline" onClick={() => setEditingService(null)}>
+                Cancel
+              </Button>
+              <Button type="submit" isLoading={isUpdatingService}>
+                Save Changes
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Delete Service Confirmation Modal */}
+      {serviceToDelete && (
+        <Modal
+          isOpen={true}
+          onClose={() => setServiceToDelete(null)}
+          title="Delete Client Service"
+          maxWidth="sm"
+        >
+          <div className="space-y-3 text-xs">
+            <p className="text-slate-700 dark:text-slate-300">
+              Are you sure you want to remove <strong>"{serviceToDelete.serviceName}"</strong>? This will remove this work item without affecting other services for this client.
+            </p>
+            <div className="flex justify-end space-x-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <Button variant="outline" onClick={() => setServiceToDelete(null)}>
+                Cancel
+              </Button>
+              <Button variant="danger" onClick={handleDeleteService} isLoading={isDeletingService}>
+                Delete Service
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
+

@@ -1,6 +1,7 @@
-import { prisma } from "../../lib/db";
+import { prisma, isDbCircuitOpen } from "../../lib/db";
 import { buildPaginationParams, formatPaginatedResponse } from "../../lib/utils";
 import { NotFoundError, ValidationError } from "../../middleware/errorHandler";
+import { memoryClients } from "../clients/clients.service";
 import {
   AuthUser,
   TaxAuditRecord,
@@ -157,10 +158,29 @@ export class TaxAuditService {
   public static async createEngagement(dto: CreateTaxAuditDTO, user: AuthUser) {
     await this.ensureInitialized();
 
-    const client = await prisma.client.findUnique({
-      where: { id: dto.clientId },
-      include: { assignedStaff: { select: { id: true, name: true } } }
-    });
+    let client: any = null;
+    if (!isDbCircuitOpen()) {
+      try {
+        client = await prisma.client.findUnique({
+          where: { id: dto.clientId },
+          include: { assignedStaff: { select: { id: true, name: true } } }
+        });
+      } catch {}
+    }
+
+    if (!client) {
+      const memClient = memoryClients.find(c => c.id === dto.clientId);
+      if (memClient) {
+        client = {
+          id: memClient.id,
+          name: memClient.name,
+          pan: memClient.pan,
+          entityType: memClient.entityType,
+          assignedStaffId: memClient.assignedStaffId || null,
+          assignedStaff: memClient.assignedStaffName ? { id: memClient.assignedStaffId, name: memClient.assignedStaffName } : null
+        };
+      }
+    }
 
     if (!client) {
       throw new NotFoundError("Client not found");

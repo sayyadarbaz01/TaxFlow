@@ -119,10 +119,7 @@ export const ClientOnboardingModal: React.FC<ClientOnboardingModalProps> = ({ is
       const cleanPan = pan.trim().toUpperCase();
       const cleanGstin = gstin.trim().toUpperCase();
 
-      if (!cleanPan) {
-        return setErrorMsg("PAN number is required");
-      }
-      if (!PAN_REGEX.test(cleanPan)) {
+      if (cleanPan && !PAN_REGEX.test(cleanPan)) {
         return setErrorMsg("Invalid PAN format (e.g. ABCDE1234F - 5 letters, 4 digits, 1 letter)");
       }
       if (cleanGstin && !GSTIN_REGEX.test(cleanGstin)) {
@@ -158,7 +155,7 @@ export const ClientOnboardingModal: React.FC<ClientOnboardingModalProps> = ({ is
     try {
       await createClient({
         name: name.trim(),
-        pan: pan.trim().toUpperCase(),
+        pan: pan.trim() ? pan.trim().toUpperCase() : undefined,
         gstin: gstin.trim() ? gstin.trim().toUpperCase() : undefined,
         entityType,
         contactPhone: contactPhone.trim(),
@@ -245,10 +242,11 @@ export const ClientOnboardingModal: React.FC<ClientOnboardingModalProps> = ({ is
         {currentStep === "2" && (
           <div className="space-y-3">
             <Input
-              label="Permanent Account Number (PAN)"
-              placeholder="5 Letters, 4 Digits, 1 Letter (e.g. ABCDE1234F)"
+              label="Permanent Account Number (PAN) (Optional)"
+              placeholder="e.g. ABCDE1234F (Optional - can be added later)"
               value={pan}
               onChange={(e) => setPan(e.target.value.toUpperCase())}
+              helperText="Optional: Can be provided now or added later from the Client Dossier."
             />
             <Input
               label="GSTIN (Optional)"

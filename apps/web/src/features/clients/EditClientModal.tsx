@@ -59,10 +59,10 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClos
     }
 
     const cleanPan = pan.trim().toUpperCase();
-    if (!cleanPan) {
-      return setErrorMsg("PAN number is required");
+    if (status !== "LEAD" && !cleanPan) {
+      return setErrorMsg("PAN number is required for active clients");
     }
-    if (!PAN_REGEX.test(cleanPan)) {
+    if (cleanPan && !PAN_REGEX.test(cleanPan)) {
       return setErrorMsg("Invalid PAN format (e.g. ABCDE1234F)");
     }
 
@@ -89,7 +89,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClos
         id: client.id,
         name: name.trim(),
         entityType,
-        pan: cleanPan,
+        pan: cleanPan ? cleanPan : null,
         gstin: cleanGstin ? cleanGstin : null,
         contactPhone: cleanPhone,
         contactEmail: cleanEmail ? cleanEmail : null,

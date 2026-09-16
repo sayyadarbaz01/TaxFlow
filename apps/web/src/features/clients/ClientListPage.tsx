@@ -82,7 +82,8 @@ export const ClientListPage: React.FC = () => {
       cell: (row) => (
         <div className="text-[11px] space-y-0.5">
           <p className="font-mono font-medium text-slate-900">
-            <span className="text-slate-400 text-[10px] mr-1">PAN:</span>{row.pan}
+            <span className="text-slate-400 text-[10px] mr-1">PAN:</span>
+            {row.pan ? row.pan : <span className="text-amber-600 font-sans italic text-[10px]">Not Provided</span>}
           </p>
           {row.gstin ? (
             <p className="font-mono text-slate-600 text-[10px]">

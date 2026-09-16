@@ -19,7 +19,6 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, onClose }) =
   const [name, setName] = useState("");
   const [entityType, setEntityType] = useState<EntityType>("INDIVIDUAL");
   const [pan, setPan] = useState("");
-  const [isProvisionalPan, setIsProvisionalPan] = useState(false);
   const [gstin, setGstin] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [contactEmail, setContactEmail] = useState("");
@@ -30,26 +29,10 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, onClose }) =
   const [createClient, { isLoading }] = useCreateClientMutation();
   const { data: staffData } = useGetAdminUsersQuery({});
 
-  const generateProvisionalPan = () => {
-    // Generate valid 10-char PAN: LEAD + 4 random digits + P
-    const randomDigits = Math.floor(1000 + Math.random() * 9000);
-    return `LEADP${randomDigits}L`;
-  };
-
-  const handleProvisionalToggle = (checked: boolean) => {
-    setIsProvisionalPan(checked);
-    if (checked) {
-      setPan(generateProvisionalPan());
-    } else {
-      setPan("");
-    }
-  };
-
   const handleClose = () => {
     setName("");
     setEntityType("INDIVIDUAL");
     setPan("");
-    setIsProvisionalPan(false);
     setGstin("");
     setContactPhone("");
     setContactEmail("");
@@ -70,16 +53,8 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, onClose }) =
       return setErrorMsg("Lead Name must be at least 2 characters");
     }
 
-    let cleanPan = pan.trim().toUpperCase();
-    if (!cleanPan) {
-      if (isProvisionalPan) {
-        cleanPan = generateProvisionalPan();
-        setPan(cleanPan);
-      } else {
-        return setErrorMsg("PAN number is required (or check 'Provisional Lead without PAN')");
-      }
-    }
-    if (!PAN_REGEX.test(cleanPan)) {
+    const cleanPan = pan.trim().toUpperCase();
+    if (cleanPan && !PAN_REGEX.test(cleanPan)) {
       return setErrorMsg("Invalid PAN format (e.g. ABCDE1234F)");
     }
 
@@ -104,7 +79,7 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, onClose }) =
     try {
       await createClient({
         name: name.trim(),
-        pan: cleanPan,
+        pan: cleanPan || undefined,
         gstin: cleanGstin || undefined,
         entityType,
         contactPhone: cleanPhone,
@@ -202,25 +177,13 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, onClose }) =
             ]}
           />
 
-          <div className="sm:col-span-2 space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Permanent Account Number (PAN)</label>
-              <label className="flex items-center gap-1.5 cursor-pointer text-[11px] text-purple-700 dark:text-purple-400 font-medium hover:text-purple-900 dark:hover:text-purple-300">
-                <input
-                  type="checkbox"
-                  checked={isProvisionalPan}
-                  onChange={(e) => handleProvisionalToggle(e.target.checked)}
-                  className="rounded border-slate-300 dark:border-slate-700 text-purple-600 focus:ring-purple-500 w-3.5 h-3.5"
-                />
-                <Sparkles className="w-3 h-3 text-purple-500" />
-                <span>Provisional Lead (No PAN yet)</span>
-              </label>
-            </div>
+          <div className="sm:col-span-2">
             <Input
-              placeholder={isProvisionalPan ? "Auto-generated provisional PAN" : "ABCDE1234F"}
+              label="Permanent Account Number (PAN) (Optional for Leads)"
+              placeholder="e.g. ABCDE1234F (Can be added/updated later)"
               value={pan}
-              disabled={isProvisionalPan}
               onChange={(e) => setPan(e.target.value.toUpperCase())}
+              helperText="PAN is optional when creating a lead client and can be provided anytime later."
             />
           </div>
 

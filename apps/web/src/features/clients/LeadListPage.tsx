@@ -95,7 +95,14 @@ export const LeadListPage: React.FC = () => {
       cell: (row) => (
         <div className="text-[11px] space-y-0.5">
           <p className="font-mono font-medium text-slate-800 dark:text-slate-200">
-            <span className="text-slate-400 text-[10px] mr-1">PAN:</span>{row.pan}
+            <span className="text-slate-400 text-[10px] mr-1">PAN:</span>
+            {row.pan ? (
+              row.pan
+            ) : (
+              <span className="text-amber-600 dark:text-amber-400 font-sans italic text-[10px]">
+                Not Provided (Optional)
+              </span>
+            )}
           </p>
           {row.gstin ? (
             <p className="font-mono text-slate-600 dark:text-slate-400 text-[10px]">

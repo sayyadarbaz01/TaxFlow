@@ -10,6 +10,7 @@ async function main() {
   await prisma.auditLog.deleteMany({});
   await prisma.aiMessage.deleteMany({});
   await prisma.aiConversation.deleteMany({});
+  await prisma.documentEmbedding.deleteMany({});
   await prisma.whatsAppMessage.deleteMany({});
   await prisma.whatsAppTemplate.deleteMany({});
   await prisma.payment.deleteMany({});
@@ -19,6 +20,7 @@ async function main() {
   await prisma.gstReturn.deleteMany({});
   await prisma.itrFiling.deleteMany({});
   await prisma.clientDocument.deleteMany({});
+  await prisma.clientService.deleteMany({});
   await prisma.client.deleteMany({});
   await prisma.refreshToken.deleteMany({});
   await prisma.user.deleteMany({});
@@ -111,6 +113,82 @@ async function main() {
       workType: "GST Registration",
       assignedStaffId: superAdmin.id,
       status: "LEAD"
+    }
+  });
+
+  // 3b. Client Services
+  await prisma.clientService.create({
+    data: {
+      clientId: client1.id,
+      serviceType: "INCOME_TAX_RETURN",
+      serviceName: "ITR-6 Corporate Filing",
+      fee: 15000,
+      paymentStatus: "PAID",
+      workStatus: "IN_PROGRESS",
+      serviceData: {
+        itrFormType: "ITR_6",
+        assessmentYear: "AY 2026-27"
+      }
+    }
+  });
+
+  await prisma.clientService.create({
+    data: {
+      clientId: client1.id,
+      serviceType: "GST_RETURN",
+      serviceName: "Monthly GST Compliance",
+      fee: 10000,
+      paymentStatus: "PENDING",
+      workStatus: "NOT_STARTED",
+      serviceData: {
+        gstin: "27AAACA1234A1Z5",
+        frequency: "MONTHLY"
+      }
+    }
+  });
+
+  await prisma.clientService.create({
+    data: {
+      clientId: client2.id,
+      serviceType: "INCOME_TAX_RETURN",
+      serviceName: "ITR-5 Partnership Tax Return",
+      fee: 25000,
+      paymentStatus: "PAID",
+      workStatus: "IN_PROGRESS",
+      serviceData: {
+        itrFormType: "ITR_5",
+        assessmentYear: "AY 2026-27"
+      }
+    }
+  });
+
+  await prisma.clientService.create({
+    data: {
+      clientId: client3.id,
+      serviceType: "GST_RETURN",
+      serviceName: "GSTR-1 & GSTR-3B Filing",
+      fee: 5000,
+      paymentStatus: "PENDING",
+      workStatus: "NOT_STARTED",
+      serviceData: {
+        gstin: "27BCDPP9012C1Z8",
+        frequency: "MONTHLY"
+      }
+    }
+  });
+
+  await prisma.clientService.create({
+    data: {
+      clientId: client4.id,
+      serviceType: "GST_REGISTRATION",
+      serviceName: "New GST Registration Application",
+      fee: 7500,
+      paymentStatus: "PENDING",
+      workStatus: "NOT_STARTED",
+      serviceData: {
+        legalName: "Apex Healthcare Labs",
+        constitution: "PARTNERSHIP"
+      }
     }
   });
 

@@ -1,6 +1,7 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
+  testPathIgnorePatterns: ["/node_modules/", "\\.vitest\\.test\\.ts$", "e2e-http"],
   transform: {
     "^.+\\.tsx?$": [
       "ts-jest",

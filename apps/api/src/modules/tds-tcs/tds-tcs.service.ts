@@ -4,6 +4,20 @@ import { buildPaginationParams, formatPaginatedResponse } from "../../lib/utils"
 import { NotFoundError } from "../../middleware/errorHandler";
 import { AuthUser, TdsEntryType } from "@ca-saas/shared-types";
 
+/** Pure reconciliation rules used by createEntry — unit-tested independently. */
+export function computeTdsReconciliation(expectedAmount: number, creditedAmount: number) {
+  const mismatchAmount = Math.abs(expectedAmount - creditedAmount);
+  let reconciliationStatus: "MATCHED" | "MISMATCH_UNDER" | "MISMATCH_OVER" = "MATCHED";
+
+  if (creditedAmount < expectedAmount) {
+    reconciliationStatus = "MISMATCH_UNDER";
+  } else if (creditedAmount > expectedAmount) {
+    reconciliationStatus = "MISMATCH_OVER";
+  }
+
+  return { mismatchAmount, reconciliationStatus };
+}
+
 export class TdsTcsService {
   public static async listEntries(user: AuthUser, query: Record<string, any>) {
     const { page, pageSize, skip } = buildPaginationParams(query);
@@ -61,14 +75,10 @@ export class TdsTcsService {
     const client = await prisma.client.findFirst({ where: clientScope });
     if (!client) throw new NotFoundError("Client not found");
 
-    const mismatchAmount = Math.abs(expectedAmount - creditedAmount);
-    let reconciliationStatus: "MATCHED" | "MISMATCH_UNDER" | "MISMATCH_OVER" = "MATCHED";
-
-    if (creditedAmount < expectedAmount) {
-      reconciliationStatus = "MISMATCH_UNDER";
-    } else if (creditedAmount > expectedAmount) {
-      reconciliationStatus = "MISMATCH_OVER";
-    }
+    const { mismatchAmount, reconciliationStatus } = computeTdsReconciliation(
+      expectedAmount,
+      creditedAmount
+    );
 
     const entry = await prisma.tdsTcsEntry.create({
       data: {

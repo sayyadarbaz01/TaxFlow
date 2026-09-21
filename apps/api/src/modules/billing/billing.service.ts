@@ -4,6 +4,21 @@ import { buildPaginationParams, formatPaginatedResponse } from "../../lib/utils"
 import { NotFoundError } from "../../middleware/errorHandler";
 import { AuthUser, InvoiceLineItem } from "@ca-saas/shared-types";
 
+/** Pure invoice math — unit-tested independently of Prisma. */
+export function calculateInvoiceTotals(
+  lineItems: Array<{ amount: number }>,
+  taxRatePercentage = 18
+) {
+  const subtotal = lineItems.reduce((acc, item) => acc + item.amount, 0);
+  const tax = Math.round((subtotal * taxRatePercentage) / 100);
+  const total = subtotal + tax;
+  return { subtotal, tax, total };
+}
+
+export function buildUpiPaymentLink(total: number, invoiceNo: string) {
+  return `upi://pay?pa=capractice@upi&pn=CA%20Practice&am=${total}&tn=${invoiceNo}&cu=INR`;
+}
+
 export class BillingService {
   public static async listInvoices(user: AuthUser, query: Record<string, any>) {
     const { page, pageSize, skip } = buildPaginationParams(query);
@@ -68,13 +83,11 @@ export class BillingService {
     taxRatePercentage = 18,
     user: AuthUser
   ) {
-    const subtotal = lineItems.reduce((acc, item) => acc + item.amount, 0);
-    const tax = Math.round((subtotal * taxRatePercentage) / 100);
-    const total = subtotal + tax;
+    const { subtotal, tax, total } = calculateInvoiceTotals(lineItems, taxRatePercentage);
 
     const count = await prisma.invoice.count();
     const invoiceNo = `INV-2026-${String(count + 1).padStart(3, "0")}`;
-    const upiLink = `upi://pay?pa=capractice@upi&pn=CA%20Practice&am=${total}&tn=${invoiceNo}&cu=INR`;
+    const upiLink = buildUpiPaymentLink(total, invoiceNo);
 
     const invoice = await prisma.invoice.create({
       data: {

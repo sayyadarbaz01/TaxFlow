@@ -26,6 +26,8 @@
     "db:generate": "prisma generate",
     "test": "npm run test --workspace=apps/api && npm run test --workspace=apps/web",
     "test:api": "npm run test --workspace=apps/api",
+    "test:api:vitest": "npm run test:vitest --workspace=apps/api",
+    "test:api:all": "npm run test:all --workspace=apps/api",
     "test:web": "npm run test --workspace=apps/web",
     "test:e2e": "playwright test"
   },

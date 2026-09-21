@@ -7,7 +7,9 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
-    "test": "jest --detectOpenHandles --forceExit"
+    "test": "jest --detectOpenHandles --forceExit",
+    "test:vitest": "vitest run --config vitest.config.ts",
+    "test:all": "npm run test && npm run test:vitest"
   },
   "dependencies": {
     "@ca-saas/shared-types": "*",

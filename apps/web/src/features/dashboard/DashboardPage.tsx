@@ -373,7 +373,7 @@ export const DashboardPage: React.FC = () => {
             leftIcon={<Bot className="w-4 h-4 text-blue-400" />}
             className="border-slate-700 text-white hover:bg-slate-800 font-semibold"
           >
-            Ask AI
+            Ask TaxFlow AI
           </Button>
         </div>
       </div>
@@ -902,7 +902,7 @@ export const DashboardPage: React.FC = () => {
                 onClick={() => navigate("/ai-assistant")}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
               >
-                Review Insights with AI
+                Ask TaxFlow AI
               </Button>
             </div>
           </Card>

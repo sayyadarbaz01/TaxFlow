@@ -70,7 +70,7 @@ export const Sidebar: React.FC<SidebarProps> = React.memo(
       {
         title: "INTELLIGENCE",
         items: [
-          { label: "AI Assistant", icon: Bot, path: "/ai-assistant", perm: "ai_assistant:read" }
+          { label: "AI Tax Assistant", icon: Bot, path: "/ai-assistant", perm: "ai_assistant:read" }
         ]
       },
       {

@@ -333,12 +333,17 @@ export interface WhatsAppMessageRecord {
 }
 
 // AI Assistant
+export interface AiSourceCitation {
+  title: string;
+  url: string;
+}
+
 export interface AiMessageRecord {
   id: string;
   conversationId: string;
   role: "user" | "assistant" | "system";
   content: string;
-  sourceType?: "structured" | "rag" | "fallback";
+  sourceType?: "structured" | "gemini" | "grounded" | "fallback" | "rag" | null;
   createdAt: string;
 }
 
@@ -348,6 +353,17 @@ export interface AiConversationRecord {
   title: string;
   createdAt: string;
   messages: AiMessageRecord[];
+}
+
+export interface AiQueryResponse {
+  answer: string;
+  sourceType: "structured" | "gemini" | "grounded" | "fallback" | "rag";
+  sources: AiSourceCitation[];
+  lastUpdated?: string | null;
+  suggestedActions: string[];
+  conversationId: string;
+  data?: unknown;
+  model?: string;
 }
 
 // Audit Logs

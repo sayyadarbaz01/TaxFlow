@@ -61,7 +61,7 @@ export const Topbar: React.FC<TopbarProps> = React.memo(({
           leftIcon={<Bot className="w-4 h-4 text-blue-600 dark:text-blue-400" />}
           className="hidden md:inline-flex text-blue-700 dark:text-blue-300 bg-blue-50/60 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800 hover:bg-blue-100/70 dark:hover:bg-blue-900/50"
         >
-          Ask AI
+          Ask TaxFlow AI
         </Button>
 
         {/* Theme Toggle Button */}

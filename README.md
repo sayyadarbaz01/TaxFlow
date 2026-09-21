@@ -1,6 +1,6 @@
 # CA Practice Automation SaaS (`ca-saas`)
 
-An enterprise full-stack **CA Practice Automation SaaS** built with TypeScript, React 18, Vite, Express.js, Prisma ORM, PostgreSQL + pgvector, Ollama AI, WhatsApp Cloud/Mock provider, and Docker Compose.
+An enterprise full-stack **CA Practice Automation SaaS** built with TypeScript, React 18, Vite, Express.js, Prisma ORM, PostgreSQL, Google Gemini AI, WhatsApp Cloud/Mock provider, and Docker Compose.
 
 ---
 
@@ -31,13 +31,14 @@ An enterprise full-stack **CA Practice Automation SaaS** built with TypeScript, 
 6. **Billing & Deep-Link UPI QR Collection**:
    - Line items, subtotal, 18% auto-tax calculation, deep-link UPI link generator (`upi://pay?pa=...`), QR code display modal, and 1-click payment marking.
 
-7. **Hybrid AI Assistant & RAG Pipeline**:
-   - Structured intent layer for instant DB queries ("Client ka GST pending hai", "Which ITR is pending?", "Which invoices are overdue?").
-   - Open-ended RAG powered by `OllamaProvider` (`llama3.1:8b` + `nomic-embed-text` embeddings with pgvector cosine search).
+7. **AI Tax Assistant (Gemini)**:
+   - Backend-only `GEMINI_API_KEY` with Google Search grounding for current tax info.
+   - RBAC-scoped practice context (clients, filings, documents, tasks, invoices).
+   - Structured intents for GST/ITR/docs/billing plus modular `GeminiProvider` adapter.
 
 8. **Enterprise Frontend UI/UX (`apps/web`)**:
    - High-density SaaS application shell with collapsible grouped sidebar.
-   - Global Cmd+K quick search modal, Notification Drawer, Ask AI modal trigger.
+   - Global Cmd+K quick search modal, Notification Drawer, Ask TaxFlow AI trigger.
    - 5-step Client Onboarding Wizard.
    - ITR visual status stepper (`Not Started -> Documents Pending -> Under Preparation -> Filed -> Verified -> Processed -> Refund Issued`).
    - Recurring GST return calendar.
@@ -96,7 +97,7 @@ npm run dev
 
 ## 🐳 Docker Deployment
 
-Run all services (Postgres+pgvector, Ollama, MinIO, API, Web) using Docker Compose:
+Run all services (Postgres, MinIO, API, Web) using Docker Compose:
 
 ```bash
 docker-compose up -d --build

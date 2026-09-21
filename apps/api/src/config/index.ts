@@ -36,10 +36,10 @@ export const config = {
     verifyToken: process.env.WHATSAPP_VERIFY_TOKEN || "casaas_verify_token_123"
   },
 
-  ollama: {
-    baseUrl: process.env.OLLAMA_BASE_URL || "http://localhost:11434",
-    chatModel: process.env.OLLAMA_CHAT_MODEL || "llama3.1:8b",
-    embeddingModel: process.env.OLLAMA_EMBEDDING_MODEL || "nomic-embed-text"
+  gemini: {
+    apiKey: process.env.GEMINI_API_KEY || "",
+    model: process.env.GEMINI_MODEL || "gemini-3.6-flash",
+    timeoutMs: parseInt(process.env.GEMINI_TIMEOUT_MS || "45000", 10)
   },
 
   storage: {

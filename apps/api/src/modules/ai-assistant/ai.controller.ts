@@ -1,14 +1,23 @@
 import { Request, Response, NextFunction } from "express";
+import { z } from "zod";
 import { AiService } from "./ai.service";
-import { ValidationError } from "../../middleware/errorHandler";
+
+const AskSchema = z.object({
+  query: z.string().min(1).max(2000),
+  conversationId: z.string().uuid().optional(),
+  clientId: z.string().uuid().optional()
+});
 
 export class AiController {
   public static async ask(req: Request, res: Response, next: NextFunction) {
     try {
-      const { query, conversationId } = req.body;
-      if (!query) throw new ValidationError("query string is required");
-
-      const result = await AiService.processQuery(query, req.user!, conversationId);
+      const body = AskSchema.parse(req.body);
+      const result = await AiService.processQuery(
+        body.query,
+        req.user!,
+        body.conversationId,
+        body.clientId
+      );
       return res.json(result);
     } catch (err) {
       next(err);

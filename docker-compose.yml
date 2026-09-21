@@ -19,15 +19,6 @@ services:
       timeout: 5s
       retries: 5
 
-  ollama:
-    image: ollama/ollama:latest
-    container_name: casaas_ollama
-    restart: always
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-
   minio:
     image: minio/minio:latest
     container_name: casaas_minio
@@ -53,7 +44,8 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: postgresql://postgres:postgrespassword@postgres:5432/casaas_db?schema=public
-      OLLAMA_BASE_URL: http://ollama:11434
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.6-flash}
     depends_on:
       postgres:
         condition: service_healthy
@@ -71,5 +63,4 @@ services:
 
 volumes:
   postgres_data:
-  ollama_data:
   minio_data:

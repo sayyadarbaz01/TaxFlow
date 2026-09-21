@@ -6,7 +6,9 @@ import {
   GstRegistrationRecord,
   CreateGstRegDTO,
   ClientServiceDTO,
-  ClientServiceRecord
+  ClientServiceRecord,
+  AiQueryResponse,
+  AiConversationRecord
 } from "@ca-saas/shared-types";
 
 const getApiBaseUrl = (): string => {
@@ -328,9 +330,16 @@ export const api = createApi({
     }),
 
     // AI Assistant
-    askAi: builder.mutation({
+    askAi: builder.mutation<
+      AiQueryResponse,
+      { query: string; conversationId?: string; clientId?: string }
+    >({
       query: (body) => ({ url: "/ai-assistant/query", method: "POST", body }),
       invalidatesTags: ["Ai"]
+    }),
+    getAiConversations: builder.query<AiConversationRecord[], void>({
+      query: () => "/ai-assistant/conversations",
+      providesTags: ["Ai"]
     }),
 
     // Admin & Audit
@@ -414,6 +423,7 @@ export const {
   useGetWhatsAppTemplatesQuery,
   useSendWhatsAppTemplateMutation,
   useAskAiMutation,
+  useGetAiConversationsQuery,
   useGetAdminUsersQuery,
   useRegisterUserMutation,
   useGetRolesQuery,

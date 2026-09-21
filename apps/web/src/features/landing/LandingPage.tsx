@@ -228,7 +228,7 @@ export const LandingPage: React.FC = () => {
                   </span>
                   <span className="px-3 py-1.5 bg-slate-800 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5">
                     <Bot className="w-3.5 h-3.5 text-blue-400" />
-                    Ask AI
+                    Ask TaxFlow AI
                   </span>
                 </div>
               </div>
@@ -433,13 +433,12 @@ export const LandingPage: React.FC = () => {
               <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-800">
                 <Bot className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">AI Practice Assistant & OCR</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">AI Tax Assistant</h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                Get instant answers on Income Tax sections, GST circulars, draft client response letters,
-                and auto-extract data from financial documents.
+                Ask TaxFlow AI about ITR, GST, TDS/TCS, deadlines, and client compliance — grounded in your practice data with cited sources for current tax info.
               </p>
               <div className="pt-2 text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1">
-                Indian Tax Regulations & Document OCR
+                Gemini · RBAC-scoped · Cited sources
               </div>
             </div>
           </div>

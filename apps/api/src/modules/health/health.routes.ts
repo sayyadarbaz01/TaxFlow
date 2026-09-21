@@ -5,6 +5,6 @@ const router = Router();
 
 router.get("/", HealthController.getHealth);
 router.get("/db", HealthController.getDbHealth);
-router.get("/ollama", HealthController.getOllamaHealth);
+router.get("/gemini", HealthController.getGeminiHealth);
 
 export default router;

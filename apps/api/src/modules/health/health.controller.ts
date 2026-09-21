@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import fetch from "node-fetch";
 import { prisma } from "../../lib/db";
 import { config } from "../../config";
 
@@ -22,16 +21,19 @@ export class HealthController {
     }
   }
 
-  public static async getOllamaHealth(_req: Request, res: Response) {
-    try {
-      const response = await fetch(`${config.ollama.baseUrl}/api/tags`);
-      if (response.ok) {
-        const data = await response.json();
-        return res.json({ status: "UP", service: "Ollama", models: data });
-      }
-      return res.status(503).json({ status: "DOWN", service: "Ollama" });
-    } catch (err: any) {
-      return res.status(503).json({ status: "DOWN", service: "Ollama", message: err.message });
+  public static async getGeminiHealth(_req: Request, res: Response) {
+    if (!config.gemini.apiKey) {
+      return res.status(503).json({
+        status: "DOWN",
+        service: "Gemini",
+        message: "GEMINI_API_KEY is not configured"
+      });
     }
+    return res.json({
+      status: "UP",
+      service: "Gemini",
+      model: config.gemini.model,
+      configured: true
+    });
   }
 }

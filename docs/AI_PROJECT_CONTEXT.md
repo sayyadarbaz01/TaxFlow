@@ -27,7 +27,7 @@ Future AI agents and developers must consult this document before making code al
   6. **Document Vault**: Multi-source file ingestion (PAN, Bank Statements, Aadhaar) with mandatory checklist verification.
   7. **Billing & Dynamic UPI**: Invoicing with 18% GST calculation, dynamic UPI link/QR generation, payment reconciliation, and overdue aging.
   8. **WhatsApp Client Hub**: Automated compliance deadline broadcast templates and direct client notifications.
-  9. **AI Practice Assistant**: Hybrid router with structured intent matching and local/remote LLM (Ollama) fallback.
+  9. **AI Tax Assistant**: Hybrid structured intent router over RBAC-scoped practice data, with Google Gemini (`@google/genai`) + optional Google Search grounding for current tax info.
 
 ### Architecture Diagram
 
@@ -559,8 +559,9 @@ errorHandler [Catches unhandled errors & maps to HTTP status]
 | `REFRESH_TOKEN_EXPIRES` | Refresh token lifespan | No | `7d` | `jwt.ts` |
 | `WHATSAPP_PROVIDER` | Provider mode (`mock` or `cloud`) | No | `mock` | `WhatsAppProvider.ts` |
 | `WHATSAPP_ACCESS_TOKEN` | Meta Graph API access token | No | `<SECRET>` | `WhatsAppProvider.ts` |
-| `OLLAMA_BASE_URL` | Ollama AI server endpoint | No | `http://localhost:11434` | `OllamaProvider.ts` |
-| `OLLAMA_CHAT_MODEL` | Ollama LLM model name | No | `llama3.1:8b` | `OllamaProvider.ts` |
+| `GEMINI_API_KEY` | Google Gemini API key (backend only) | Yes | _(empty)_ | `GeminiProvider.ts` / `config/index.ts` |
+| `GEMINI_MODEL` | Gemini model id | No | `gemini-3.6-flash` | `config/index.ts` |
+| `GEMINI_TIMEOUT_MS` | Gemini request timeout | No | `45000` | `GeminiProvider.ts` |
 | `STORAGE_PROVIDER` | Document storage provider (`local` / `minio`) | No | `local` | `FileStorageAdapter.ts` |
 | `APP_URL` | Frontend client origin URL | No | `http://localhost:3000` | CORS, App |
 | `API_URL` | Backend server origin URL | No | `http://localhost:5000` | Server, Links |

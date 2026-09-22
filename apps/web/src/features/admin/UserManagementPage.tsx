@@ -8,6 +8,7 @@ import { Modal } from "../../components/ui/Modal";
 import { Input } from "../../components/ui/Input";
 import { Select } from "../../components/ui/Select";
 import { SystemRole } from "@ca-saas/shared-types";
+import { PageHeader } from "../../components/ui/PageHeader";
 
 export const UserManagementPage: React.FC = () => {
   const { data, isLoading } = useGetAdminUsersQuery({});
@@ -63,12 +64,12 @@ export const UserManagementPage: React.FC = () => {
       header: "User Name",
       cell: (row) => (
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-full bg-slate-800 dark:bg-slate-700 text-white font-bold flex items-center justify-center text-xs">
+          <div className="w-8 h-8 rounded-full bg-muted text-white font-bold flex items-center justify-center text-xs">
             {row.name.charAt(0)}
           </div>
           <div>
-            <p className="font-semibold text-slate-900 dark:text-white text-xs">{row.name}</p>
-            <span className="text-[10px] text-slate-500 dark:text-slate-400">{row.email}</span>
+            <p className="font-semibold text-foreground text-xs">{row.name}</p>
+            <span className="text-[10px] text-muted-foreground">{row.email}</span>
           </div>
         </div>
       )
@@ -79,21 +80,21 @@ export const UserManagementPage: React.FC = () => {
     },
     {
       header: "Joined Date",
-      cell: (row) => <span className="font-mono text-xs text-slate-700 dark:text-slate-300">{new Date(row.createdAt).toLocaleDateString()}</span>
+      cell: (row) => <span className="font-mono text-xs text-foreground/80">{new Date(row.createdAt).toLocaleDateString()}</span>
     }
   ];
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">User Administration</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Manage firm user accounts with SuperAdmin and Admin roles.</p>
-        </div>
-        <Button onClick={() => setIsModalOpen(true)} leftIcon={<Plus className="w-4 h-4" />}>
-          Add User
-        </Button>
-      </div>
+      <PageHeader
+        title="Users"
+        description="Manage firm user accounts with SuperAdmin and Admin roles."
+        actions={
+          <Button onClick={() => setIsModalOpen(true)} leftIcon={<Plus className="w-4 h-4" />}>
+            Add User
+          </Button>
+        }
+      />
 
       <Table columns={columns} data={data?.data || []} isLoading={isLoading} emptyText="No users found." />
 
@@ -147,7 +148,7 @@ export const UserManagementPage: React.FC = () => {
             ]}
           />
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex justify-end gap-2 pt-4 border-t border-border">
             <Button variant="secondary" size="sm" type="button" onClick={() => setIsModalOpen(false)}>
               Cancel
             </Button>

@@ -20,7 +20,7 @@ import {
   FileBadge,
   X
 } from "lucide-react";
-import { clsx } from "clsx";
+import { cn } from "../../lib/cn";
 import { AuthUser } from "@ca-saas/shared-types";
 import { ThemeToggle } from "../ui/ThemeToggle";
 
@@ -36,7 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = React.memo(
   ({ user, isCollapsed, onToggleCollapse, isMobileOpen = false, onCloseMobile }) => {
     const groups = [
       {
-        title: "WORKSPACE",
+        title: "Workspace",
         items: [
           { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
           { label: "Clients", icon: Users, path: "/clients", perm: "clients:read" },
@@ -45,106 +45,114 @@ export const Sidebar: React.FC<SidebarProps> = React.memo(
         ]
       },
       {
-        title: "COMPLIANCE",
+        title: "Compliance",
         items: [
           { label: "ITR Filings", icon: FileText, path: "/itr", perm: "itr:read" },
           { label: "GST Returns", icon: Calendar, path: "/gst", perm: "gst:read" },
           { label: "Tax Audit", icon: ClipboardCheck, path: "/tax-audit", perm: "tax_audit:read" },
-          { label: "GST Registration", icon: FileBadge, path: "/gst-registration", perm: "gst_registration:read" },
+          {
+            label: "GST Registration",
+            icon: FileBadge,
+            path: "/gst-registration",
+            perm: "gst_registration:read"
+          },
           { label: "TDS / TCS", icon: Layers, path: "/tds-tcs", perm: "tds_tcs:read" }
         ]
       },
       {
-        title: "OPERATIONS",
+        title: "Operations",
         items: [
           { label: "Tasks", icon: CheckSquare, path: "/tasks", perm: "tasks:read" },
           { label: "WhatsApp Hub", icon: MessageSquare, path: "/whatsapp", perm: "whatsapp:read" }
         ]
       },
       {
-        title: "FINANCE",
+        title: "Finance",
         items: [
           { label: "Billing & Invoices", icon: CreditCard, path: "/billing", perm: "billing:read" }
         ]
       },
       {
-        title: "INTELLIGENCE",
+        title: "Intelligence",
         items: [
           { label: "AI Tax Assistant", icon: Bot, path: "/ai-assistant", perm: "ai_assistant:read" }
         ]
       },
       {
-        title: "ADMINISTRATION",
+        title: "Administration",
         items: [
           { label: "User Management", icon: ShieldCheck, path: "/admin/users", superAdminOnly: true },
-          { label: "Audit Logs", icon: FileSpreadsheet, path: "/admin/audit-logs", superAdminOnly: true }
+          {
+            label: "Audit Logs",
+            icon: FileSpreadsheet,
+            path: "/admin/audit-logs",
+            superAdminOnly: true
+          }
         ]
       }
     ];
 
     const canAccess = (superAdminOnly?: boolean) => {
       if (!user) return false;
-      if (superAdminOnly) {
-        return user.role === "SuperAdmin";
-      }
+      if (superAdminOnly) return user.role === "SuperAdmin";
       return true;
     };
 
+    const showLabels = !isCollapsed || isMobileOpen;
+
     return (
       <aside
-        className={clsx(
-          "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 flex flex-col border-r border-slate-200 dark:border-slate-800 transition-colors duration-200 fixed inset-y-0 left-0 z-50 lg:relative lg:h-full lg:z-auto flex-shrink-0",
-          isMobileOpen ? "translate-x-0 shadow-2xl w-64" : "-translate-x-full lg:translate-x-0",
-          isCollapsed ? "lg:w-16" : "lg:w-64"
+        className={cn(
+          "bg-card text-foreground flex flex-col border-r border-border transition-all duration-200 fixed inset-y-0 left-0 z-50 lg:relative lg:h-full lg:z-auto flex-shrink-0",
+          isMobileOpen ? "translate-x-0 shadow-elevated w-64" : "-translate-x-full lg:translate-x-0",
+          isCollapsed ? "lg:w-[4.5rem]" : "lg:w-64"
         )}
       >
-        {/* Brand Header */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
-          {!isCollapsed || isMobileOpen ? (
-            <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+        <div className="h-16 flex items-center justify-between px-3.5 border-b border-border flex-shrink-0">
+          {showLabels ? (
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs shadow-xs flex-shrink-0">
                 TF
               </div>
-              <div>
-                <h1 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight leading-none">TaxFlow</h1>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Tax & Audit Suite</p>
+              <div className="min-w-0">
+                <h1 className="text-sm font-bold tracking-tight leading-none truncate">TaxFlow</h1>
+                <p className="text-2xs text-muted-foreground font-medium mt-0.5">Practice OS</p>
               </div>
             </div>
           ) : (
-            <div className="w-8 h-8 mx-auto rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs">
+            <div className="w-8 h-8 mx-auto rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs">
               TF
             </div>
           )}
 
-          {/* Desktop Collapse Toggle */}
           <button
             onClick={onToggleCollapse}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-smooth hidden lg:block"
-            title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-smooth hidden lg:inline-flex focus-ring"
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
 
-          {/* Mobile Close Button */}
           <button
             onClick={onCloseMobile}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-smooth lg:hidden"
-            title="Close navigation menu"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-smooth lg:hidden focus-ring"
+            title="Close navigation"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Grouped Nav Items */}
-        <div className="flex-1 overflow-y-auto py-4 px-2 space-y-5 touch-pan-y">
+        <nav className="flex-1 overflow-y-auto py-4 px-2.5 space-y-5 touch-pan-y">
           {groups.map((group, gIdx) => {
-            const visibleItems = group.items.filter((item) => canAccess((item as any).superAdminOnly));
+            const visibleItems = group.items.filter((item) =>
+              canAccess((item as any).superAdminOnly)
+            );
             if (visibleItems.length === 0) return null;
 
             return (
-              <div key={gIdx} className="space-y-1">
-                {(!isCollapsed || isMobileOpen) && (
-                  <h2 className="px-3 text-[10px] font-semibold text-slate-400 dark:text-slate-500 tracking-wider uppercase mb-1">
+              <div key={gIdx} className="space-y-0.5">
+                {showLabels && (
+                  <h2 className="px-2.5 mb-1.5 text-2xs font-semibold text-muted-foreground tracking-wider uppercase">
                     {group.title}
                   </h2>
                 )}
@@ -155,41 +163,37 @@ export const Sidebar: React.FC<SidebarProps> = React.memo(
                       key={item.path}
                       to={item.path}
                       onClick={() => onCloseMobile?.()}
+                      title={!showLabels ? item.label : undefined}
                       className={({ isActive }) =>
-                        clsx(
-                          "flex items-center px-3 py-2.5 lg:py-2 rounded-lg text-xs font-medium transition-smooth group",
+                        cn(
+                          "flex items-center px-2.5 py-2 rounded-lg text-xs font-medium transition-smooth group",
                           isActive
-                            ? "bg-blue-600 text-white font-semibold shadow-xs"
-                            : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white"
+                            ? "bg-primary text-primary-foreground shadow-xs"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
                         )
                       }
                     >
                       <Icon className="w-4 h-4 flex-shrink-0" />
-                      {(!isCollapsed || isMobileOpen) && (
-                        <span className="ml-3 truncate">{item.label}</span>
-                      )}
+                      {showLabels && <span className="ml-2.5 truncate">{item.label}</span>}
                     </NavLink>
                   );
                 })}
               </div>
             );
           })}
-        </div>
+        </nav>
 
-        {/* User Info Footer + Theme Toggle */}
-        {user && (!isCollapsed || isMobileOpen) && (
-          <div className="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 flex items-center justify-between flex-shrink-0">
-            <div className="flex items-center space-x-2 truncate">
-              <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-700 dark:bg-slate-700 dark:text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+        {user && showLabels && (
+          <div className="p-3 border-t border-border bg-muted/30 flex items-center justify-between flex-shrink-0 gap-2">
+            <div className="flex items-center gap-2 truncate min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-primary/15 text-primary flex items-center justify-center text-xs font-bold flex-shrink-0">
                 {user.name.charAt(0)}
               </div>
               <div className="truncate">
-                <p className="text-xs font-medium text-slate-900 dark:text-white truncate">{user.name}</p>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 capitalize">{user.role}</p>
+                <p className="text-xs font-semibold truncate">{user.name}</p>
+                <p className="text-2xs text-muted-foreground capitalize">{user.role}</p>
               </div>
             </div>
-
-            {/* Quick Theme Toggle inside footer for easy access */}
             <ThemeToggle size="sm" />
           </div>
         )}
@@ -198,3 +202,4 @@ export const Sidebar: React.FC<SidebarProps> = React.memo(
   }
 );
 
+Sidebar.displayName = "Sidebar";

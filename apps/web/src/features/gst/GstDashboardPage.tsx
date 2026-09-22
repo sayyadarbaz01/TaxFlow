@@ -7,6 +7,7 @@ import { StatusBadge } from "../../components/ui/StatusBadge";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { GstReturnRecord } from "@ca-saas/shared-types";
+import { PageHeader } from "../../components/ui/PageHeader";
 
 export const GstDashboardPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -42,28 +43,28 @@ export const GstDashboardPage: React.FC = () => {
       cell: (row) => (
         <div>
           <div className="flex items-center gap-1.5">
-            <p className="font-semibold text-slate-900 dark:text-white text-xs">{row.clientName}</p>
+            <p className="font-semibold text-foreground text-xs">{row.clientName}</p>
             {row.workType === "ITR + GST" && (
-              <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+              <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-primary-muted text-primary border border-primary/20">
                 ITR + GST
               </span>
             )}
           </div>
-          <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">{row.period}</span>
+          <span className="text-[10px] font-mono text-muted-foreground">{row.period}</span>
         </div>
       )
     },
     {
       header: "Return Type",
       cell: (row) => (
-        <span className="font-bold text-xs px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+        <span className="font-bold text-xs px-2 py-0.5 rounded bg-primary-muted text-primary border border-primary/20">
           {row.returnType} ({row.filingFrequency})
         </span>
       )
     },
     {
       header: "Due Date",
-      cell: (row) => <span className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">{row.dueDate}</span>
+      cell: (row) => <span className="font-mono text-xs font-semibold text-foreground">{row.dueDate}</span>
     },
     {
       header: "Filing Status",
@@ -92,27 +93,24 @@ export const GstDashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">GST Compliance Center</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Recurring GSTR-1, GSTR-3B, PMT-06, and GSTR-9 statutory return schedules.</p>
-        </div>
-      </div>
+      <PageHeader
+        title="GST Returns"
+        description="Recurring GSTR-1, GSTR-3B, PMT-06, and GSTR-9 statutory return schedules."
+      />
 
       {/* Upcoming Due Returns Banner */}
-      <Card className="bg-gradient-to-r from-indigo-900 to-slate-900 text-white">
-        <div className="flex items-center space-x-2 text-indigo-300 mb-2">
+      <Card className="bg-card border-border">
+        <div className="flex items-center space-x-2 text-primary mb-2">
           <Calendar className="w-4 h-4" />
           <h3 className="text-xs font-bold uppercase tracking-wider">Upcoming GST Deadlines (Next 30 Days)</h3>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs mt-3">
           {upcomingData?.slice(0, 3).map((item: any) => (
-            <div key={item.id} className="p-2.5 bg-slate-800/80 rounded-lg border border-slate-700">
-              <p className="font-bold text-white truncate">{item.clientName}</p>
-              <p className="text-[10px] text-slate-400 font-mono">{item.returnType} • {item.period}</p>
+            <div key={item.id} className="p-2.5 bg-muted rounded-lg border border-border">
+              <p className="font-bold text-foreground truncate">{item.clientName}</p>
+              <p className="text-[10px] text-muted-foreground font-mono">{item.returnType} • {item.period}</p>
               <div className="flex items-center justify-between mt-2">
-                <span className="text-[10px] font-bold text-amber-400">Due: {item.dueDate}</span>
+                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">Due: {item.dueDate}</span>
                 <StatusBadge status={item.status} />
               </div>
             </div>
@@ -121,7 +119,7 @@ export const GstDashboardPage: React.FC = () => {
       </Card>
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-2 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-2 text-xs">
         <div className="flex space-x-2 overflow-x-auto pb-1">
           {["", "due", "PENDING", "OVERDUE", "FILED"].map((st) => (
             <button
@@ -130,7 +128,7 @@ export const GstDashboardPage: React.FC = () => {
               className={`px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-smooth ${
                 statusFilter === st
                   ? "bg-rose-600 text-white shadow-xs"
-                  : "bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  : "bg-card border border-border text-muted-foreground hover:bg-muted"
               }`}
             >
               {st === "due" ? "Due / Approaching" : st || "All Statuses"}
@@ -145,8 +143,8 @@ export const GstDashboardPage: React.FC = () => {
               onClick={() => setReturnTypeFilter(rt)}
               className={`px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-smooth ${
                 returnTypeFilter === rt
-                  ? "bg-indigo-600 text-white shadow-xs"
-                  : "bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  ? "bg-primary text-white shadow-xs"
+                  : "bg-card border border-border text-muted-foreground hover:bg-muted"
               }`}
             >
               {rt || "All Forms"}

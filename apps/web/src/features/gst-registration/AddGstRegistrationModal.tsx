@@ -189,7 +189,7 @@ export const AddGstRegistrationModal: React.FC<AddGstRegistrationModalProps> = (
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>

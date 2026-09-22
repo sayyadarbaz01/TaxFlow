@@ -1,6 +1,6 @@
 import React from "react";
 import { Loader2 } from "lucide-react";
-import { clsx } from "clsx";
+import { cn } from "../../lib/cn";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "danger" | "success" | "outline" | "ghost";
@@ -21,26 +21,34 @@ export const Button: React.FC<ButtonProps> = ({
   className,
   ...props
 }) => {
-  const baseStyles = "inline-flex items-center justify-center font-medium transition-smooth rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
-
   const variants = {
-    primary: "bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500 shadow-sm",
-    secondary: "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 focus:ring-slate-400",
-    danger: "bg-rose-600 hover:bg-rose-700 text-white focus:ring-rose-500 shadow-sm",
-    success: "bg-emerald-600 hover:bg-emerald-700 text-white focus:ring-emerald-500 shadow-sm",
-    outline: "border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 focus:ring-blue-500 shadow-sm",
-    ghost: "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white focus:ring-slate-400"
+    primary:
+      "bg-primary text-primary-foreground hover:opacity-90 focus-visible:ring-ring shadow-xs",
+    secondary:
+      "bg-muted text-foreground hover:bg-muted/80 focus-visible:ring-ring",
+    danger:
+      "bg-destructive text-destructive-foreground hover:opacity-90 focus-visible:ring-destructive shadow-xs",
+    success:
+      "bg-success text-success-foreground hover:opacity-90 focus-visible:ring-success shadow-xs",
+    outline:
+      "border border-border bg-card text-foreground hover:bg-muted focus-visible:ring-ring shadow-xs",
+    ghost: "text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring"
   };
 
   const sizes = {
-    sm: "px-3 py-1.5 text-xs gap-1.5",
-    md: "px-4 py-2 text-sm gap-2",
-    lg: "px-5 py-2.5 text-base gap-2.5"
+    sm: "h-8 px-3 text-xs gap-1.5 rounded-lg",
+    md: "h-9 px-4 text-sm gap-2 rounded-lg",
+    lg: "h-11 px-5 text-sm gap-2.5 rounded-xl"
   };
 
   return (
     <button
-      className={clsx(baseStyles, variants[variant], sizes[size], className)}
+      className={cn(
+        "inline-flex items-center justify-center font-semibold transition-smooth focus-ring disabled:opacity-50 disabled:cursor-not-allowed",
+        variants[variant],
+        sizes[size],
+        className
+      )}
       disabled={disabled || isLoading}
       {...props}
     >
@@ -50,4 +58,3 @@ export const Button: React.FC<ButtonProps> = ({
     </button>
   );
 };
-

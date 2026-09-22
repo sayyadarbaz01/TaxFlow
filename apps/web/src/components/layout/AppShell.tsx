@@ -19,22 +19,19 @@ export const AppShell: React.FC<AppShellProps> = ({ user, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Auto-close mobile navigation drawer on route change
   useEffect(() => {
     setIsMobileNavOpen(false);
   }, [location.pathname]);
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
-      {/* Mobile Drawer Backdrop Overlay */}
+    <div className="h-screen w-screen overflow-hidden flex bg-background text-foreground">
       {isMobileNavOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 lg:hidden animate-in fade-in duration-200"
+          className="fixed inset-0 bg-slate-950/50 backdrop-blur-[2px] z-40 lg:hidden animate-fade-in"
           onClick={() => setIsMobileNavOpen(false)}
         />
       )}
 
-      {/* Responsive Sidebar (Off-canvas drawer on mobile, sticky sidebar on desktop) */}
       <Sidebar
         user={user}
         isCollapsed={isSidebarCollapsed}
@@ -43,7 +40,6 @@ export const AppShell: React.FC<AppShellProps> = ({ user, onLogout }) => {
         onCloseMobile={() => setIsMobileNavOpen(false)}
       />
 
-      {/* Main Container */}
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <Topbar
           user={user}
@@ -54,16 +50,18 @@ export const AppShell: React.FC<AppShellProps> = ({ user, onLogout }) => {
           onOpenMobileNav={() => setIsMobileNavOpen(true)}
         />
 
-        <main className="flex-1 p-3 sm:p-4 md:p-6 overflow-y-auto overflow-x-hidden w-full">
-          <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+        <main className="flex-1 p-4 sm:p-5 md:p-6 overflow-y-auto overflow-x-hidden w-full">
+          <div className="max-w-7xl mx-auto space-y-5 sm:space-y-6">
             <Outlet context={{ user }} />
           </div>
         </main>
       </div>
 
-      {/* Global Modals */}
       <CmdKModal isOpen={isCmdKOpen} onClose={() => setIsCmdKOpen(false)} />
-      <NotificationDrawer isOpen={isNotificationsOpen} onClose={() => setIsNotificationsOpen(false)} />
+      <NotificationDrawer
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+      />
     </div>
   );
 };

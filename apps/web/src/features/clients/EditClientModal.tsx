@@ -222,7 +222,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClos
           />
         </div>
 
-        <div className="flex justify-end gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+        <div className="flex justify-end gap-2 pt-4 border-t border-border">
           <Button variant="secondary" size="sm" type="button" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>

@@ -121,12 +121,12 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, onClose }) =
     <Modal isOpen={isOpen} onClose={handleClose} title="Add New Lead Client" maxWidth="lg">
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         {/* Banner */}
-        <div className="p-3 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 rounded-xl text-xs text-purple-800 dark:text-purple-300 flex items-start gap-2.5">
-          <UserPlus className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
+        <div className="p-3 bg-primary-muted border border-primary/20 rounded-xl text-xs text-primary dark:text-primary flex items-start gap-2.5">
+          <UserPlus className="w-4 h-4 text-primary shrink-0 mt-0.5" />
           <div>
             <span className="font-semibold">Prospective Client Intake:</span>
-            <p className="text-purple-700 dark:text-purple-400 text-[11px] mt-0.5">
-              This client will be saved with status <span className="font-semibold bg-purple-200/60 dark:bg-purple-900/60 px-1 py-0.5 rounded text-purple-900 dark:text-purple-200">LEAD</span>. You can track communication, schedule follow-ups, and convert them to an Active Client once engaged.
+            <p className="text-primary dark:text-primary text-[11px] mt-0.5">
+              This client will be saved with status <span className="font-semibold bg-primary-muted/60 dark:bg-primary-muted/60 px-1 py-0.5 rounded text-primary dark:text-primary">LEAD</span>. You can track communication, schedule follow-ups, and convert them to an Active Client once engaged.
             </p>
           </div>
         </div>
@@ -217,7 +217,7 @@ export const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, onClose }) =
           />
         </div>
 
-        <div className="flex justify-end gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+        <div className="flex justify-end gap-2 pt-4 border-t border-border">
           <Button variant="secondary" size="sm" type="button" onClick={handleClose} disabled={isLoading}>
             Cancel
           </Button>

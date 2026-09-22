@@ -12,6 +12,7 @@ import { StatusBadge } from "../../components/ui/StatusBadge";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { WhatsAppMessageRecord } from "@ca-saas/shared-types";
+import { PageHeader } from "../../components/ui/PageHeader";
 
 export const WhatsAppHubPage: React.FC = () => {
   const { data: clientsData } = useGetClientsQuery({});
@@ -60,8 +61,8 @@ export const WhatsAppHubPage: React.FC = () => {
       header: "Client Name",
       cell: (row) => (
         <div>
-          <p className="font-semibold text-slate-900 dark:text-white text-xs">{row.clientName}</p>
-          <span className="text-[10px] text-slate-500 dark:text-slate-400">{new Date(row.sentAt).toLocaleString()}</span>
+          <p className="font-semibold text-foreground text-xs">{row.clientName}</p>
+          <span className="text-[10px] text-muted-foreground">{new Date(row.sentAt).toLocaleString()}</span>
         </div>
       )
     },
@@ -70,7 +71,7 @@ export const WhatsAppHubPage: React.FC = () => {
       cell: (row) => (
         <span
           className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-            row.direction === "INBOUND" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300" : "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300"
+            row.direction === "INBOUND" ? "bg-primary-muted text-primary" : "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300"
           }`}
         >
           {row.direction}
@@ -79,11 +80,11 @@ export const WhatsAppHubPage: React.FC = () => {
     },
     {
       header: "Message Body",
-      cell: (row) => <p className="text-xs text-slate-800 dark:text-slate-200 max-w-xs truncate">{row.body}</p>
+      cell: (row) => <p className="text-xs text-foreground max-w-xs truncate">{row.body}</p>
     },
     {
       header: "Statutory Cost",
-      cell: (row) => <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">₹{row.cost.toFixed(2)}</span>
+      cell: (row) => <span className="font-mono text-xs font-semibold text-foreground/80">₹{row.cost.toFixed(2)}</span>
     },
     {
       header: "Status",
@@ -93,15 +94,10 @@ export const WhatsAppHubPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">WhatsApp Communication Center</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Official WhatsApp Business API integration for compliance reminders and document collection.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="WhatsApp Hub"
+        description="WhatsApp Business API for compliance reminders and document collection."
+      />
 
       {/* Spend Tracker KPI */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -110,26 +106,26 @@ export const WhatsAppHubPage: React.FC = () => {
             <DollarSign className="w-4 h-4" />
             <span className="text-xs font-bold uppercase tracking-wider">Monthly WhatsApp Spend</span>
           </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white">₹{spendData?.totalSpend ? spendData.totalSpend.toFixed(2) : "0.00"}</p>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">{spendData?.month || "Current"} Billing Cycle</p>
+          <p className="text-2xl font-bold text-foreground">₹{spendData?.totalSpend ? spendData.totalSpend.toFixed(2) : "0.00"}</p>
+          <p className="text-[10px] text-muted-foreground mt-1">{spendData?.month || "Current"} Billing Cycle</p>
         </Card>
 
         <Card>
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Outbound Messages Sent</span>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-2">{spendData?.totalSent || 0}</p>
+          <span className="text-xs font-semibold text-muted-foreground">Outbound Messages Sent</span>
+          <p className="text-2xl font-bold text-foreground mt-2">{spendData?.totalSent || 0}</p>
         </Card>
 
         <Card>
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Approved Templates</span>
-          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">{templatesData?.length || 2}</p>
+          <span className="text-xs font-semibold text-muted-foreground">Approved Templates</span>
+          <p className="text-2xl font-bold text-primary mt-2">{templatesData?.length || 2}</p>
         </Card>
       </div>
 
       {/* Quick Dispatch Section */}
       <Card>
-        <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">Quick Dispatch WhatsApp Reminder</h3>
+        <h3 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3">Quick Dispatch WhatsApp Reminder</h3>
         {clients.length === 0 ? (
-          <p className="text-xs text-slate-500 dark:text-slate-400 py-2">
+          <p className="text-xs text-muted-foreground py-2">
             No clients registered yet. Please add a client before dispatching WhatsApp reminders.
           </p>
         ) : (
@@ -137,7 +133,7 @@ export const WhatsAppHubPage: React.FC = () => {
             <select
               value={clientId}
               onChange={(e) => setClientId(e.target.value)}
-              className="text-xs border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
+              className="text-xs border border-border rounded-lg px-3 py-2 bg-card text-foreground font-medium"
             >
               {clients.map((c: any) => (
                 <option key={c.id} value={c.id}>
@@ -149,7 +145,7 @@ export const WhatsAppHubPage: React.FC = () => {
             <select
               value={templateName}
               onChange={(e) => setTemplateName(e.target.value)}
-              className="text-xs border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
+              className="text-xs border border-border rounded-lg px-3 py-2 bg-card text-foreground font-medium"
             >
               {templatesData?.map((t: any) => (
                 <option key={t.id} value={t.name}>

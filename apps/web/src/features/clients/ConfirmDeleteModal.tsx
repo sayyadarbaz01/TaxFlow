@@ -38,28 +38,28 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+            <h4 className="text-sm font-bold text-foreground">
               Are you sure you want to delete this client?
             </h4>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
               This action is permanent and will cascade to remove all associated filings, returns, tasks, invoices, and documents.
             </p>
           </div>
         </div>
 
         {client && (
-          <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60 text-xs space-y-1.5">
+          <div className="p-3 bg-muted/60 rounded-xl border border-border/60 text-xs space-y-1.5">
             <div className="flex justify-between">
-              <span className="text-slate-500 dark:text-slate-400">Client Name:</span>
-              <span className="font-semibold text-slate-900 dark:text-white">{client.name}</span>
+              <span className="text-muted-foreground">Client Name:</span>
+              <span className="font-semibold text-foreground">{client.name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500 dark:text-slate-400">PAN:</span>
-              <span className="font-mono font-semibold text-slate-900 dark:text-white">{client.pan}</span>
+              <span className="text-muted-foreground">PAN:</span>
+              <span className="font-mono font-semibold text-foreground">{client.pan}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500 dark:text-slate-400">Scope of Work:</span>
-              <span className="font-medium text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 px-1.5 py-0.2 rounded border border-blue-200 dark:border-blue-800/60 text-[11px]">
+              <span className="text-muted-foreground">Scope of Work:</span>
+              <span className="font-medium text-primary bg-primary-muted px-1.5 py-0.2 rounded border border-primary/20 text-[11px]">
                 {client.workType || "ITR"}
               </span>
             </div>
@@ -72,7 +72,7 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
           </div>
         )}
 
-        <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+        <div className="flex justify-end gap-2 pt-3 border-t border-border">
           <Button variant="secondary" size="sm" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>

@@ -28,6 +28,8 @@ import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
 import { StatusBadge } from "../../components/ui/StatusBadge";
+import { PageHeader } from "../../components/ui/PageHeader";
+import { MetricCard } from "../../components/ui/MetricCard";
 import {
   useGetDashboardSummaryQuery,
   useGetClientsQuery,
@@ -239,7 +241,7 @@ export const DashboardPage: React.FC = () => {
         clientSubtitle: `${t.clientName || "General Task"} • Due: ${t.dueDate || "Today"}`,
         actionLabel: "View Task",
         onAction: () => navigate("/tasks"),
-        dotColor: t.priority === "HIGH" ? "bg-rose-500" : "bg-blue-500",
+        dotColor: t.priority === "HIGH" ? "bg-rose-500" : "bg-primary",
         isCompleted: false
       });
     });
@@ -343,173 +345,106 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-8">
-      {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 to-slate-800 border border-slate-800 dark:border-slate-800/80 text-white p-6 rounded-2xl shadow-md">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">
-            Welcome back{user?.name ? `, ${user.name}` : ""} 👋
-          </h1>
-          <p className="text-xs text-slate-300 mt-1">
-            {urgentCount > 0
-              ? `Here's what's happening across your CA practice today. ${urgentCount} actionable item${
-                  urgentCount > 1 ? "s" : ""
-                } require attention.`
-              : "Here's what's happening across your CA practice today. All returns, documents, and payments are up to date."}
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            size="sm"
-            onClick={() => navigate("/clients")}
-            leftIcon={<Plus className="w-4 h-4" />}
-            className="bg-blue-600 hover:bg-blue-500 text-white font-semibold"
-          >
-            Add Client
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => navigate("/ai-assistant")}
-            variant="outline"
-            leftIcon={<Bot className="w-4 h-4 text-blue-400" />}
-            className="border-slate-700 text-white hover:bg-slate-800 font-semibold"
-          >
-            Ask TaxFlow AI
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Practice overview"
+        title={`Welcome back${user?.name ? `, ${user.name}` : ""}`}
+        description={
+          urgentCount > 0
+            ? `${urgentCount} actionable item${urgentCount > 1 ? "s" : ""} need attention across filings, tasks, and payments.`
+            : "All returns, documents, and payments are up to date across your practice."
+        }
+        actions={
+          <>
+            <Button size="sm" onClick={() => navigate("/clients")} leftIcon={<Plus className="w-4 h-4" />}>
+              Add Client
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => navigate("/ai-assistant")}
+              leftIcon={<Bot className="w-4 h-4 text-primary" />}
+            >
+              Ask TaxFlow AI
+            </Button>
+          </>
+        }
+      />
 
-      {/* 4 KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {isSummaryLoading ? (
           <>
             {[1, 2, 3, 4].map((n) => (
               <Card key={n} className="animate-pulse">
                 <div className="flex items-center justify-between">
-                  <div className="h-3.5 bg-slate-200 dark:bg-slate-700 rounded w-24" />
-                  <div className="w-8 h-8 bg-slate-200 dark:bg-slate-700 rounded-lg" />
+                  <div className="h-3.5 bg-muted rounded w-24" />
+                  <div className="w-8 h-8 bg-muted rounded-lg" />
                 </div>
                 <div className="mt-3 space-y-2">
-                  <div className="h-7 bg-slate-200 dark:bg-slate-700 rounded w-16" />
-                  <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-28" />
+                  <div className="h-7 bg-muted rounded w-16" />
+                  <div className="h-3 bg-muted rounded w-28" />
                 </div>
               </Card>
             ))}
           </>
         ) : (
           <>
-            {/* 1. Total Revenue */}
-            <Card
+            <MetricCard
+              label="Total Revenue"
+              value={`₹${(summary?.totalRevenue ?? 0).toLocaleString("en-IN")}`}
+              icon={<IndianRupee className="w-4 h-4" />}
+              trend={
+                summary?.totalRevenueComparison ||
+                (summary && summary.totalRevenueThisMonth > 0
+                  ? `₹${summary.totalRevenueThisMonth.toLocaleString("en-IN")} this month`
+                  : undefined)
+              }
+              hint={!summary?.totalRevenueComparison && !(summary && summary.totalRevenueThisMonth > 0) ? "All-time collected" : undefined}
+              trendTone={summary?.totalRevenueComparison || (summary && summary.totalRevenueThisMonth > 0) ? "positive" : "neutral"}
               onClick={() => navigate("/billing?status=PAID")}
-              className="hover:border-emerald-300 dark:hover:border-emerald-700 transition-smooth cursor-pointer"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Revenue</span>
-                <div className="p-2 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-lg">
-                  <IndianRupee className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="mt-3">
-                <span className="text-2xl font-bold text-slate-900 dark:text-white">
-                  ₹{(summary?.totalRevenue ?? 0).toLocaleString("en-IN")}
-                </span>
-                {summary?.totalRevenueComparison ? (
-                  <div className="flex items-center text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
-                    <TrendingUp className="w-3 h-3 mr-1" />
-                    {summary.totalRevenueComparison}
-                  </div>
-                ) : summary && summary.totalRevenueThisMonth > 0 ? (
-                  <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
-                    ₹{summary.totalRevenueThisMonth.toLocaleString("en-IN")} this month
-                  </p>
-                ) : (
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-1">All-time collected</p>
-                )}
-              </div>
-            </Card>
-
-            {/* 2. Active Clients */}
-            <Card
+            />
+            <MetricCard
+              label="Active Clients"
+              value={activeClientsCount}
+              icon={<Users className="w-4 h-4" />}
+              trend={summary?.activeClientsComparison}
+              hint={!summary?.activeClientsComparison ? "Active client accounts" : undefined}
+              trendTone={summary?.activeClientsComparison ? "positive" : "neutral"}
               onClick={() => navigate("/clients?status=ACTIVE")}
-              className="hover:border-blue-300 dark:hover:border-blue-700 transition-smooth cursor-pointer"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Active Clients</span>
-                <div className="p-2 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 rounded-lg">
-                  <Users className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="mt-3">
-                <span className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {activeClientsCount}
-                </span>
-                {summary?.activeClientsComparison ? (
-                  <div className="flex items-center text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
-                    <TrendingUp className="w-3 h-3 mr-1" />
-                    {summary.activeClientsComparison}
-                  </div>
-                ) : (
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-1">Active client accounts</p>
-                )}
-              </div>
-            </Card>
-
-            {/* 3. Pending Filings */}
-            <Card
+            />
+            <MetricCard
+              label="Pending Filings"
+              value={totalPendingFilings}
+              icon={<Clock className="w-4 h-4" />}
+              trend={
+                totalPendingFilings > 0
+                  ? (summary?.pendingFilingsOverdue ?? 0) > 0
+                    ? `Requires action · ${summary?.pendingFilingsOverdue} overdue`
+                    : "Requires action"
+                  : undefined
+              }
+              hint={totalPendingFilings === 0 ? "All filings up to date" : undefined}
+              trendTone={totalPendingFilings > 0 ? "negative" : "neutral"}
               onClick={() => navigate("/itr?status=pending")}
-              className="hover:border-amber-300 dark:hover:border-amber-700 transition-smooth cursor-pointer"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Pending Filings</span>
-                <div className="p-2 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-lg">
-                  <Clock className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="mt-3">
-                <span className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {totalPendingFilings}
-                </span>
-                {totalPendingFilings > 0 ? (
-                  <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                    <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold">Requires action</span>
-                    {(summary?.pendingFilingsOverdue ?? 0) > 0 && (
-                      <span className="text-[10px] text-rose-600 dark:text-rose-400 font-bold">
-                        • {summary?.pendingFilingsOverdue} overdue
-                      </span>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-1">All filings up to date</p>
-                )}
-              </div>
-            </Card>
-
-            {/* 4. Total Leads */}
-            <Card
+            />
+            <MetricCard
+              label="Total Leads"
+              value={totalLeadsCount}
+              icon={<UserPlus className="w-4 h-4" />}
+              trend={
+                summary && summary.newLeadsThisMonth > 0
+                  ? `${summary.newLeadsThisMonth} new this month`
+                  : undefined
+              }
+              hint={
+                !(summary && summary.newLeadsThisMonth > 0)
+                  ? summary && summary.totalLeads > 0
+                    ? "Prospective clients"
+                    : "No active leads"
+                  : undefined
+              }
+              trendTone={summary && summary.newLeadsThisMonth > 0 ? "positive" : "neutral"}
               onClick={() => navigate("/clients?status=LEAD")}
-              className="hover:border-purple-300 dark:hover:border-purple-700 transition-smooth cursor-pointer"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Leads</span>
-                <div className="p-2 bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 rounded-lg">
-                  <UserPlus className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="mt-3">
-                <span className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {totalLeadsCount}
-                </span>
-                {summary && summary.newLeadsThisMonth > 0 ? (
-                  <div className="flex items-center text-[10px] text-purple-600 dark:text-purple-400 font-semibold mt-1">
-                    <TrendingUp className="w-3 h-3 mr-1" />
-                    {summary.newLeadsThisMonth} new this month
-                  </div>
-                ) : summary && summary.totalLeads > 0 ? (
-                  <p className="text-[10px] text-purple-600 dark:text-purple-400 font-semibold mt-1">Prospective clients</p>
-                ) : (
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-1">No active leads</p>
-                )}
-              </div>
-            </Card>
+            />
           </>
         )}
       </div>
@@ -521,19 +456,19 @@ export const DashboardPage: React.FC = () => {
           <Card className="h-full flex flex-col justify-between">
             <div>
               {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 rounded-lg">
+                  <div className="p-2 bg-primary-muted text-primary rounded-lg">
                     <ListTodo className="w-4 h-4" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="text-sm font-bold text-slate-900 dark:text-white">Live Task Dashboard</h2>
-                      <span className="px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[11px] font-bold">
+                      <h2 className="text-sm font-bold text-foreground">Live Task Dashboard</h2>
+                      <span className="px-2 py-0.5 rounded-full bg-primary-muted border border-primary/20 text-primary text-[11px] font-bold">
                         {completedDailyCount}/{totalDailyCount} completed
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
                       Daily priorities & pending actions
                     </p>
                   </div>
@@ -543,8 +478,8 @@ export const DashboardPage: React.FC = () => {
                   size="sm"
                   variant="outline"
                   onClick={() => setIsPendingModalOpen(true)}
-                  leftIcon={<FileCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />}
-                  className="text-xs border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/50 font-semibold self-start sm:self-auto"
+                  leftIcon={<FileCheck className="w-3.5 h-3.5 text-primary" />}
+                  className="text-xs border-primary/20 text-primary hover:bg-primary-muted font-semibold self-start sm:self-auto"
                 >
                   See all pending GST & ITR {allPendingFilings.length > 0 ? `(${allPendingFilings.length})` : ""}
                 </Button>
@@ -552,13 +487,13 @@ export const DashboardPage: React.FC = () => {
 
               {/* Progress bar */}
               <div className="mt-3">
-                <div className="flex justify-between items-center text-[10px] text-slate-500 dark:text-slate-400 font-medium mb-1">
+                <div className="flex justify-between items-center text-[10px] text-muted-foreground font-medium mb-1">
                   <span>Daily Action Progress</span>
-                  <span className="font-bold text-slate-700 dark:text-slate-300">{dailyProgressPercent}% completed</span>
+                  <span className="font-bold text-foreground/80">{dailyProgressPercent}% completed</span>
                 </div>
-                <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-blue-600 to-emerald-500 h-1.5 rounded-full transition-all duration-500"
+                    className="bg-gradient-to-r from-primary to-emerald-500 h-1.5 rounded-full transition-all duration-500"
                     style={{ width: `${dailyProgressPercent}%` }}
                   />
                 </div>
@@ -570,8 +505,8 @@ export const DashboardPage: React.FC = () => {
                   <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-2.5">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
-                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">All Daily Priorities Completed!</h4>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
+                  <h4 className="text-xs font-bold text-foreground">All Daily Priorities Completed!</h4>
+                  <p className="text-[11px] text-muted-foreground mt-1 max-w-sm mx-auto">
                     0/0 daily actions pending. All returns, documents, and firm tasks are completely up to date.
                   </p>
                   <div className="mt-4 flex items-center justify-center gap-2">
@@ -580,7 +515,7 @@ export const DashboardPage: React.FC = () => {
                       variant="outline"
                       onClick={() => setIsPendingModalOpen(true)}
                       className="text-xs"
-                      leftIcon={<FileCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />}
+                      leftIcon={<FileCheck className="w-3.5 h-3.5 text-primary" />}
                     >
                       See all pending GST & ITR
                     </Button>
@@ -595,12 +530,12 @@ export const DashboardPage: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="divide-y divide-slate-100 dark:divide-slate-800 mt-2 max-h-[340px] overflow-y-auto pr-1">
+                <div className="divide-y divide-border mt-2 max-h-[340px] overflow-y-auto pr-1">
                   {priorityActionItems.map((item) => (
                     <div
                       key={item.id}
-                      className={`py-2.5 px-2 flex items-center justify-between gap-2.5 rounded-lg transition-smooth hover:bg-slate-50 dark:hover:bg-slate-800/60 ${
-                        item.isCompleted ? "opacity-60 bg-slate-50/50 dark:bg-slate-800/30" : ""
+                      className={`py-2.5 px-2 flex items-center justify-between gap-2.5 rounded-lg transition-smooth hover:bg-muted/60 ${
+                        item.isCompleted ? "opacity-60 bg-muted/40" : ""
                       }`}
                     >
                       <div className="flex items-start space-x-3 min-w-0 flex-1 pr-1">
@@ -608,13 +543,13 @@ export const DashboardPage: React.FC = () => {
                           <button
                             onClick={() => item.rawId && handleToggleTask(item.rawId, item.status || "TODO")}
                             disabled={isUpdatingTask}
-                            className="mt-0.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex-shrink-0"
+                            className="mt-0.5 text-muted-foreground hover:text-primary transition-colors flex-shrink-0"
                             title={item.isCompleted ? "Mark incomplete" : "Mark completed"}
                           >
                             {item.isCompleted ? (
                               <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                             ) : (
-                              <Circle className="w-4 h-4 text-slate-300 dark:text-slate-600 hover:text-blue-500" />
+                              <Circle className="w-4 h-4 text-muted-foreground dark:text-slate-600 hover:text-primary" />
                             )}
                           </button>
                         ) : (
@@ -623,13 +558,13 @@ export const DashboardPage: React.FC = () => {
 
                         <div className="min-w-0 flex-1">
                           <h4
-                            className={`text-xs font-bold text-slate-900 dark:text-white truncate ${
-                              item.isCompleted ? "line-through text-slate-500 dark:text-slate-400" : ""
+                            className={`text-xs font-bold text-foreground truncate ${
+                              item.isCompleted ? "line-through text-muted-foreground" : ""
                             }`}
                           >
                             {item.title}
                           </h4>
-                          <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                          <p className="text-[10px] text-muted-foreground truncate">
                             {item.clientSubtitle}
                           </p>
                         </div>
@@ -650,7 +585,7 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* Footer Summary */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+            <div className="pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
               <span>
                 {urgentCount > 0 ? (
                   <span className="text-amber-600 dark:text-amber-400 font-medium">
@@ -662,7 +597,7 @@ export const DashboardPage: React.FC = () => {
               </span>
               <button
                 onClick={() => navigate("/tasks")}
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold hover:underline"
+                className="text-primary hover:text-primary font-semibold hover:underline"
               >
                 Go to Task Kanban →
               </button>
@@ -676,19 +611,19 @@ export const DashboardPage: React.FC = () => {
           <Card className="h-full flex flex-col justify-between">
             <div>
               {/* Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-between pb-3 border-b border-border">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-lg">
+                  <div className="p-2 bg-primary-muted text-primary rounded-lg">
                     <BarChart3 className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Weekly Activity</h3>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Tasks & filings this week</p>
+                    <h3 className="text-sm font-bold text-foreground">Weekly Activity</h3>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">Tasks & filings this week</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-1.5">
-                  <span className="px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[10px] font-bold">
+                  <span className="px-2 py-0.5 rounded-full bg-primary-muted border border-primary/20 text-primary text-[10px] font-bold">
                     {weeklyFilingsTotal} Filings
                   </span>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
@@ -701,11 +636,11 @@ export const DashboardPage: React.FC = () => {
               <div className="relative pt-4 pb-1">
                 {/* Dynamic Tooltip on Hover */}
                 {hoveredDayIndex !== null && weeklyActivity[hoveredDayIndex] && (
-                  <div className="absolute top-0 right-0 bg-slate-900 dark:bg-slate-800 text-white text-[10px] px-2.5 py-1 rounded-md shadow-md z-10 animate-in fade-in duration-150 pointer-events-none flex items-center gap-2 font-medium border border-slate-700">
-                    <span className="text-slate-300">
+                  <div className="absolute top-0 right-0 bg-slate-900 dark:bg-slate-800 text-white text-[10px] px-2.5 py-1 rounded-md shadow-md z-10 animate-in fade-in duration-150 pointer-events-none flex items-center gap-2 font-medium border border-border">
+                    <span className="text-muted-foreground">
                       {weeklyActivity[hoveredDayIndex].day} ({weeklyActivity[hoveredDayIndex].date}):
                     </span>
-                    <span className="text-blue-400 font-bold">
+                    <span className="text-primary font-bold">
                       {weeklyActivity[hoveredDayIndex].filings} Filings
                     </span>
                     <span className="text-emerald-400 font-bold">
@@ -792,7 +727,7 @@ export const DashboardPage: React.FC = () => {
                           textAnchor="middle"
                           className={
                             isToday
-                              ? "fill-blue-600 dark:fill-blue-400 font-bold text-[10px]"
+                              ? "fill-primary font-bold text-[10px]"
                               : isHovered
                               ? "fill-slate-900 dark:fill-white font-bold text-[10px]"
                               : "fill-slate-400 text-[10px] font-medium"
@@ -807,9 +742,9 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               {/* Chart Legend */}
-              <div className="flex items-center justify-center gap-5 pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400">
+              <div className="flex items-center justify-center gap-5 pt-2 border-t border-border text-[11px] text-muted-foreground">
                 <div className="flex items-center gap-1.5 font-medium">
-                  <span className="w-2.5 h-2.5 rounded-xs bg-blue-500 inline-block" />
+                  <span className="w-2.5 h-2.5 rounded-xs bg-primary inline-block" />
                   <span>GST & ITR Filings</span>
                 </div>
                 <div className="flex items-center gap-1.5 font-medium">
@@ -819,7 +754,7 @@ export const DashboardPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-2 text-[10px] text-slate-400 dark:text-slate-500 text-center">
+            <div className="pt-2 text-[10px] text-muted-foreground text-center">
               Real-time daily activity tracking for the past 7 days
             </div>
           </Card>
@@ -831,18 +766,18 @@ export const DashboardPage: React.FC = () => {
         {/* Left Column (2 cols): Compliance Health Progress */}
         <div className="lg:col-span-2 min-w-0">
           <Card>
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4">Firm Compliance Health Overview</h3>
+            <h3 className="text-sm font-bold text-foreground mb-4">Firm Compliance Health Overview</h3>
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
-                  <span className="text-slate-700 dark:text-slate-300">ITR Filing Progress (AY 2026-27)</span>
-                  <span className="text-blue-600 dark:text-blue-400 font-bold">
+                  <span className="text-foreground/80">ITR Filing Progress (AY 2026-27)</span>
+                  <span className="text-primary font-bold">
                     {itrTotal > 0 ? `${itrPercentage}%` : "100% (No pending)"}
                   </span>
                 </div>
-                <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
                   <div
-                    className="bg-blue-600 h-2.5 rounded-full transition-all duration-500"
+                    className="bg-primary h-2.5 rounded-full transition-all duration-500"
                     style={{ width: `${itrTotal > 0 ? itrPercentage : 100}%` }}
                   />
                 </div>
@@ -850,12 +785,12 @@ export const DashboardPage: React.FC = () => {
 
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
-                  <span className="text-slate-700 dark:text-slate-300">GST Monthly Compliance</span>
+                  <span className="text-foreground/80">GST Monthly Compliance</span>
                   <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                     {gstTotal > 0 ? `${gstPercentage}%` : "100% (No pending)"}
                   </span>
                 </div>
-                <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
                   <div
                     className="bg-emerald-500 h-2.5 rounded-full transition-all duration-500"
                     style={{ width: `${gstTotal > 0 ? gstPercentage : 100}%` }}
@@ -865,12 +800,12 @@ export const DashboardPage: React.FC = () => {
 
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
-                  <span className="text-slate-700 dark:text-slate-300">Task Completion Rate</span>
+                  <span className="text-foreground/80">Task Completion Rate</span>
                   <span className="text-amber-600 dark:text-amber-400 font-bold">
                     {tasksTotal > 0 ? `${tasksPercentage}%` : "100% (No pending)"}
                   </span>
                 </div>
-                <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
                   <div
                     className="bg-amber-500 h-2.5 rounded-full transition-all duration-500"
                     style={{ width: `${tasksTotal > 0 ? tasksPercentage : 100}%` }}
@@ -884,12 +819,12 @@ export const DashboardPage: React.FC = () => {
         {/* Right Column (1 col): AI Insights & Statutory Deadlines */}
         <div className="space-y-6 min-w-0">
           {/* AI Practice Insight Card */}
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-850 border-blue-200 dark:border-slate-800">
-            <div className="flex items-center space-x-2 text-blue-700 dark:text-blue-300 mb-2">
+          <Card className="bg-primary-muted/40 border-primary/20">
+            <div className="flex items-center space-x-2 text-primary mb-2">
               <Bot className="w-5 h-5" />
               <h3 className="text-xs font-bold uppercase tracking-wider">AI Practice Insights</h3>
             </div>
-            <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+            <p className="text-xs text-foreground/80 leading-relaxed font-medium">
               {urgentCount > 0
                 ? `${urgentCount} compliance and operational item${
                     urgentCount > 1 ? "s" : ""
@@ -900,7 +835,7 @@ export const DashboardPage: React.FC = () => {
               <Button
                 size="sm"
                 onClick={() => navigate("/ai-assistant")}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                className="w-full bg-primary hover:bg-primary/90 text-white font-semibold"
               >
                 Ask TaxFlow AI
               </Button>
@@ -909,15 +844,15 @@ export const DashboardPage: React.FC = () => {
 
           {/* Upcoming Statutory Deadlines */}
           <Card>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-3">
-              <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+            <div className="flex items-center justify-between pb-3 border-b border-border mb-3">
+              <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">
                 Upcoming Statutory Deadlines
               </h3>
-              <Calendar className="w-4 h-4 text-slate-400" />
+              <Calendar className="w-4 h-4 text-muted-foreground" />
             </div>
 
             {upcomingDeadlines.length === 0 ? (
-              <div className="py-4 text-center text-xs text-slate-500 dark:text-slate-400">
+              <div className="py-4 text-center text-xs text-muted-foreground">
                 No upcoming statutory deadlines scheduled.
               </div>
             ) : (
@@ -925,8 +860,8 @@ export const DashboardPage: React.FC = () => {
                 {upcomingDeadlines.map((item, idx) => (
                   <div key={idx} className="flex items-center justify-between text-xs">
                     <div>
-                      <span className="font-semibold text-slate-900 dark:text-white">{item.title}</span>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400">{item.client}</p>
+                      <span className="font-semibold text-foreground">{item.title}</span>
+                      <p className="text-[10px] text-muted-foreground">{item.client}</p>
                     </div>
                     <span className={`px-2 py-0.5 rounded font-bold text-[10px] ${item.badgeColor}`}>
                       {item.due}
@@ -949,13 +884,13 @@ export const DashboardPage: React.FC = () => {
         <div className="space-y-4">
           {/* Header Description & Search Filter */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
+            <div className="flex items-center gap-1.5 p-1 bg-muted rounded-lg">
               <button
                 onClick={() => setPendingFilterTab("ALL")}
                 className={`px-3 py-1 text-xs font-semibold rounded-md transition-smooth ${
                   pendingFilterTab === "ALL"
-                    ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    ? "bg-card text-foreground shadow-2xs"
+                    : "text-muted-foreground hover:text-foreground dark:hover:text-white"
                 }`}
               >
                 All Pending ({allPendingFilings.length})
@@ -964,8 +899,8 @@ export const DashboardPage: React.FC = () => {
                 onClick={() => setPendingFilterTab("GST")}
                 className={`px-3 py-1 text-xs font-semibold rounded-md transition-smooth ${
                   pendingFilterTab === "GST"
-                    ? "bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 shadow-2xs"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    ? "bg-card text-primary shadow-2xs"
+                    : "text-muted-foreground hover:text-foreground dark:hover:text-white"
                 }`}
               >
                 GST Returns ({pendingGstCount})
@@ -974,8 +909,8 @@ export const DashboardPage: React.FC = () => {
                 onClick={() => setPendingFilterTab("ITR")}
                 className={`px-3 py-1 text-xs font-semibold rounded-md transition-smooth ${
                   pendingFilterTab === "ITR"
-                    ? "bg-white dark:bg-slate-700 text-amber-700 dark:text-amber-300 shadow-2xs"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    ? "bg-card text-amber-700 dark:text-amber-300 shadow-2xs"
+                    : "text-muted-foreground hover:text-foreground dark:hover:text-white"
                 }`}
               >
                 ITR Filings ({pendingItrCount})
@@ -983,26 +918,26 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             <div className="relative flex-1 sm:max-w-xs">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
+              <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search client or return..."
                 value={pendingSearch}
                 onChange={(e) => setPendingSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-1 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-8 pr-3 py-1 text-xs bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
           </div>
 
           {/* Filings List */}
-          <div className="max-h-[60vh] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900/50">
+          <div className="max-h-[60vh] overflow-y-auto divide-y divide-border border border-border rounded-xl bg-muted/30">
             {filteredPendingFilings.length === 0 ? (
               <div className="py-12 text-center">
                 <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-2">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
-                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">No Pending Filings Found</h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
+                <h4 className="text-xs font-bold text-foreground">No Pending Filings Found</h4>
+                <p className="text-[11px] text-muted-foreground mt-1 max-w-sm mx-auto">
                   {allPendingFilings.length === 0
                     ? "All client GST returns and ITR filings have been processed and completed."
                     : "No pending returns match your search filter."}
@@ -1012,7 +947,7 @@ export const DashboardPage: React.FC = () => {
               filteredPendingFilings.map((item) => (
                 <div
                   key={item.id}
-                  className="p-3 bg-white dark:bg-slate-850 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-smooth"
+                  className="p-3 bg-card flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-muted transition-smooth"
                 >
                   <div className="flex items-start gap-3 min-w-0 flex-1">
                     <div
@@ -1027,7 +962,7 @@ export const DashboardPage: React.FC = () => {
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{item.title}</h4>
+                        <h4 className="text-xs font-bold text-foreground truncate">{item.title}</h4>
                         <span
                           className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
                             item.category === "GST"
@@ -1038,9 +973,9 @@ export const DashboardPage: React.FC = () => {
                           {item.period}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 font-medium truncate">{item.clientName}</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5 font-medium truncate">{item.clientName}</p>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400">Due: {item.dueDate}</span>
+                        <span className="text-[10px] text-muted-foreground">Due: {item.dueDate}</span>
                         {item.isOverdue && (
                           <span className="text-[10px] text-rose-600 dark:text-rose-400 font-bold">• OVERDUE</span>
                         )}
@@ -1066,7 +1001,7 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {/* Modal Footer */}
-          <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+          <div className="flex items-center justify-between pt-3 border-t border-border text-xs text-muted-foreground">
             <span>
               Showing {filteredPendingFilings.length} of {allPendingFilings.length} pending filings
             </span>

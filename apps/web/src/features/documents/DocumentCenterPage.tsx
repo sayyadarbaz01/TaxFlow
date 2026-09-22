@@ -35,6 +35,7 @@ import { Input } from "../../components/ui/Input";
 import { Modal } from "../../components/ui/Modal";
 import { ClientDocumentRecord, DocType } from "@ca-saas/shared-types";
 import { useDebounce } from "../../lib/useDebounce";
+import { PageHeader } from "../../components/ui/PageHeader";
 
 export const DocumentCenterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -177,12 +178,12 @@ export const DocumentCenterPage: React.FC = () => {
       header: "Document Name",
       cell: (row) => (
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+          <div className="p-2 bg-blue-50 text-primary rounded-lg">
             <File className="w-4 h-4" />
           </div>
           <div>
-            <p className="font-bold text-slate-900 text-xs">{row.fileName}</p>
-            <span className="text-[10px] text-slate-500 font-medium">Client: {row.clientName}</span>
+            <p className="font-bold text-foreground text-xs">{row.fileName}</p>
+            <span className="text-[10px] text-muted-foreground font-medium">Client: {row.clientName}</span>
           </div>
         </div>
       )
@@ -218,7 +219,7 @@ export const DocumentCenterPage: React.FC = () => {
           }`}>
             {row.source}
           </span>
-          <p className="text-[10px] text-slate-400 mt-0.5">{row.uploadedBy}</p>
+          <p className="text-[10px] text-muted-foreground mt-0.5">{row.uploadedBy}</p>
         </div>
       )
     },
@@ -236,7 +237,7 @@ export const DocumentCenterPage: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             title="View Document"
-            className="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-smooth"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-blue-50 transition-smooth"
           >
             <Eye className="w-4 h-4" />
           </a>
@@ -246,7 +247,7 @@ export const DocumentCenterPage: React.FC = () => {
             href={getDocActionUrl(row.id, "download")}
             download
             title="Download Document"
-            className="p-1.5 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 transition-smooth"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50 transition-smooth"
           >
             <Download className="w-4 h-4" />
           </a>
@@ -255,7 +256,7 @@ export const DocumentCenterPage: React.FC = () => {
           <button
             onClick={() => setDocToDelete(row)}
             title="Delete Document"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-smooth"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-600 hover:bg-rose-50 transition-smooth"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -274,68 +275,61 @@ export const DocumentCenterPage: React.FC = () => {
         </div>
       )}
 
-      {/* Page Header & View Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Client Document Vault & Checklist
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Secure, client-specific document management with row-level ownership and WhatsApp collection.
-          </p>
-        </div>
+      <PageHeader
+        title="Documents"
+        description="Client document vault and checklists with row-level ownership and WhatsApp collection."
+        actions={
+          <div className="flex items-center bg-muted p-1 rounded-xl text-xs font-semibold text-muted-foreground">
+            <button
+              onClick={() => setActiveView("client")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-smooth ${
+                activeView === "client" ? "bg-card text-primary shadow-xs font-bold" : "hover:text-foreground dark:hover:text-white"
+              }`}
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>By Selected Client</span>
+            </button>
 
-        {/* View Mode Switcher */}
-        <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300">
-          <button
-            onClick={() => setActiveView("client")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-smooth ${
-              activeView === "client" ? "bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 shadow-xs font-bold" : "hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            <Users className="w-3.5 h-3.5" />
-            <span>By Selected Client</span>
-          </button>
-
-          <button
-            onClick={() => setActiveView("grouped")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-smooth ${
-              activeView === "grouped" ? "bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 shadow-xs font-bold" : "hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Grouped Overview (All Clients)</span>
-          </button>
-        </div>
-      </div>
+            <button
+              onClick={() => setActiveView("grouped")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-smooth ${
+                activeView === "grouped" ? "bg-card text-primary shadow-xs font-bold" : "hover:text-foreground dark:hover:text-white"
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Grouped Overview (All Clients)</span>
+            </button>
+          </div>
+        }
+      />
 
       {/* Step 1: Search & Select Client by Name */}
-      <Card className="bg-gradient-to-r from-blue-50/50 to-slate-50 dark:from-blue-950/30 dark:to-slate-900 border-blue-100 dark:border-blue-900 p-4">
+      <Card className="bg-primary-muted/40 border-primary/20 p-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
               Step 1: Select Client / User
             </span>
             <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
+              <Search className="w-4 h-4 absolute left-3 top-2.5 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search Client by Name, PAN, or Phone..."
                 value={clientSearch}
                 onChange={(e) => setClientSearch(e.target.value)}
-                className="w-full md:w-80 pl-9 pr-4 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full md:w-80 pl-9 pr-4 py-2 text-xs rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
           </div>
 
           <div className="flex-1 md:max-w-md">
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-xs font-medium text-foreground/80 mb-1">
               Active Client Profile Context:
             </label>
             <select
               value={selectedClientId}
               onChange={(e) => handleSelectClient(e.target.value)}
-              className="w-full text-xs font-semibold p-2 rounded-lg border border-blue-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs focus:ring-2 focus:ring-blue-500"
+              className="w-full text-xs font-semibold p-2 rounded-lg border border-blue-300 dark:border-border bg-card text-foreground shadow-xs focus:ring-2 focus:ring-ring"
             >
               <option value="">-- Choose Client --</option>
               {clientsData?.data?.map((c: any) => (
@@ -351,18 +345,18 @@ export const DocumentCenterPage: React.FC = () => {
         {selectedClient && (
           <div className="mt-4 pt-3 border-t border-blue-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+              <div className="w-9 h-9 rounded-lg bg-primary text-white font-bold flex items-center justify-center text-sm shadow-xs">
                 {selectedClient.name.charAt(0)}
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-slate-900 dark:text-white text-sm">{selectedClient.name}</h3>
-                  <span className="font-mono bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300 text-[10px] font-semibold px-1.5 py-0.2 rounded">
+                  <h3 className="font-bold text-foreground text-sm">{selectedClient.name}</h3>
+                  <span className="font-mono bg-primary-muted dark:bg-blue-900/60 text-blue-800 dark:text-blue-300 text-[10px] font-semibold px-1.5 py-0.2 rounded">
                     {selectedClient.pan}
                   </span>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400">({selectedClient.entityType})</span>
+                  <span className="text-[11px] text-muted-foreground">({selectedClient.entityType})</span>
                 </div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                <p className="text-[11px] text-muted-foreground mt-0.5">
                   Phone: {selectedClient.contactPhone} • Email: {selectedClient.contactEmail || "None"}
                 </p>
               </div>
@@ -373,7 +367,7 @@ export const DocumentCenterPage: React.FC = () => {
                 size="sm"
                 variant="outline"
                 className="text-xs"
-                rightIcon={<ExternalLink className="w-3.5 h-3.5 text-slate-400" />}
+                rightIcon={<ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />}
                 onClick={() => navigate(`/clients/${selectedClient.id}`)}
               >
                 Open Full Client Profile
@@ -391,12 +385,12 @@ export const DocumentCenterPage: React.FC = () => {
             {/* Upload Document Card */}
             <Card>
               <div className="flex items-center gap-2 mb-3">
-                <Upload className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Upload Document</h3>
+                <Upload className="w-4 h-4 text-primary" />
+                <h3 className="text-sm font-bold text-foreground">Upload Document</h3>
               </div>
 
               {selectedClient ? (
-                <p className="text-[11px] text-blue-800 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 p-2 rounded-lg mb-3 border border-blue-100 dark:border-blue-900">
+                <p className="text-[11px] text-blue-800 dark:text-blue-300 bg-primary-muted p-2 rounded-lg mb-3 border border-blue-100 dark:border-blue-900">
                   Adding document linked strictly to: <strong>{selectedClient.name}</strong>
                 </p>
               ) : (
@@ -414,7 +408,7 @@ export const DocumentCenterPage: React.FC = () => {
 
               <form onSubmit={handleUpload} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-xs font-medium text-foreground/80 mb-1">
                     Document Name / Title
                   </label>
                   <Input
@@ -426,13 +420,13 @@ export const DocumentCenterPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-xs font-medium text-foreground/80 mb-1">
                     Document Category
                   </label>
                   <select
                     value={docType}
                     onChange={(e) => setDocType(e.target.value as any)}
-                    className="w-full text-xs border border-slate-300 dark:border-slate-700 rounded-lg p-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-1 focus:ring-blue-500 font-medium"
+                    className="w-full text-xs border border-border rounded-lg p-2 bg-card text-foreground focus:ring-1 focus:ring-ring font-medium"
                   >
                     <option value="PAN">PAN Card</option>
                     <option value="BANK_STATEMENT">Bank Statement</option>
@@ -442,20 +436,20 @@ export const DocumentCenterPage: React.FC = () => {
                   </select>
                 </div>
 
-                <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-5 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-smooth">
-                  <Upload className="w-6 h-6 text-slate-400 mx-auto mb-1.5" />
+                <div className="border-2 border-dashed border-border rounded-xl p-5 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-smooth">
+                  <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-1.5" />
                   <input
                     type="file"
                     onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                    className="text-xs text-slate-500 dark:text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 dark:file:bg-blue-950/50 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100"
+                    className="text-xs text-muted-foreground file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 dark:file:bg-blue-950/50 file:text-primary dark:file:text-blue-300 hover:file:bg-blue-100"
                     required
                   />
                   {selectedFile && (
-                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-2 truncate">
+                    <p className="text-xs font-bold text-foreground mt-2 truncate">
                       Selected: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(0)} KB)
                     </p>
                   )}
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">PDF, JPG, PNG, Excel up to 25MB</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">PDF, JPG, PNG, Excel up to 25MB</p>
                 </div>
 
                 <Button
@@ -469,8 +463,8 @@ export const DocumentCenterPage: React.FC = () => {
               </form>
 
               {/* 1-Click WhatsApp Document Request */}
-              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white mb-2">
+              <div className="mt-6 pt-4 border-t border-border">
+                <h4 className="text-xs font-bold text-foreground mb-2">
                   1-Click WhatsApp Document Request
                 </h4>
                 <div className="space-y-1.5">
@@ -500,8 +494,8 @@ export const DocumentCenterPage: React.FC = () => {
             {checklistData && (
               <Card>
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">Compliance Checklist</h3>
-                  <span className="text-xs font-bold bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full">
+                  <h3 className="text-sm font-bold text-foreground">Compliance Checklist</h3>
+                  <span className="text-xs font-bold bg-primary-muted dark:bg-blue-900/60 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full">
                     {checklistData.completedCount} / {checklistData.totalRequired}
                   </span>
                 </div>
@@ -510,7 +504,7 @@ export const DocumentCenterPage: React.FC = () => {
                   {checklistData.checklist?.map((item: any) => (
                     <div
                       key={item.docType}
-                      className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40"
+                      className="p-2.5 rounded-lg border border-border flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40"
                     >
                       <div className="flex items-center gap-2">
                         {item.isCompleted ? (
@@ -518,7 +512,7 @@ export const DocumentCenterPage: React.FC = () => {
                         ) : (
                           <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
                         )}
-                        <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        <span className="font-semibold text-foreground">
                           {item.docType.replace(/_/g, " ")}
                         </span>
                       </div>
@@ -546,10 +540,10 @@ export const DocumentCenterPage: React.FC = () => {
           {/* Right Column: Documents Table for Selected Client */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+              <h3 className="text-sm font-bold text-foreground">
                 Documents Linked to {selectedClient?.name || "Client"}
               </h3>
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              <span className="text-xs text-muted-foreground font-medium">
                 {clientDocsData?.data?.length || 0} Files Stored
               </span>
             </div>
@@ -568,16 +562,16 @@ export const DocumentCenterPage: React.FC = () => {
       {activeView === "grouped" && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+            <h3 className="text-sm font-bold text-foreground">
               Firm-wide Document Repository (Grouped by Client)
             </h3>
-            <span className="text-xs text-slate-500 dark:text-slate-400">
+            <span className="text-xs text-muted-foreground">
               {groupedData?.totalClients || 0} Active Clients
             </span>
           </div>
 
           {isGroupedLoading ? (
-            <div className="p-12 text-center text-xs text-slate-500 dark:text-slate-400 font-medium animate-pulse">
+            <div className="p-12 text-center text-xs text-muted-foreground font-medium animate-pulse">
               Loading Grouped Document Repository...
             </div>
           ) : (
@@ -585,14 +579,14 @@ export const DocumentCenterPage: React.FC = () => {
               {groupedData?.data?.map((group: any) => {
                 const isExpanded = !!expandedClients[group.clientId];
                 return (
-                  <Card key={group.clientId} className="p-4 hover:border-blue-200 dark:hover:border-slate-700 transition-smooth">
+                  <Card key={group.clientId} className="p-4 hover:border-blue-200 dark:hover:border-border transition-smooth">
                     {/* Header Row */}
                     <div
                       className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer"
                       onClick={() => toggleGroupExpand(group.clientId)}
                     >
                       <div className="flex items-center gap-3">
-                        <button className="p-1 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                        <button className="p-1 rounded text-muted-foreground hover:text-slate-600 dark:hover:text-slate-200">
                           {isExpanded ? (
                             <ChevronDown className="w-4 h-4" />
                           ) : (
@@ -601,13 +595,13 @@ export const DocumentCenterPage: React.FC = () => {
                         </button>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="text-sm font-bold text-slate-900 dark:text-white">{group.clientName}</h4>
-                            <span className="font-mono text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1.5 py-0.2 rounded font-medium">
+                            <h4 className="text-sm font-bold text-foreground">{group.clientName}</h4>
+                            <span className="font-mono text-[11px] bg-muted text-foreground/80 px-1.5 py-0.2 rounded font-medium">
                               {group.pan}
                             </span>
-                            <span className="text-[10px] text-slate-400">({group.entityType})</span>
+                            <span className="text-[10px] text-muted-foreground">({group.entityType})</span>
                           </div>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                          <p className="text-[11px] text-muted-foreground mt-0.5">
                             Checklist: {group.checklistCompleted} / {group.checklistTotal} Verified • Latest:{" "}
                             {group.latestUploadDate
                               ? new Date(group.latestUploadDate).toLocaleDateString()
@@ -617,7 +611,7 @@ export const DocumentCenterPage: React.FC = () => {
                       </div>
 
                       <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                        <span className="font-bold text-xs bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 px-2.5 py-1 rounded-full">
+                        <span className="font-bold text-xs bg-primary-muted text-primary border border-primary/20 px-2.5 py-1 rounded-full">
                           {group.totalDocuments} Documents
                         </span>
                         <Button
@@ -647,7 +641,7 @@ export const DocumentCenterPage: React.FC = () => {
                     {isExpanded && (
                       <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
                         {group.documents?.length === 0 ? (
-                          <p className="text-xs text-slate-400 italic py-2">
+                          <p className="text-xs text-muted-foreground italic py-2">
                             No documents uploaded for this client yet.
                           </p>
                         ) : (
@@ -658,10 +652,10 @@ export const DocumentCenterPage: React.FC = () => {
                                 className="p-2.5 rounded-lg border border-slate-200 bg-slate-50/50 flex items-center justify-between hover:bg-white transition-smooth"
                               >
                                 <div className="flex items-center gap-2 truncate pr-2">
-                                  <File className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                                  <File className="w-3.5 h-3.5 text-primary shrink-0" />
                                   <div className="truncate">
-                                    <p className="font-bold text-slate-900 truncate">{doc.fileName}</p>
-                                    <span className="text-[10px] text-slate-400">
+                                    <p className="font-bold text-foreground truncate">{doc.fileName}</p>
+                                    <span className="text-[10px] text-muted-foreground">
                                       {doc.docType.replace(/_/g, " ")} •{" "}
                                       {new Date(doc.uploadedAt).toLocaleDateString()}
                                     </span>
@@ -673,7 +667,7 @@ export const DocumentCenterPage: React.FC = () => {
                                     href={getDocActionUrl(doc.id, "view")}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="p-1 rounded text-slate-400 hover:text-blue-600"
+                                    className="p-1 rounded text-muted-foreground hover:text-primary"
                                     title="View"
                                   >
                                     <Eye className="w-3.5 h-3.5" />
@@ -681,7 +675,7 @@ export const DocumentCenterPage: React.FC = () => {
                                   <a
                                     href={getDocActionUrl(doc.id, "download")}
                                     download
-                                    className="p-1 rounded text-slate-400 hover:text-emerald-600"
+                                    className="p-1 rounded text-muted-foreground hover:text-emerald-600"
                                     title="Download"
                                   >
                                     <Download className="w-3.5 h-3.5" />

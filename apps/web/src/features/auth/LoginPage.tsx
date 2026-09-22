@@ -6,17 +6,12 @@ import { ThemeToggle } from "../../components/ui/ThemeToggle";
 import {
   ArrowLeft,
   CheckCircle2,
-  ShieldCheck,
   User,
   Lock,
   Mail,
   Eye,
   EyeOff,
   AlertCircle,
-  Zap,
-  MessageSquare,
-  FileCheck,
-  Sparkles
 } from "lucide-react";
 
 export interface LoginPageProps {
@@ -25,6 +20,9 @@ export interface LoginPageProps {
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const fieldInputClass =
+  "w-full h-9 bg-card border border-border rounded-lg text-xs text-foreground placeholder:text-muted-foreground transition-smooth focus-ring focus-visible:border-primary/40";
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMode }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -145,7 +143,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
       await signup({
         name: trimmedName,
         email: trimmedEmail,
-        password: signupPassword
+        password: signupPassword,
       }).unwrap();
 
       // Clear signup sensitive inputs
@@ -173,77 +171,79 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
     }
   };
 
+  const tabInactiveClass =
+    "text-muted-foreground hover:text-foreground transition-smooth";
+  const tabActiveClass = "bg-primary text-primary-foreground shadow-xs";
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-background text-foreground flex flex-col justify-between selection:bg-primary/20 selection:text-foreground">
       {/* Top Header Bar */}
-      <header className="max-w-7xl w-full mx-auto p-4 sm:p-6 flex items-center justify-between">
+      <header className="max-w-7xl w-full mx-auto px-4 py-4 sm:px-6 sm:py-6 flex items-center justify-between">
         <button
+          type="button"
           onClick={() => navigate("/")}
-          className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-smooth"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-primary transition-smooth focus-ring rounded-md"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Home</span>
         </button>
 
         {/* Brand Logo Header & Theme Toggle */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-4">
           <ThemeToggle size="sm" />
-          <div
-            className="flex items-center space-x-3 cursor-pointer group"
+          <button
+            type="button"
+            className="flex items-center gap-3 text-left group focus-ring rounded-lg"
             onClick={() => navigate("/")}
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm group-hover:from-blue-500 group-hover:to-indigo-500 transition-smooth">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shadow-xs group-hover:bg-primary/90 transition-smooth">
               TF
             </div>
             <div>
-              <span className="text-sm font-bold text-slate-900 dark:text-white tracking-tight leading-none block">
+              <span className="text-sm font-bold text-foreground tracking-tight leading-none block">
                 TaxFlow
               </span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium block">
-                Tax & Audit Suite
+              <span className="text-2xs text-muted-foreground font-medium block mt-0.5">
+                Practice OS
               </span>
             </div>
-          </div>
+          </button>
         </div>
       </header>
 
       {/* Main Authentication Card Container */}
-      <div className="w-full max-w-md mx-auto my-6 px-4">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-7 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xl space-y-6">
+      <div className="w-full max-w-md mx-auto flex-1 flex flex-col justify-center px-4 py-6">
+        <div className="surface-card shadow-elevated p-6 sm:p-8 space-y-6">
           {/* Segmented Mode Switcher Tabs */}
-          <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-bold">
+          <div className="flex p-1 bg-muted rounded-xl text-xs font-bold" role="tablist">
             <button
               type="button"
+              role="tab"
+              aria-selected={!isSignUp}
               id="login-tab-btn"
               onClick={() => toggleMode(false)}
-              className={`flex-1 py-2.5 rounded-lg text-center transition-smooth ${
-                !isSignUp
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
+              className={`flex-1 py-2 rounded-lg text-center ${!isSignUp ? tabActiveClass : tabInactiveClass}`}
             >
               Login
             </button>
             <button
               type="button"
+              role="tab"
+              aria-selected={isSignUp}
               id="signup-tab-btn"
               onClick={() => toggleMode(true)}
-              className={`flex-1 py-2.5 rounded-lg text-center transition-smooth ${
-                isSignUp
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
+              className={`flex-1 py-2 rounded-lg text-center ${isSignUp ? tabActiveClass : tabInactiveClass}`}
             >
               Sign Up
             </button>
           </div>
 
           {/* Card Header Titles */}
-          <div className="text-center space-y-1">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+          <div className="text-center space-y-2">
+            <h2 className="text-xl font-bold text-foreground tracking-tight">
               {isSignUp ? "Create Your Account" : "Welcome Back"}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-muted-foreground">
               {isSignUp
                 ? "Enter your details to register and get started"
                 : "Enter your credentials to access your firm dashboard"}
@@ -252,8 +252,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
 
           {/* Error Alert Banner */}
           {errorMsg && (
-            <div className="p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 rounded-xl text-xs font-medium space-y-2">
-              <div className="flex items-start space-x-2">
+            <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 rounded-xl text-xs font-medium space-y-2">
+              <div className="flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
                 <span>{errorMsg}</span>
               </div>
@@ -264,7 +264,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
                     setEmail(signupEmail.trim());
                     toggleMode(false);
                   }}
-                  className="text-[11px] text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-bold underline block pl-6"
+                  className="text-[11px] text-primary hover:text-primary/80 font-bold underline block pl-6 transition-smooth"
                 >
                   Click here to Login with this email →
                 </button>
@@ -274,7 +274,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
 
           {/* Success Alert Banner */}
           {successMsg && (
-            <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 rounded-xl text-xs font-medium flex items-center space-x-2.5">
+            <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 rounded-xl text-xs font-medium flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
               <span>{successMsg}</span>
             </div>
@@ -283,12 +283,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
           {/* LOGIN FORM */}
           {!isSignUp ? (
             <form onSubmit={handleLoginSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <div className="space-y-2">
+                <label
+                  htmlFor="login-email-input"
+                  className="block text-xs font-semibold text-foreground/80"
+                >
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                  <Mail className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type="email"
                     id="login-email-input"
@@ -297,17 +300,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@taxflow.com"
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg py-2.5 pl-9 pr-3 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-smooth"
+                    className={`${fieldInputClass} pl-9 pr-3`}
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <div className="space-y-2">
+                <label
+                  htmlFor="login-password-input"
+                  className="block text-xs font-semibold text-foreground/80"
+                >
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                  <Lock className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type={showLoginPassword ? "text" : "password"}
                     id="login-password-input"
@@ -315,12 +321,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg py-2.5 pl-9 pr-10 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-smooth"
+                    className={`${fieldInputClass} pl-9 pr-10`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowLoginPassword(!showLoginPassword)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-0.5 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 transition-smooth focus-ring rounded"
                     aria-label={showLoginPassword ? "Hide password" : "Show password"}
                   >
                     {showLoginPassword ? (
@@ -335,18 +341,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
               <Button
                 type="submit"
                 id="login-submit-btn"
-                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 text-xs rounded-lg shadow-sm"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-9 text-xs rounded-lg shadow-xs"
                 isLoading={isLoginLoading}
               >
                 Login
               </Button>
 
-              <p className="text-center text-xs text-slate-500 dark:text-slate-400 pt-2">
+              <p className="text-center text-xs text-muted-foreground pt-2">
                 Don't have an account yet?{" "}
                 <button
                   type="button"
                   onClick={() => toggleMode(true)}
-                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold underline ml-1"
+                  className="text-primary hover:text-primary/80 font-semibold underline ml-1 transition-smooth"
                 >
                   Sign Up
                 </button>
@@ -355,12 +361,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
           ) : (
             /* SIGN UP FORM */
             <form onSubmit={handleSignupSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <div className="space-y-2">
+                <label
+                  htmlFor="signup-name-input"
+                  className="block text-xs font-semibold text-foreground/80"
+                >
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                  <User className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type="text"
                     id="signup-name-input"
@@ -369,17 +378,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="CA Rajesh Sharma"
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg py-2.5 pl-9 pr-3 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-smooth"
+                    className={`${fieldInputClass} pl-9 pr-3`}
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <div className="space-y-2">
+                <label
+                  htmlFor="signup-email-input"
+                  className="block text-xs font-semibold text-foreground/80"
+                >
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                  <Mail className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type="email"
                     id="signup-email-input"
@@ -387,17 +399,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
                     value={signupEmail}
                     onChange={(e) => setSignupEmail(e.target.value)}
                     placeholder="rajesh@taxfirm.in"
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg py-2.5 pl-9 pr-3 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-smooth"
+                    className={`${fieldInputClass} pl-9 pr-3`}
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <div className="space-y-2">
+                <label
+                  htmlFor="signup-password-input"
+                  className="block text-xs font-semibold text-foreground/80"
+                >
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                  <Lock className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type={showSignupPassword ? "text" : "password"}
                     id="signup-password-input"
@@ -405,12 +420,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
                     value={signupPassword}
                     onChange={(e) => setSignupPassword(e.target.value)}
                     placeholder="Min 6 characters"
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg py-2.5 pl-9 pr-10 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-smooth"
+                    className={`${fieldInputClass} pl-9 pr-10`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowSignupPassword(!showSignupPassword)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-0.5 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 transition-smooth focus-ring rounded"
                     aria-label={showSignupPassword ? "Hide password" : "Show password"}
                   >
                     {showSignupPassword ? (
@@ -422,12 +437,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <div className="space-y-2">
+                <label
+                  htmlFor="signup-confirm-password-input"
+                  className="block text-xs font-semibold text-foreground/80"
+                >
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                  <Lock className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     id="signup-confirm-password-input"
@@ -435,12 +453,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm password"
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg py-2.5 pl-9 pr-10 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-smooth"
+                    className={`${fieldInputClass} pl-9 pr-10`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-0.5 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 transition-smooth focus-ring rounded"
                     aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                   >
                     {showConfirmPassword ? (
@@ -455,18 +473,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
               <Button
                 type="submit"
                 id="signup-submit-btn"
-                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 text-xs rounded-lg shadow-sm"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-9 text-xs rounded-lg shadow-xs"
                 isLoading={isSignupLoading}
               >
                 Sign Up
               </Button>
 
-              <p className="text-center text-xs text-slate-500 dark:text-slate-400 pt-2">
+              <p className="text-center text-xs text-muted-foreground pt-2">
                 Already have an account?{" "}
                 <button
                   type="button"
                   onClick={() => toggleMode(false)}
-                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold underline ml-1"
+                  className="text-primary hover:text-primary/80 font-semibold underline ml-1 transition-smooth"
                 >
                   Login
                 </button>
@@ -477,8 +495,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, initialMod
       </div>
 
       {/* Footer Notice */}
-      <footer className="p-6 text-center text-xs text-slate-400 dark:text-slate-500">
-        © 2026 TaxFlow · Tax & Audit Suite. Protected by 256-bit encryption.
+      <footer className="px-4 py-6 text-center text-xs text-muted-foreground border-t border-border bg-background">
+        © 2026 TaxFlow · Practice OS. Protected by 256-bit encryption.
       </footer>
     </div>
   );

@@ -8,6 +8,7 @@ import { Input } from "../../components/ui/Input";
 import { Select } from "../../components/ui/Select";
 import { StatusBadge } from "../../components/ui/StatusBadge";
 import { TaskRecord, TaskStatus, TaskPriority } from "@ca-saas/shared-types";
+import { PageHeader } from "../../components/ui/PageHeader";
 
 export const TaskKanbanPage: React.FC = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -45,27 +46,27 @@ export const TaskKanbanPage: React.FC = () => {
   const doneTasks = tasks.filter((t: any) => t.status === "DONE");
 
   const renderColumn = (colTitle: string, taskList: TaskRecord[], colStatus: TaskStatus) => (
-    <div className="bg-slate-100/70 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col space-y-3 min-h-[500px]">
-      <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
-        <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">{colTitle}</h3>
-        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-2xs">
+    <div className="bg-slate-100/70 dark:bg-slate-900/60 p-4 rounded-xl border border-border flex flex-col space-y-3 min-h-[500px]">
+      <div className="flex items-center justify-between pb-2 border-b border-border">
+        <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">{colTitle}</h3>
+        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-card text-slate-700 dark:text-slate-200 shadow-2xs">
           {taskList.length}
         </span>
       </div>
 
       <div className="space-y-3 flex-1">
         {taskList.map((task) => (
-          <Card key={task.id} className="bg-white dark:bg-slate-850 shadow-2xs hover:shadow-md transition-smooth">
+          <Card key={task.id} className="bg-card shadow-2xs hover:shadow-md transition-smooth">
             <div className="flex items-start justify-between">
-              <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-snug">{task.title}</h4>
+              <h4 className="text-xs font-bold text-foreground leading-snug">{task.title}</h4>
               <StatusBadge status={task.priority} />
             </div>
 
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">{task.clientName}</p>
+            <p className="text-[11px] text-muted-foreground mt-1">{task.clientName}</p>
 
-            <div className="mt-3 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px]">
-              <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
-                <Clock className="w-3 h-3 text-slate-400" />
+            <div className="mt-3 pt-2 border-t border-border flex items-center justify-between text-[10px]">
+              <span className="flex items-center gap-1 text-muted-foreground">
+                <Clock className="w-3 h-3 text-muted-foreground" />
                 {task.dueDate}
               </span>
 
@@ -73,7 +74,7 @@ export const TaskKanbanPage: React.FC = () => {
               <select
                 value={task.status}
                 onChange={(e) => handleStatusChange(task.id, e.target.value as TaskStatus)}
-                className="text-[10px] font-semibold border border-slate-200 dark:border-slate-700 rounded px-1.5 py-0.5 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none"
+                className="text-[10px] font-semibold border border-border rounded px-1.5 py-0.5 bg-muted text-slate-700 dark:text-slate-200 focus:outline-none"
               >
                 <option value="TODO">TO DO</option>
                 <option value="IN_PROGRESS">IN PROGRESS</option>
@@ -88,16 +89,15 @@ export const TaskKanbanPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Task & Operational Kanban</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Workflow automation tasks auto-generated from statutory deadlines and document checklist completion.</p>
-        </div>
-        <Button onClick={() => setIsCreateOpen(true)} leftIcon={<Plus className="w-4 h-4" />}>
-          Create Task
-        </Button>
-      </div>
+      <PageHeader
+        title="Tasks"
+        description="Operational tasks from statutory deadlines and document checklist completion."
+        actions={
+          <Button onClick={() => setIsCreateOpen(true)} leftIcon={<Plus className="w-4 h-4" />}>
+            Create Task
+          </Button>
+        }
+      />
 
       {/* Kanban Board */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

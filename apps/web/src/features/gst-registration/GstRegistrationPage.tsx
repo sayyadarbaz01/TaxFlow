@@ -22,6 +22,7 @@ import { Table, Column } from "../../components/ui/Table";
 import { StatusBadge } from "../../components/ui/StatusBadge";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
+import { PageHeader } from "../../components/ui/PageHeader";
 import { Modal } from "../../components/ui/Modal";
 import { Input } from "../../components/ui/Input";
 import { Stepper, Step } from "../../components/ui/Stepper";
@@ -142,12 +143,12 @@ export const GstRegistrationPage: React.FC = () => {
       header: "Applicant / Business",
       cell: (row) => (
         <div>
-          <p className="font-bold text-slate-900 dark:text-white text-xs">{row.businessName}</p>
+          <p className="font-bold text-foreground text-xs">{row.businessName}</p>
           <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="font-mono text-[11px] text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded font-medium">
+            <span className="font-mono text-[11px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-medium">
               {row.pan}
             </span>
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">({row.entityType})</span>
+            <span className="text-[10px] text-muted-foreground font-medium">({row.entityType})</span>
           </div>
         </div>
       )
@@ -159,7 +160,7 @@ export const GstRegistrationPage: React.FC = () => {
           <span className="font-semibold text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 px-2 py-0.5 rounded-full">
             {row.registrationType}
           </span>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">{row.state}</p>
+          <p className="text-[10px] text-muted-foreground mt-1 font-medium">{row.state}</p>
         </div>
       )
     },
@@ -169,16 +170,16 @@ export const GstRegistrationPage: React.FC = () => {
         <div className="font-mono text-xs">
           {row.arn ? (
             <div>
-              <span className="font-bold text-slate-900 dark:text-white block">ARN: {row.arn}</span>
-              <span className="text-[10px] text-slate-400 dark:text-slate-500">Filed: {row.submissionDate || "Recent"}</span>
+              <span className="font-bold text-foreground block">ARN: {row.arn}</span>
+              <span className="text-[10px] text-muted-foreground">Filed: {row.submissionDate || "Recent"}</span>
             </div>
           ) : row.trn ? (
             <div>
-              <span className="text-slate-700 dark:text-slate-300 font-medium block">TRN: {row.trn}</span>
+              <span className="text-foreground/80 font-medium block">TRN: {row.trn}</span>
               <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">Part A Done</span>
             </div>
           ) : (
-            <span className="text-slate-400 dark:text-slate-500 italic text-[11px]">Pending TRN</span>
+            <span className="text-muted-foreground italic text-[11px]">Pending TRN</span>
           )}
         </div>
       )
@@ -193,7 +194,7 @@ export const GstRegistrationPage: React.FC = () => {
               {row.gstin}
             </span>
           ) : (
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 block">
+            <span className="text-[10px] text-muted-foreground mt-0.5 block">
               Aadhaar: {row.aadhaarAuthStatus}
             </span>
           )}
@@ -204,10 +205,10 @@ export const GstRegistrationPage: React.FC = () => {
       header: "Assigned Staff",
       cell: (row) => (
         <div>
-          <span className="text-xs text-slate-700 dark:text-slate-300 font-medium block">
+          <span className="text-xs text-foreground/80 font-medium block">
             {row.assignedStaffName || "Unassigned"}
           </span>
-          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">{row.contactPhone}</span>
+          <span className="text-[10px] text-muted-foreground font-mono">{row.contactPhone}</span>
         </div>
       )
     },
@@ -263,63 +264,53 @@ export const GstRegistrationPage: React.FC = () => {
         </div>
       )}
 
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-              GST Registration Center
-            </h1>
-            <span className="bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 text-[11px] font-bold px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800/60">
-              Form GST REG-01
-            </span>
-          </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            New GST Network applications, TRN/ARN submission tracking, promoter Aadhaar authentication, and REG-06 certificate issuance.
-          </p>
-        </div>
-
-        <Button
-          onClick={() => setIsAddModalOpen(true)}
-          leftIcon={<Plus className="w-4 h-4" />}
-          className="shadow-sm bg-amber-600 hover:bg-amber-700 text-white"
-        >
-          New GST Registration
-        </Button>
-      </div>
+      <PageHeader
+        eyebrow="Form GST REG-01"
+        title="GST Registration"
+        description="GSTN applications, TRN/ARN tracking, promoter Aadhaar auth, and REG-06 certificate issuance."
+        actions={
+          <Button
+            onClick={() => setIsAddModalOpen(true)}
+            leftIcon={<Plus className="w-4 h-4" />}
+            className="shadow-sm bg-amber-600 hover:bg-amber-700 text-white"
+          >
+            New GST Registration
+          </Button>
+        }
+      />
 
       {/* KPI Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <Card className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+        <Card className="bg-card border border-border">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Active Applications</span>
+            <span className="text-xs font-semibold text-muted-foreground">Active Applications</span>
             <FileBadge className="w-4 h-4 text-amber-600 dark:text-amber-400" />
           </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-2">{summary.totalPipeline}</p>
-          <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 block">Total Onboarding Pipeline</span>
+          <p className="text-2xl font-bold text-foreground mt-2">{summary.totalPipeline}</p>
+          <span className="text-[11px] text-muted-foreground mt-0.5 block">Total Onboarding Pipeline</span>
         </Card>
 
-        <Card className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+        <Card className="bg-card border border-border">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">TRN Drafts (Part A)</span>
+            <span className="text-xs font-semibold text-muted-foreground">TRN Drafts (Part A)</span>
             <Clock className="w-4 h-4 text-amber-500 dark:text-amber-400" />
           </div>
           <p className="text-2xl font-bold text-amber-700 dark:text-amber-400 mt-2">{summary.trnDrafts}</p>
-          <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 block">Valid 15 Days for Part B</span>
+          <span className="text-[11px] text-muted-foreground mt-0.5 block">Valid 15 Days for Part B</span>
         </Card>
 
-        <Card className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+        <Card className="bg-card border border-border">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">ARN Submitted (Part B)</span>
-            <Send className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span className="text-xs font-semibold text-muted-foreground">ARN Submitted (Part B)</span>
+            <Send className="w-4 h-4 text-primary" />
           </div>
-          <p className="text-2xl font-bold text-blue-700 dark:text-blue-400 mt-2">{summary.arnSubmitted}</p>
-          <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 block">Pending Officer Verification</span>
+          <p className="text-2xl font-bold text-primary mt-2">{summary.arnSubmitted}</p>
+          <span className="text-[11px] text-muted-foreground mt-0.5 block">Pending Officer Verification</span>
         </Card>
 
-        <Card className="bg-white dark:bg-slate-900 border-emerald-200 dark:border-emerald-800/60">
+        <Card className="bg-card border-emerald-200 dark:border-emerald-800/60">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Certificates Issued (REG-06)</span>
+            <span className="text-xs font-semibold text-muted-foreground">Certificates Issued (REG-06)</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
           </div>
           <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{summary.certificatesIssued}</p>
@@ -329,19 +320,19 @@ export const GstRegistrationPage: React.FC = () => {
 
       {/* Selected Application Stepper Inspector */}
       {selectedApp && (
-        <Card className="bg-gradient-to-r from-amber-50/60 to-orange-50/60 dark:from-slate-900 dark:to-amber-950/40 border-amber-200 dark:border-amber-900/60">
+        <Card className="bg-amber-50/60 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/40">
           <div className="flex items-center justify-between pb-3 border-b border-amber-200/60 dark:border-amber-800/60">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white">{selectedApp.businessName}</h3>
+                <h3 className="text-sm font-bold text-foreground">{selectedApp.businessName}</h3>
                 <span className="text-xs font-mono bg-amber-200/60 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-semibold px-2 py-0.5 rounded">
                   {selectedApp.pan}
                 </span>
-                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">({selectedApp.state})</span>
+                <span className="text-xs font-semibold text-muted-foreground">({selectedApp.state})</span>
               </div>
-              <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
+              <p className="text-[11px] text-muted-foreground mt-0.5">
                 Type: {selectedApp.registrationType} • {selectedApp.jurisdictionWard}
-                {selectedApp.arn && <span className="ml-2 font-bold text-slate-800 dark:text-slate-200">ARN: {selectedApp.arn}</span>}
+                {selectedApp.arn && <span className="ml-2 font-bold text-foreground">ARN: {selectedApp.arn}</span>}
                 {selectedApp.gstin && (
                   <span className="ml-2 font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/60 px-1.5 py-0.2 rounded">
                     GSTIN: {selectedApp.gstin}
@@ -372,7 +363,7 @@ export const GstRegistrationPage: React.FC = () => {
       )}
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
         {/* Stage Filter Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
           {[
@@ -389,7 +380,7 @@ export const GstRegistrationPage: React.FC = () => {
               className={`px-3 py-1.5 rounded-lg font-medium transition-smooth whitespace-nowrap ${
                 stageFilter === tab.id
                   ? "bg-amber-600 text-white font-semibold shadow-xs"
-                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-750 hover:text-slate-900 dark:hover:text-white"
+                  : "bg-muted text-muted-foreground hover:bg-muted hover:text-foreground dark:hover:text-white"
               }`}
             >
               {tab.label}
@@ -400,20 +391,20 @@ export const GstRegistrationPage: React.FC = () => {
         {/* Search & Category Filter */}
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search Business, PAN, ARN..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="text-xs pl-8 pr-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-amber-500 w-48"
+              className="text-xs pl-8 pr-3 py-1.5 rounded-lg bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-amber-500 w-48"
             />
           </div>
 
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="text-xs py-1.5 px-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-amber-500"
+            className="text-xs py-1.5 px-2.5 rounded-lg border border-border bg-card text-foreground/80 focus:outline-none focus:ring-1 focus:ring-amber-500"
           >
             <option value="ALL">All Categories</option>
             <option value="REGULAR">Regular Taxpayer</option>
@@ -444,11 +435,11 @@ export const GstRegistrationPage: React.FC = () => {
           maxWidth="md"
         >
           <div className="space-y-4 text-xs">
-            <div className="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
-              <span className="font-semibold text-slate-700 dark:text-slate-300">Transitioning Stage:</span>
-              <div className="flex items-center gap-2 mt-1 font-bold text-slate-900 dark:text-white">
+            <div className="p-3 bg-muted border border-border rounded-xl">
+              <span className="font-semibold text-foreground/80">Transitioning Stage:</span>
+              <div className="flex items-center gap-2 mt-1 font-bold text-foreground">
                 <StatusBadge status={advanceModalApp.stage} />
-                <ArrowRight className="w-4 h-4 text-slate-400" />
+                <ArrowRight className="w-4 h-4 text-muted-foreground" />
                 <StatusBadge status={targetStage} />
               </div>
             </div>
@@ -461,7 +452,7 @@ export const GstRegistrationPage: React.FC = () => {
 
             {targetStage === "ARN_SUBMITTED" && (
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                <label className="block text-xs font-medium text-foreground/80">
                   Application Reference Number (ARN):
                 </label>
                 <Input
@@ -476,7 +467,7 @@ export const GstRegistrationPage: React.FC = () => {
 
             {targetStage === "CLARIFICATION_PENDING" && (
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                <label className="block text-xs font-medium text-foreground/80">
                   Form GST REG-03 Query / Notice Reference:
                 </label>
                 <Input
@@ -490,7 +481,7 @@ export const GstRegistrationPage: React.FC = () => {
 
             {targetStage === "APPROVED_ISSUED" && (
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                <label className="block text-xs font-medium text-foreground/80">
                   15-Character Approved GSTIN (Form GST REG-06):
                 </label>
                 <Input
@@ -504,7 +495,7 @@ export const GstRegistrationPage: React.FC = () => {
               </div>
             )}
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
               <Button variant="outline" onClick={() => setAdvanceModalApp(null)}>
                 Cancel
               </Button>

@@ -8,6 +8,7 @@ import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { Modal } from "../../components/ui/Modal";
 import { Input } from "../../components/ui/Input";
+import { PageHeader } from "../../components/ui/PageHeader";
 import { InvoiceRecord } from "@ca-saas/shared-types";
 
 export const BillingPage: React.FC = () => {
@@ -75,26 +76,26 @@ export const BillingPage: React.FC = () => {
       header: "Invoice #",
       cell: (row) => (
         <div>
-          <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">{row.invoiceNo}</span>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400">{row.clientName}</p>
+          <span className="font-mono text-xs font-bold text-foreground">{row.invoiceNo}</span>
+          <p className="text-[10px] text-muted-foreground">{row.clientName}</p>
         </div>
       )
     },
     {
       header: "Subtotal",
-      cell: (row) => <span className="font-mono text-xs text-slate-700 dark:text-slate-300">₹{row.subtotal.toLocaleString("en-IN")}</span>
+      cell: (row) => <span className="font-mono text-xs text-foreground/80">₹{row.subtotal.toLocaleString("en-IN")}</span>
     },
     {
       header: "GST (18%)",
-      cell: (row) => <span className="font-mono text-xs text-slate-500 dark:text-slate-400">₹{row.tax.toLocaleString("en-IN")}</span>
+      cell: (row) => <span className="font-mono text-xs text-muted-foreground">₹{row.tax.toLocaleString("en-IN")}</span>
     },
     {
       header: "Total Fee",
-      cell: (row) => <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">₹{row.total.toLocaleString("en-IN")}</span>
+      cell: (row) => <span className="font-mono text-xs font-bold text-foreground">₹{row.total.toLocaleString("en-IN")}</span>
     },
     {
       header: "Due Date",
-      cell: (row) => <span className="font-mono text-xs text-slate-700 dark:text-slate-300">{row.dueDate}</span>
+      cell: (row) => <span className="font-mono text-xs text-foreground/80">{row.dueDate}</span>
     },
     {
       header: "Status",
@@ -107,7 +108,7 @@ export const BillingPage: React.FC = () => {
           <Button
             size="sm"
             variant="outline"
-            leftIcon={<QrCode className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />}
+            leftIcon={<QrCode className="w-3.5 h-3.5 text-primary" />}
             onClick={() => setSelectedUpiInvoice(row)}
           >
             UPI QR
@@ -142,19 +143,18 @@ export const BillingPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Billing & Fee Management</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Invoice creation, automated 18% GST tax math, deep-link UPI collection, and payment marking.</p>
-        </div>
-        <Button onClick={() => setIsCreateOpen(true)} leftIcon={<Plus className="w-4 h-4" />}>
-          Create Invoice
-        </Button>
-      </div>
+      <PageHeader
+        title="Billing & Invoices"
+        description="Invoice creation, automated GST, UPI collection, and payment tracking."
+        actions={
+          <Button onClick={() => setIsCreateOpen(true)} leftIcon={<Plus className="w-4 h-4" />}>
+            Create Invoice
+          </Button>
+        }
+      />
 
       {/* Filter Tabs */}
-      <div className="flex space-x-2 border-b border-slate-200 dark:border-slate-800 pb-2 text-xs overflow-x-auto">
+      <div className="flex space-x-2 border-b border-border pb-2 text-xs overflow-x-auto">
         {[
           { id: "", label: "All Invoices" },
           { id: "unpaid", label: "Unpaid / Overdue" },
@@ -167,8 +167,8 @@ export const BillingPage: React.FC = () => {
             onClick={() => setStatusFilter(tab.id)}
             className={`px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-smooth ${
               statusFilter === tab.id
-                ? "bg-emerald-600 text-white shadow-xs"
-                : "bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "bg-card border border-border text-muted-foreground hover:bg-muted"
             }`}
           >
             {tab.label}
@@ -183,13 +183,13 @@ export const BillingPage: React.FC = () => {
       {selectedUpiInvoice && (
         <Modal isOpen={!!selectedUpiInvoice} onClose={() => setSelectedUpiInvoice(null)} title={`UPI Collection — ${selectedUpiInvoice.invoiceNo}`}>
           <div className="text-center space-y-4 py-2">
-            <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 inline-block">
-              <QrCode className="w-40 h-40 text-slate-900 dark:text-white mx-auto" />
-              <p className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 mt-3">{selectedUpiInvoice.upiLink}</p>
+            <div className="bg-muted p-6 rounded-2xl border border-border inline-block">
+              <QrCode className="w-40 h-40 text-foreground mx-auto" />
+              <p className="font-mono text-xs font-bold text-foreground mt-3">{selectedUpiInvoice.upiLink}</p>
             </div>
             <div>
-              <h4 className="text-base font-bold text-slate-900 dark:text-white">Total Payable: ₹{selectedUpiInvoice.total.toLocaleString("en-IN")}</h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Scan using BHIM, Google Pay, PhonePe, or Paytm</p>
+              <h4 className="text-base font-bold text-foreground">Total Payable: ₹{selectedUpiInvoice.total.toLocaleString("en-IN")}</h4>
+              <p className="text-xs text-muted-foreground mt-1">Scan using BHIM, Google Pay, PhonePe, or Paytm</p>
             </div>
           </div>
         </Modal>
@@ -201,7 +201,7 @@ export const BillingPage: React.FC = () => {
           <Input label="Description of Professional Service" value={desc} onChange={(e) => setDesc(e.target.value)} required />
           <Input label="Subtotal Amount (₹)" type="number" value={amount} onChange={(e) => setAmount(e.target.value)} required />
           <Input label="Invoice Due Date" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required />
-          <div className="p-3 bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg text-xs font-medium">
+          <div className="p-3 bg-primary-muted text-blue-800 dark:text-blue-300 border border-primary/20 rounded-lg text-xs font-medium">
             18% GST (₹{Math.round(Number(amount || 0) * 0.18)}) will be auto-calculated. Total: ₹{Math.round(Number(amount || 0) * 1.18)}.
           </div>
           <Button type="submit" className="w-full" isLoading={isCreating}>

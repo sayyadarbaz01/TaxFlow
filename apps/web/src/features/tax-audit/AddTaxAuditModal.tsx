@@ -89,11 +89,11 @@ export const AddTaxAuditModal: React.FC<AddTaxAuditModalProps> = ({ isOpen, onCl
     <Modal isOpen={isOpen} onClose={onClose} title="Initiate Section 44AB Tax Audit Engagement" maxWidth="lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Info Banner */}
-        <div className="p-3 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 rounded-xl text-xs text-purple-800 dark:text-purple-300 flex items-start gap-2.5">
-          <ShieldCheck className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
+        <div className="p-3 bg-primary-muted border border-primary/20 rounded-xl text-xs text-primary dark:text-primary flex items-start gap-2.5">
+          <ShieldCheck className="w-4 h-4 text-primary shrink-0 mt-0.5" />
           <div>
             <span className="font-semibold">Section 44AB Statutory Audit Engagement:</span>
-            <p className="text-purple-700 dark:text-purple-400 text-[11px] mt-0.5">
+            <p className="text-primary dark:text-primary text-[11px] mt-0.5">
               Applies to businesses with turnover exceeding ₹1 Cr (₹10 Cr if cash transactions ≤ 5%) and professionals with gross receipts &gt; ₹50 Lakhs. Form 3CA is applicable to corporate/LLP entities, and Form 3CB to proprietary/partnership entities.
             </p>
           </div>
@@ -167,7 +167,7 @@ export const AddTaxAuditModal: React.FC<AddTaxAuditModalProps> = ({ isOpen, onCl
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>

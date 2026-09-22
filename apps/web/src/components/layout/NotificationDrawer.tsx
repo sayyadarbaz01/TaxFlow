@@ -81,8 +81,8 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">Zero Pending Notifications</h4>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto">
+            <h4 className="text-xs font-bold text-foreground">Zero Pending Notifications</h4>
+            <p className="text-[11px] text-muted-foreground mt-1 max-w-xs mx-auto">
               All firm filings, client requests, and invoices are up to date.
             </p>
           </div>
@@ -94,17 +94,17 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
             return (
               <div
                 key={n.id}
-                className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-850 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-smooth flex items-start space-x-3"
+                className="p-3 rounded-lg border border-border bg-card shadow-2xs hover:border-border transition-smooth flex items-start space-x-3"
               >
                 <div className={`p-2 rounded-lg mt-0.5 ${n.color}`}>
                   <Icon className="w-4 h-4" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">{n.title}</h4>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold">{n.time}</span>
+                    <h4 className="text-xs font-bold text-foreground">{n.title}</h4>
+                    <span className="text-[10px] text-muted-foreground font-semibold">{n.time}</span>
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">{n.message}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{n.message}</p>
                 </div>
               </div>
             );

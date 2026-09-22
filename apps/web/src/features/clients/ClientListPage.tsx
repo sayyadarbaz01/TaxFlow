@@ -5,6 +5,7 @@ import { clsx } from "clsx";
 import { Button } from "../../components/ui/Button";
 import { Table, Column } from "../../components/ui/Table";
 import { StatusBadge } from "../../components/ui/StatusBadge";
+import { PageHeader } from "../../components/ui/PageHeader";
 import { useGetClientsQuery, useUpdateClientMutation } from "../../lib/api";
 import { ClientRecord } from "@ca-saas/shared-types";
 import { useDebounce } from "../../lib/useDebounce";
@@ -67,12 +68,12 @@ export const ClientListPage: React.FC = () => {
       accessorKey: "name",
       cell: (row) => (
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-xs">
+          <div className="w-8 h-8 rounded-full bg-primary-muted text-primary font-bold flex items-center justify-center text-xs">
             {row.name.charAt(0)}
           </div>
           <div>
-            <p className="font-semibold text-slate-900 text-xs">{row.name}</p>
-            <p className="text-[10px] text-slate-500">{row.entityType}</p>
+            <p className="font-semibold text-foreground text-xs">{row.name}</p>
+            <p className="text-[10px] text-muted-foreground">{row.entityType}</p>
           </div>
         </div>
       )
@@ -81,16 +82,16 @@ export const ClientListPage: React.FC = () => {
       header: "Identifiers (PAN / GSTIN)",
       cell: (row) => (
         <div className="text-[11px] space-y-0.5">
-          <p className="font-mono font-medium text-slate-900">
-            <span className="text-slate-400 text-[10px] mr-1">PAN:</span>
+          <p className="font-mono font-medium text-foreground">
+            <span className="text-muted-foreground text-[10px] mr-1">PAN:</span>
             {row.pan ? row.pan : <span className="text-amber-600 font-sans italic text-[10px]">Not Provided</span>}
           </p>
           {row.gstin ? (
             <p className="font-mono text-slate-600 text-[10px]">
-              <span className="text-slate-400 mr-1">GST:</span>{row.gstin}
+              <span className="text-muted-foreground mr-1">GST:</span>{row.gstin}
             </p>
           ) : (
-            <p className="text-slate-400 italic text-[10px]">No GSTIN</p>
+            <p className="text-muted-foreground italic text-[10px]">No GSTIN</p>
           )}
         </div>
       )
@@ -101,11 +102,11 @@ export const ClientListPage: React.FC = () => {
         const wt = row.workType || "ITR";
         const badgeColor =
           wt === "ITR"
-            ? "bg-blue-50 text-blue-700 border-blue-200"
+            ? "bg-blue-50 text-primary border-blue-200"
             : wt === "GST"
             ? "bg-emerald-50 text-emerald-700 border-emerald-200"
             : wt === "Tax Audit"
-            ? "bg-purple-50 text-purple-700 border-purple-200"
+            ? "bg-primary-muted text-primary border-primary/20"
             : wt === "ITR + GST"
             ? "bg-indigo-50 text-indigo-700 border-indigo-200"
             : wt === "TDS/TCS"
@@ -124,16 +125,16 @@ export const ClientListPage: React.FC = () => {
       cell: (row) => (
         <div className="text-[11px] space-y-0.5">
           <p className="text-slate-700 flex items-center gap-1">
-            <Phone className="w-3 h-3 text-slate-400" />
+            <Phone className="w-3 h-3 text-muted-foreground" />
             {row.contactPhone}
           </p>
           {row.contactEmail ? (
-            <p className="text-slate-500 flex items-center gap-1">
-              <Mail className="w-3 h-3 text-slate-400" />
+            <p className="text-muted-foreground flex items-center gap-1">
+              <Mail className="w-3 h-3 text-muted-foreground" />
               {row.contactEmail}
             </p>
           ) : (
-            <p className="text-slate-400 italic text-[10px]">No email</p>
+            <p className="text-muted-foreground italic text-[10px]">No email</p>
           )}
         </div>
       )
@@ -170,16 +171,16 @@ export const ClientListPage: React.FC = () => {
             variant="outline"
             leftIcon={<Eye className="w-3.5 h-3.5" />}
             onClick={() => navigate(`/clients/${row.id}`)}
-            className="hover:border-blue-400 hover:text-blue-600 px-2.5 py-1 text-xs"
+            className="hover:border-blue-400 hover:text-primary px-2.5 py-1 text-xs"
           >
             View CRM
           </Button>
           <Button
             size="sm"
             variant="outline"
-            leftIcon={<Pencil className="w-3.5 h-3.5 text-blue-600" />}
+            leftIcon={<Pencil className="w-3.5 h-3.5 text-primary" />}
             onClick={() => setClientToEdit(row)}
-            className="hover:border-blue-400 hover:bg-blue-50 text-blue-700 px-2.5 py-1 text-xs"
+            className="hover:border-blue-400 hover:bg-blue-50 text-primary px-2.5 py-1 text-xs"
           >
             Edit
           </Button>
@@ -199,29 +200,28 @@ export const ClientListPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Client Management CRM</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Manage firm clients, compliance statuses, contacts, and staff assignments.</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => navigate("/leads")}
-            leftIcon={<UserPlus className="w-4 h-4 text-purple-600 dark:text-purple-400" />}
-            className="border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-xs"
-          >
-            Lead Clients Pipeline
-          </Button>
-          <Button onClick={() => setIsOnboardingOpen(true)} leftIcon={<Plus className="w-4 h-4" />}>
-            Add Client
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Clients"
+        description="Manage firm clients, compliance statuses, contacts, and staff assignments."
+        actions={
+          <>
+            <Button
+              variant="outline"
+              onClick={() => navigate("/leads")}
+              leftIcon={<UserPlus className="w-4 h-4 text-primary" />}
+              className="border-primary/20 text-primary hover:bg-primary-muted text-xs"
+            >
+              Lead Pipeline
+            </Button>
+            <Button onClick={() => setIsOnboardingOpen(true)} leftIcon={<Plus className="w-4 h-4" />}>
+              Add Client
+            </Button>
+          </>
+        }
+      />
 
       {/* Status Segmented Tabs */}
-      <div className="flex items-center space-x-2 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto">
+      <div className="flex items-center space-x-2 border-b border-border pb-2 overflow-x-auto">
         {[
           { id: "", label: "All Clients" },
           { id: "ACTIVE", label: "Active" },
@@ -235,15 +235,15 @@ export const ClientListPage: React.FC = () => {
             className={clsx(
               "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap",
               statusFilter === tab.id
-                ? "bg-slate-900 dark:bg-blue-600 text-white shadow-xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                ? "bg-slate-900 dark:bg-primary text-white shadow-xs"
+                : "text-muted-foreground hover:text-foreground dark:hover:text-white hover:bg-muted"
             )}
           >
             {tab.label}
             {tab.id === "LEAD" && (
               <span className={clsx(
                 "w-2 h-2 rounded-full",
-                statusFilter === "LEAD" ? "bg-purple-300" : "bg-purple-500"
+                statusFilter === "LEAD" ? "bg-primary-muted" : "bg-primary-muted"
               )}></span>
             )}
           </button>
@@ -251,22 +251,22 @@ export const ClientListPage: React.FC = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-wrap items-center gap-3">
+      <div className="bg-card p-4 rounded-xl border border-border shadow-2xs flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
+          <Search className="w-4 h-4 absolute left-3 top-2.5 text-muted-foreground" />
           <input
             type="text"
             placeholder="Filter clients by name, PAN, or GSTIN..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-9 pr-3 py-1.5 text-xs bg-card border border-border text-foreground placeholder:text-muted-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
 
         <select
           value={workTypeFilter}
           onChange={(e) => setWorkTypeFilter(e.target.value)}
-          className="text-xs border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+          className="text-xs border border-border rounded-lg px-3 py-1.5 bg-card text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-ring font-medium"
         >
           <option value="">All Services (Work Scope)</option>
           <option value="ITR">ITR (Income Tax)</option>
@@ -280,7 +280,7 @@ export const ClientListPage: React.FC = () => {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="text-xs border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+          className="text-xs border border-border rounded-lg px-3 py-1.5 bg-card text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-ring font-medium"
         >
           <option value="">All Statuses</option>
           <option value="ACTIVE">Active</option>
@@ -292,7 +292,7 @@ export const ClientListPage: React.FC = () => {
         <select
           value={entityFilter}
           onChange={(e) => setEntityFilter(e.target.value)}
-          className="text-xs border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+          className="text-xs border border-border rounded-lg px-3 py-1.5 bg-card text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-ring font-medium"
         >
           <option value="">All Entity Types</option>
           <option value="PVT_LTD">Pvt Ltd</option>

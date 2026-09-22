@@ -8,6 +8,7 @@ import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { Stepper } from "../../components/ui/Stepper";
 import { ItrFilingRecord, ItrStatus } from "@ca-saas/shared-types";
+import { PageHeader } from "../../components/ui/PageHeader";
 
 export const ItrDashboardPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -56,24 +57,24 @@ export const ItrDashboardPage: React.FC = () => {
       cell: (row) => (
         <div>
           <div className="flex items-center gap-1.5">
-            <p className="font-semibold text-slate-900 dark:text-white text-xs">{row.clientName}</p>
+            <p className="font-semibold text-foreground text-xs">{row.clientName}</p>
             {row.workType === "ITR + GST" && (
-              <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+              <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-primary-muted text-primary border border-primary/20">
                 ITR + GST
               </span>
             )}
           </div>
-          <span className="text-[10px] text-slate-500 dark:text-slate-400">{row.assessmentYear}</span>
+          <span className="text-[10px] text-muted-foreground">{row.assessmentYear}</span>
         </div>
       )
     },
     {
       header: "ITR Form",
-      cell: (row) => <span className="font-bold text-xs text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-800">{row.itrFormType}</span>
+      cell: (row) => <span className="font-bold text-xs text-primary bg-primary-muted px-2 py-0.5 rounded border border-primary/20">{row.itrFormType}</span>
     },
     {
       header: "Statutory Due Date",
-      cell: (row) => <span className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">{row.dueDate}</span>
+      cell: (row) => <span className="font-mono text-xs font-semibold text-foreground">{row.dueDate}</span>
     },
     {
       header: "Status Stepper",
@@ -81,7 +82,7 @@ export const ItrDashboardPage: React.FC = () => {
     },
     {
       header: "Assigned Staff",
-      cell: (row) => <span className="text-xs text-slate-700 dark:text-slate-300">{row.assignedStaffName || "Unassigned"}</span>
+      cell: (row) => <span className="text-xs text-foreground/80">{row.assignedStaffName || "Unassigned"}</span>
     },
     {
       header: "Workflow Action",
@@ -111,21 +112,18 @@ export const ItrDashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">ITR Compliance Automation Engine</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Data-driven ITR preparation, status stepper tracking, and verification.</p>
-        </div>
-      </div>
+      <PageHeader
+        title="ITR Filings"
+        description="ITR preparation, status stepper tracking, and verification."
+      />
 
       {/* Selected Filing Stepper Drawer/Section */}
       {selectedFiling && (
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border-blue-200 dark:border-blue-800">
+        <Card className="bg-primary-muted/40 border-primary/20">
           <div className="flex items-center justify-between pb-2 border-b border-blue-100 dark:border-blue-900">
             <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">{selectedFiling.clientName} — {selectedFiling.assessmentYear} ({selectedFiling.itrFormType})</h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">Statutory Due Date: {selectedFiling.dueDate}</p>
+              <h3 className="text-sm font-bold text-foreground">{selectedFiling.clientName} — {selectedFiling.assessmentYear} ({selectedFiling.itrFormType})</h3>
+              <p className="text-[11px] text-muted-foreground">Statutory Due Date: {selectedFiling.dueDate}</p>
             </div>
             <Button size="sm" variant="ghost" onClick={() => setSelectedFiling(null)}>Close</Button>
           </div>
@@ -134,15 +132,15 @@ export const ItrDashboardPage: React.FC = () => {
       )}
 
       {/* Filter Tabs */}
-      <div className="flex space-x-2 overflow-x-auto pb-2 border-b border-slate-200 dark:border-slate-800 text-xs">
+      <div className="flex space-x-2 overflow-x-auto pb-2 border-b border-border text-xs">
         {["", "pending", "NOT_STARTED", "DOCUMENTS_PENDING", "UNDER_PREPARATION", "FILED", "VERIFIED", "PROCESSED", "REFUND_ISSUED"].map((st) => (
           <button
             key={st}
             onClick={() => setSelectedStatus(st)}
             className={`px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-smooth ${
               selectedStatus === st
-                ? "bg-blue-600 text-white shadow-xs"
-                : "bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                ? "bg-primary text-white shadow-xs"
+                : "bg-card border border-border text-muted-foreground hover:bg-muted"
             }`}
           >
             {st === "pending" ? "Pending Actions" : st ? st.replace(/_/g, " ") : "All Filings"}

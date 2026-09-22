@@ -40,7 +40,7 @@ const WORK_TYPE_OPTIONS: WorkTypeOption[] = [
     badge: "Direct Tax",
     description: "Annual ITR filings (ITR-1 to 7), AIS/26AS reconciliation, and tax computation.",
     recommendedFor: "Salaried individuals, professionals, and non-audit firms",
-    icon: <FileText className="w-4 h-4 text-blue-600" />
+    icon: <FileText className="w-4 h-4 text-primary" />
   },
   {
     value: "GST",
@@ -56,7 +56,7 @@ const WORK_TYPE_OPTIONS: WorkTypeOption[] = [
     badge: "Audit & Assurance",
     description: "Statutory tax audit under Section 44AB/44AD/ADA, Form 3CA/3CB-3CD preparation.",
     recommendedFor: "Businesses > ₹1 Cr (or ₹10 Cr digital) & Professionals > ₹50 Lakhs turnover",
-    icon: <ShieldCheck className="w-4 h-4 text-purple-600" />
+    icon: <ShieldCheck className="w-4 h-4 text-primary" />
   },
   {
     value: "GST Registration",
@@ -273,7 +273,7 @@ export const ClientOnboardingModal: React.FC<ClientOnboardingModalProps> = ({ is
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
               />
-              <p className="text-[10px] text-slate-400 mt-1">
+              <p className="text-[10px] text-muted-foreground mt-1">
                 Optional: Leave blank if client only communicates via WhatsApp or Phone.
               </p>
             </div>
@@ -286,7 +286,7 @@ export const ClientOnboardingModal: React.FC<ClientOnboardingModalProps> = ({ is
               <label className="block text-xs font-bold text-slate-800 mb-1">
                 Select Scope of Work / Engagement Type <span className="text-rose-500">*</span>
               </label>
-              <p className="text-[11px] text-slate-500 mb-2">
+              <p className="text-[11px] text-muted-foreground mb-2">
                 Choose the primary service scope for this client. Workflows, filing calendars, and task templates will be automatically configured.
               </p>
             </div>
@@ -300,7 +300,7 @@ export const ClientOnboardingModal: React.FC<ClientOnboardingModalProps> = ({ is
                     onClick={() => setWorkType(opt.value)}
                     className={`cursor-pointer p-3 rounded-xl border transition-all duration-150 flex flex-col justify-between relative text-left ${
                       isSelected
-                        ? "border-blue-600 bg-blue-50/50 ring-2 ring-blue-500/20 shadow-xs"
+                        ? "border-blue-600 bg-blue-50/50 ring-2 ring-ring/20 shadow-xs"
                         : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50"
                     }`}
                   >
@@ -311,16 +311,16 @@ export const ClientOnboardingModal: React.FC<ClientOnboardingModalProps> = ({ is
                             {opt.icon}
                           </div>
                           <div>
-                            <span className="text-xs font-bold text-slate-900 block leading-tight">{opt.title}</span>
+                            <span className="text-xs font-bold text-foreground block leading-tight">{opt.title}</span>
                             <span className={`inline-block text-[9px] font-semibold px-1.5 py-0.2 rounded mt-0.5 ${
-                              isSelected ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-600"
+                              isSelected ? "bg-primary-muted text-primary" : "bg-slate-100 text-slate-600"
                             }`}>
                               {opt.badge}
                             </span>
                           </div>
                         </div>
                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
-                          isSelected ? "border-blue-600 bg-blue-600 text-white" : "border-slate-300 bg-white"
+                          isSelected ? "border-blue-600 bg-primary text-white" : "border-slate-300 bg-white"
                         }`}>
                           {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                         </div>
@@ -329,7 +329,7 @@ export const ClientOnboardingModal: React.FC<ClientOnboardingModalProps> = ({ is
                         {opt.description}
                       </p>
                     </div>
-                    <p className="text-[10px] text-slate-400 mt-2 font-medium border-t border-slate-100 pt-1">
+                    <p className="text-[10px] text-muted-foreground mt-2 font-medium border-t border-slate-100 pt-1">
                       💡 {opt.recommendedFor}
                     </p>
                   </div>
@@ -341,38 +341,38 @@ export const ClientOnboardingModal: React.FC<ClientOnboardingModalProps> = ({ is
 
         {currentStep === "5" && (
           <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-3">
-            <h4 className="font-bold text-slate-900 border-b border-slate-200/80 pb-1.5">Summary Review</h4>
+            <h4 className="font-bold text-foreground border-b border-slate-200/80 pb-1.5">Summary Review</h4>
             <div className="grid grid-cols-2 gap-2.5">
               <div>
-                <p className="text-slate-500 text-[11px]">Client / Entity Name</p>
-                <p className="font-semibold text-slate-900">{name}</p>
+                <p className="text-muted-foreground text-[11px]">Client / Entity Name</p>
+                <p className="font-semibold text-foreground">{name}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-[11px]">Entity Type</p>
-                <p className="font-semibold text-slate-900">{entityType}</p>
+                <p className="text-muted-foreground text-[11px]">Entity Type</p>
+                <p className="font-semibold text-foreground">{entityType}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-[11px]">PAN</p>
-                <p className="font-mono font-semibold text-slate-900">{pan}</p>
+                <p className="text-muted-foreground text-[11px]">PAN</p>
+                <p className="font-mono font-semibold text-foreground">{pan}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-[11px]">GSTIN</p>
-                <p className="font-mono font-semibold text-slate-900">{gstin || "Not Applicable"}</p>
+                <p className="text-muted-foreground text-[11px]">GSTIN</p>
+                <p className="font-mono font-semibold text-foreground">{gstin || "Not Applicable"}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-[11px]">Phone</p>
-                <p className="font-semibold text-slate-900">{contactPhone}</p>
+                <p className="text-muted-foreground text-[11px]">Phone</p>
+                <p className="font-semibold text-foreground">{contactPhone}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-[11px]">Email</p>
-                <p className="font-semibold text-slate-900">{contactEmail.trim() || "Not Provided (Optional)"}</p>
+                <p className="text-muted-foreground text-[11px]">Email</p>
+                <p className="font-semibold text-foreground">{contactEmail.trim() || "Not Provided (Optional)"}</p>
               </div>
             </div>
 
             <div className="pt-2 border-t border-slate-200/80">
-              <p className="text-slate-500 text-[11px]">Scope of Work / Service</p>
+              <p className="text-muted-foreground text-[11px]">Scope of Work / Service</p>
               <div className="flex items-center gap-2 mt-1">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-primary-muted text-blue-800 border border-blue-200">
                   {workType}
                 </span>
                 <span className="text-[11px] text-slate-700 font-medium">
@@ -381,7 +381,7 @@ export const ClientOnboardingModal: React.FC<ClientOnboardingModalProps> = ({ is
               </div>
             </div>
 
-            <div className="p-2.5 bg-blue-50/70 border border-blue-100 rounded-lg text-[11px] text-blue-700 font-medium">
+            <div className="p-2.5 bg-blue-50/70 border border-blue-100 rounded-lg text-[11px] text-primary font-medium">
               ⚡ Upon creation, compliance schedules, filings ({workType}), and document checklists will be generated automatically.
             </div>
           </div>

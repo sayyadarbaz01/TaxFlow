@@ -104,7 +104,7 @@ export const ClientDetailPage: React.FC = () => {
   }, [searchParams]);
 
   if (isLoading) {
-    return <div className="p-12 text-center text-xs text-slate-500 font-medium animate-pulse">Loading Client 360 Record...</div>;
+    return <div className="p-12 text-center text-xs text-muted-foreground font-medium animate-pulse">Loading Client 360 Record...</div>;
   }
 
   if (!client) {
@@ -245,12 +245,12 @@ export const ClientDetailPage: React.FC = () => {
       header: "Document Name",
       cell: (row) => (
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 rounded-lg">
+          <div className="p-2 bg-primary-muted text-primary rounded-lg">
             <File className="w-4 h-4" />
           </div>
           <div>
-            <p className="font-bold text-slate-900 dark:text-white text-xs">{row.fileName}</p>
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
+            <p className="font-bold text-foreground text-xs">{row.fileName}</p>
+            <span className="text-[10px] text-muted-foreground font-mono">
               Uploaded on {new Date(row.uploadedAt).toLocaleDateString()}
             </span>
           </div>
@@ -260,7 +260,7 @@ export const ClientDetailPage: React.FC = () => {
     {
       header: "Category",
       cell: (row) => (
-        <span className="font-semibold text-xs text-blue-800 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/60 px-2.5 py-0.5 rounded-full">
+        <span className="font-semibold text-xs text-blue-800 dark:text-blue-300 bg-primary-muted border border-primary/20 px-2.5 py-0.5 rounded-full">
           {row.docType.replace(/_/g, " ")}
         </span>
       )
@@ -282,7 +282,7 @@ export const ClientDetailPage: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             title="View Document"
-            className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-smooth"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary-muted transition-smooth"
           >
             <Eye className="w-4 h-4" />
           </a>
@@ -290,14 +290,14 @@ export const ClientDetailPage: React.FC = () => {
             href={getDocActionUrl(row.id, "download")}
             download
             title="Download Document"
-            className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-smooth"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-smooth"
           >
             <Download className="w-4 h-4" />
           </a>
           <button
             onClick={() => setDocToDelete(row)}
             title="Delete Document"
-            className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-smooth"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-smooth"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -311,37 +311,37 @@ export const ClientDetailPage: React.FC = () => {
       {/* Back Button */}
       <button
         onClick={() => navigate("/clients")}
-        className="flex items-center space-x-2 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-smooth"
+        className="flex items-center space-x-2 text-xs font-semibold text-muted-foreground hover:text-foreground dark:hover:text-white transition-smooth"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Clients CRM</span>
       </button>
 
       {/* Client Profile Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-card border border-border rounded-xl shadow-xs">
         <div className="flex items-start space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center text-lg shadow-sm shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-primary text-white font-bold flex items-center justify-center text-lg shadow-sm shrink-0">
             {client.name.charAt(0)}
           </div>
           <div>
             <div className="flex items-center space-x-3">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">{client.name}</h2>
+              <h2 className="text-xl font-bold text-foreground tracking-tight">{client.name}</h2>
               <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                 client.status === "LEAD"
-                  ? "bg-purple-100 dark:bg-purple-950/50 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60"
+                  ? "bg-primary-muted dark:bg-primary-muted/50 text-primary dark:text-primary border border-primary/20"
                   : "bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
               }`}>
                 {client.status}
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Entity: <span className="font-semibold text-slate-700 dark:text-slate-200">{client.entityType}</span> | PAN: <span className="font-mono font-semibold text-slate-800 dark:text-slate-200">{client.pan}</span> | GSTIN: <span className="font-mono text-slate-800 dark:text-slate-200">{client.gstin || "N/A"}</span>
+            <p className="text-xs text-muted-foreground mt-1">
+              Entity: <span className="font-semibold text-slate-700 dark:text-slate-200">{client.entityType}</span> | PAN: <span className="font-mono font-semibold text-foreground">{client.pan}</span> | GSTIN: <span className="font-mono text-foreground">{client.gstin || "N/A"}</span>
             </p>
-            <div className="flex items-center space-x-4 text-xs text-slate-600 dark:text-slate-400 mt-2">
-              <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5 text-slate-400" />{client.contactPhone}</span>
+            <div className="flex items-center space-x-4 text-xs text-muted-foreground mt-2">
+              <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5 text-muted-foreground" />{client.contactPhone}</span>
               <span className="flex items-center gap-1">
-                <Mail className="w-3.5 h-3.5 text-slate-400" />
-                {client.contactEmail || <span className="text-slate-400 italic">No email provided</span>}
+                <Mail className="w-3.5 h-3.5 text-muted-foreground" />
+                {client.contactEmail || <span className="text-muted-foreground italic">No email provided</span>}
               </span>
             </div>
           </div>
@@ -351,7 +351,7 @@ export const ClientDetailPage: React.FC = () => {
           <Button
             size="sm"
             variant="outline"
-            leftIcon={<Upload className="w-4 h-4 text-blue-600 dark:text-blue-400" />}
+            leftIcon={<Upload className="w-4 h-4 text-primary" />}
             onClick={() => {
               setActiveTab("documents");
               setIsUploadModalOpen(true);
@@ -374,25 +374,25 @@ export const ClientDetailPage: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             <Card>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Active Engagements & Services</h3>
+                <h3 className="text-sm font-bold text-foreground">Active Engagements & Services</h3>
                 <Button size="sm" variant="outline" leftIcon={<Plus className="w-3.5 h-3.5" />} onClick={() => setIsAddServiceModalOpen(true)}>
                   Add Service
                 </Button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs mb-4">
                 <div className="p-3 bg-blue-50/60 dark:bg-blue-950/40 rounded-lg border border-blue-200 dark:border-blue-900/60">
-                  <span className="text-blue-700 dark:text-blue-400 font-medium">Independent Services</span>
-                  <p className="font-bold text-slate-900 dark:text-white text-base mt-1">{servicesData.length} Active</p>
+                  <span className="text-primary font-medium">Independent Services</span>
+                  <p className="font-bold text-foreground text-base mt-1">{servicesData.length} Active</p>
                 </div>
                 <div className="p-3 bg-emerald-50/60 dark:bg-emerald-950/40 rounded-lg border border-emerald-200 dark:border-emerald-900/60">
                   <span className="text-emerald-700 dark:text-emerald-400 font-medium">Total Agreed Fees</span>
-                  <p className="font-bold text-slate-900 dark:text-white text-base mt-1">
+                  <p className="font-bold text-foreground text-base mt-1">
                     ₹{servicesData.reduce((acc, s) => acc + (s.fee || 0), 0).toLocaleString("en-IN")}
                   </p>
                 </div>
-                <div className="p-3 bg-purple-50/60 dark:bg-purple-950/40 rounded-lg border border-purple-200 dark:border-purple-900/60">
-                  <span className="text-purple-700 dark:text-purple-400 font-medium">Completed Work</span>
-                  <p className="font-bold text-slate-900 dark:text-white text-base mt-1">
+                <div className="p-3 bg-primary-muted/60 dark:bg-primary-muted/40 rounded-lg border border-primary/20 dark:border-primary/20">
+                  <span className="text-primary dark:text-primary font-medium">Completed Work</span>
+                  <p className="font-bold text-foreground text-base mt-1">
                     {servicesData.filter(s => s.workStatus === "COMPLETED").length} / {servicesData.length || 1}
                   </p>
                 </div>
@@ -400,50 +400,50 @@ export const ClientDetailPage: React.FC = () => {
               {servicesData.length > 0 ? (
                 <div className="space-y-2">
                   {servicesData.slice(0, 3).map((svc) => (
-                    <div key={svc.id} className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 flex items-center justify-between">
+                    <div key={svc.id} className="p-2.5 rounded-lg border border-border bg-slate-50/60 dark:bg-slate-800/40 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                          svc.serviceType === "INCOME_TAX_RETURN" ? "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300" :
+                          svc.serviceType === "INCOME_TAX_RETURN" ? "bg-primary-muted text-blue-800 dark:bg-blue-950 dark:text-blue-300" :
                           svc.serviceType === "GST_RETURN" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300" :
-                          "bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300"
+                          "bg-primary-muted text-primary dark:bg-primary-muted dark:text-primary"
                         }`}>
                           {svc.serviceType === "INCOME_TAX_RETURN" ? "ITR" : svc.serviceType === "GST_RETURN" ? "GST" : "GST REG"}
                         </span>
-                        <span className="font-semibold text-slate-900 dark:text-white">{svc.serviceName}</span>
+                        <span className="font-semibold text-foreground">{svc.serviceName}</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="font-mono font-bold text-slate-800 dark:text-slate-200">₹{svc.fee.toLocaleString("en-IN")}</span>
+                        <span className="font-mono font-bold text-foreground">₹{svc.fee.toLocaleString("en-IN")}</span>
                         <StatusBadge status={svc.workStatus} />
                       </div>
                     </div>
                   ))}
                   {servicesData.length > 3 && (
-                    <button onClick={() => setActiveTab("services")} className="text-xs text-blue-600 dark:text-blue-400 font-medium hover:underline pt-1">
+                    <button onClick={() => setActiveTab("services")} className="text-xs text-primary font-medium hover:underline pt-1">
                       View all {servicesData.length} client services →
                     </button>
                   )}
                 </div>
               ) : (
-                <p className="text-xs text-slate-400 italic py-2">No independent client services registered yet. Click 'Add Service' to attach ITR, GST Return, or GST Registration.</p>
+                <p className="text-xs text-muted-foreground italic py-2">No independent client services registered yet. Click 'Add Service' to attach ITR, GST Return, or GST Registration.</p>
               )}
             </Card>
 
             <Card>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3">Statutory Snapshot</h3>
+              <h3 className="text-sm font-bold text-foreground mb-3">Statutory Snapshot</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
-                <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700/60">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">Active ITR</span>
-                  <p className="font-bold text-slate-900 dark:text-white mt-1">{client.itrFilings?.[0]?.assessmentYear || "AY 2026-27"}</p>
+                <div className="p-3 bg-muted/60 rounded-lg border border-border/60">
+                  <span className="text-muted-foreground font-medium">Active ITR</span>
+                  <p className="font-bold text-foreground mt-1">{client.itrFilings?.[0]?.assessmentYear || "AY 2026-27"}</p>
                   <StatusBadge status={client.itrFilings?.[0]?.status || "NOT_STARTED"} className="mt-1" />
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700/60">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">Recent GST Return</span>
-                  <p className="font-bold text-slate-900 dark:text-white mt-1">{client.gstReturns?.[0]?.returnType || "GSTR-3B"}</p>
+                <div className="p-3 bg-muted/60 rounded-lg border border-border/60">
+                  <span className="text-muted-foreground font-medium">Recent GST Return</span>
+                  <p className="font-bold text-foreground mt-1">{client.gstReturns?.[0]?.returnType || "GSTR-3B"}</p>
                   <StatusBadge status={client.gstReturns?.[0]?.status || "PENDING"} className="mt-1" />
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700/60">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">Uploaded Documents</span>
-                  <p className="font-bold text-slate-900 dark:text-white mt-1">{client.documents?.length || 0} Files</p>
+                <div className="p-3 bg-muted/60 rounded-lg border border-border/60">
+                  <span className="text-muted-foreground font-medium">Uploaded Documents</span>
+                  <p className="font-bold text-foreground mt-1">{client.documents?.length || 0} Files</p>
                 </div>
               </div>
             </Card>
@@ -451,14 +451,14 @@ export const ClientDetailPage: React.FC = () => {
 
           <div className="space-y-6">
             <Card>
-              <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">Assigned Staff</h3>
-              <div className="flex items-center space-x-3 p-3 bg-blue-50/50 dark:bg-slate-800/60 rounded-lg border border-blue-100 dark:border-slate-700/60">
-                <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs">
+              <h3 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3">Assigned Staff</h3>
+              <div className="flex items-center space-x-3 p-3 bg-blue-50/50 dark:bg-slate-800/60 rounded-lg border border-blue-100 dark:border-border/60">
+                <div className="w-8 h-8 rounded-full bg-primary text-white font-bold flex items-center justify-center text-xs">
                   {client.assignedStaff?.name.charAt(0) || "S"}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-900 dark:text-white">{client.assignedStaff?.name || "Unassigned"}</p>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400">{client.assignedStaff?.email || "staff@firm.com"}</p>
+                  <p className="text-xs font-bold text-foreground">{client.assignedStaff?.name || "Unassigned"}</p>
+                  <p className="text-[10px] text-muted-foreground">{client.assignedStaff?.email || "staff@firm.com"}</p>
                 </div>
               </div>
             </Card>
@@ -471,11 +471,11 @@ export const ClientDetailPage: React.FC = () => {
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                <Briefcase className="w-4 h-4 text-primary" />
                 Multiple Client Services & Engagements
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Each service (Income Tax Return, GST Return, GST Registration) has independent fees, payment status, and work status.
               </p>
             </div>
@@ -491,24 +491,24 @@ export const ClientDetailPage: React.FC = () => {
           {/* Metrics summary cards */}
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
             <Card className="p-4 bg-blue-50/50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/60">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Total Engagements</span>
-              <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">{servicesData.length} Services</p>
+              <span className="text-muted-foreground font-medium">Total Engagements</span>
+              <p className="text-lg font-bold text-foreground mt-1">{servicesData.length} Services</p>
             </Card>
             <Card className="p-4 bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/60">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Total Agreed Fees</span>
-              <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">
+              <span className="text-muted-foreground font-medium">Total Agreed Fees</span>
+              <p className="text-lg font-bold text-foreground mt-1">
                 ₹{servicesData.reduce((sum, s) => sum + (s.fee || 0), 0).toLocaleString("en-IN")}
               </p>
             </Card>
             <Card className="p-4 bg-amber-50/50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/60">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Pending Payments</span>
+              <span className="text-muted-foreground font-medium">Pending Payments</span>
               <p className="text-lg font-bold text-amber-700 dark:text-amber-400 mt-1">
                 {servicesData.filter(s => s.paymentStatus === "PENDING").length} Services
               </p>
             </Card>
-            <Card className="p-4 bg-purple-50/50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-900/60">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">In Progress Work</span>
-              <p className="text-lg font-bold text-purple-700 dark:text-purple-400 mt-1">
+            <Card className="p-4 bg-primary-muted/50 dark:bg-primary-muted/30 border-primary/20 dark:border-primary/20">
+              <span className="text-muted-foreground font-medium">In Progress Work</span>
+              <p className="text-lg font-bold text-primary dark:text-primary mt-1">
                 {servicesData.filter(s => s.workStatus === "IN_PROGRESS").length} Active
               </p>
             </Card>
@@ -520,7 +520,7 @@ export const ClientDetailPage: React.FC = () => {
               servicesData.map((service) => (
                 <div
                   key={service.id}
-                  className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-smooth"
+                  className="p-4 rounded-xl border border-border bg-card shadow-2xs hover:border-border transition-smooth"
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     {/* Left: Service Type & Details */}
@@ -529,10 +529,10 @@ export const ClientDetailPage: React.FC = () => {
                         <span
                           className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
                             service.serviceType === "INCOME_TAX_RETURN"
-                              ? "bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+                              ? "bg-primary-muted text-blue-800 dark:bg-blue-950/70 dark:text-blue-300 border border-primary/20"
                               : service.serviceType === "GST_RETURN"
                               ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
-                              : "bg-purple-100 text-purple-800 dark:bg-purple-950/70 dark:text-purple-300 border border-purple-200 dark:border-purple-800"
+                              : "bg-primary-muted text-primary dark:bg-primary-muted/70 dark:text-primary border border-primary/20"
                           }`}
                         >
                           {service.serviceType === "INCOME_TAX_RETURN"
@@ -541,19 +541,19 @@ export const ClientDetailPage: React.FC = () => {
                             ? "GST Return"
                             : "GST Registration"}
                         </span>
-                        <h4 className="text-xs font-bold text-slate-900 dark:text-white">{service.serviceName}</h4>
+                        <h4 className="text-xs font-bold text-foreground">{service.serviceName}</h4>
                       </div>
 
                       {/* Service specific metadata */}
-                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-600 dark:text-slate-400">
+                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
                         {service.serviceType === "INCOME_TAX_RETURN" && (
                           <>
-                            <span className="font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-800/60">
+                            <span className="font-semibold text-primary bg-primary-muted px-2 py-0.5 rounded border border-primary/20">
                               Form: {service.serviceData?.itrFormType?.replace("_", "-") || "ITR-1"}
                             </span>
-                            <span>Assessment Year: <strong className="text-slate-800 dark:text-slate-200">{service.serviceData?.assessmentYear || "AY 2026-27"}</strong></span>
+                            <span>Assessment Year: <strong className="text-foreground">{service.serviceData?.assessmentYear || "AY 2026-27"}</strong></span>
                             {service.serviceData?.acknowledgementNo && (
-                              <span>Ack: <strong className="font-mono text-slate-800 dark:text-slate-200">{service.serviceData.acknowledgementNo}</strong></span>
+                              <span>Ack: <strong className="font-mono text-foreground">{service.serviceData.acknowledgementNo}</strong></span>
                             )}
                           </>
                         )}
@@ -562,45 +562,45 @@ export const ClientDetailPage: React.FC = () => {
                             <span className="font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/60">
                               Return: {service.serviceData?.returnType || "GSTR3B"}
                             </span>
-                            <span>Period: <strong className="text-slate-800 dark:text-slate-200">{service.serviceData?.period || "Current"}</strong></span>
+                            <span>Period: <strong className="text-foreground">{service.serviceData?.period || "Current"}</strong></span>
                           </>
                         )}
                         {service.serviceType === "GST_REGISTRATION" && (
                           <>
-                            <span className="font-semibold text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/50 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800/60">
+                            <span className="font-semibold text-primary dark:text-primary bg-primary-muted px-2 py-0.5 rounded border border-primary/20">
                               Type: {service.serviceData?.registrationType || "Regular"}
                             </span>
                             {service.serviceData?.trn && (
-                              <span>TRN: <strong className="font-mono text-slate-800 dark:text-slate-200">{service.serviceData.trn}</strong></span>
+                              <span>TRN: <strong className="font-mono text-foreground">{service.serviceData.trn}</strong></span>
                             )}
                             {service.serviceData?.state && (
-                              <span>State: <strong className="text-slate-800 dark:text-slate-200">{service.serviceData.state}</strong></span>
+                              <span>State: <strong className="text-foreground">{service.serviceData.state}</strong></span>
                             )}
                           </>
                         )}
-                        <span className="text-slate-400">• Added on {new Date(service.createdAt).toLocaleDateString()}</span>
+                        <span className="text-muted-foreground">• Added on {new Date(service.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
 
                     {/* Right: Independent Fee, Payment Status, Work Status, Actions */}
                     <div className="flex flex-wrap items-center gap-4 text-xs">
                       <div>
-                        <span className="text-[10px] text-slate-400 block">Service Fee</span>
-                        <span className="font-mono font-bold text-sm text-slate-900 dark:text-white">
+                        <span className="text-[10px] text-muted-foreground block">Service Fee</span>
+                        <span className="font-mono font-bold text-sm text-foreground">
                           ₹{service.fee?.toLocaleString("en-IN")}
                         </span>
                       </div>
 
                       <div>
-                        <span className="text-[10px] text-slate-400 block">Payment Status</span>
+                        <span className="text-[10px] text-muted-foreground block">Payment Status</span>
                         <span
                           className={`inline-block font-semibold text-[11px] px-2 py-0.5 rounded border ${
                             service.paymentStatus === "PAID"
                               ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800"
                               : service.paymentStatus === "PARTIAL"
-                              ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800"
+                              ? "bg-blue-50 text-primary border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800"
                               : service.paymentStatus === "WAIVED"
-                              ? "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
+                              ? "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-muted-foreground dark:border-border"
                               : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800"
                           }`}
                         >
@@ -609,7 +609,7 @@ export const ClientDetailPage: React.FC = () => {
                       </div>
 
                       <div>
-                        <span className="text-[10px] text-slate-400 block">Work Status</span>
+                        <span className="text-[10px] text-muted-foreground block">Work Status</span>
                         <StatusBadge status={service.workStatus} />
                       </div>
 
@@ -637,10 +637,10 @@ export const ClientDetailPage: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div className="p-8 text-center rounded-xl border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-                <Briefcase className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">No Services Added Yet</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
+              <div className="p-8 text-center rounded-xl border border-dashed border-border bg-muted/30">
+                <Briefcase className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                <h4 className="text-sm font-bold text-foreground/80">No Services Added Yet</h4>
+                <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
                   Attach independent services like Income Tax Return (ITR-1 to 7), GST Return, or GST Registration for this client.
                 </p>
                 <Button size="sm" className="mt-4" onClick={() => setIsAddServiceModalOpen(true)}>
@@ -657,10 +657,10 @@ export const ClientDetailPage: React.FC = () => {
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+              <h3 className="text-sm font-bold text-foreground">
                 Documents Linked to {client.name}
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 All files uploaded here are securely linked specifically to this client account.
               </p>
             </div>
@@ -675,13 +675,13 @@ export const ClientDetailPage: React.FC = () => {
 
           {/* Checklist Bar */}
           {checklistData && (
-            <Card className="bg-gradient-to-r from-blue-50/60 to-indigo-50/60 dark:from-slate-900 dark:to-blue-950/40 border-blue-200 dark:border-blue-900/60">
+            <Card className="bg-primary-muted/30 border-primary/20">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Document Verification Checklist</h4>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">Essential KYC & Tax files required for full statutory filing compliance.</p>
+                  <h4 className="text-xs font-bold text-foreground">Document Verification Checklist</h4>
+                  <p className="text-[11px] text-muted-foreground">Essential KYC & Tax files required for full statutory filing compliance.</p>
                 </div>
-                <span className="text-xs font-bold bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 px-2.5 py-1 rounded-full">
+                <span className="text-xs font-bold bg-primary-muted dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 px-2.5 py-1 rounded-full">
                   {checklistData.completedCount} / {checklistData.totalRequired} Verified
                 </span>
               </div>
@@ -690,7 +690,7 @@ export const ClientDetailPage: React.FC = () => {
                 {checklistData.checklist?.map((item: any) => (
                   <div
                     key={item.docType}
-                    className="p-2.5 rounded-lg border border-blue-200/80 dark:border-slate-750 bg-white dark:bg-slate-800 flex items-center justify-between"
+                    className="p-2.5 rounded-lg border border-blue-200/80 dark:border-slate-750 bg-card flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2 truncate pr-1">
                       {item.isCompleted ? (
@@ -698,7 +698,7 @@ export const ClientDetailPage: React.FC = () => {
                       ) : (
                         <AlertCircle className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0" />
                       )}
-                      <span className="font-semibold text-slate-800 dark:text-slate-200 truncate">
+                      <span className="font-semibold text-foreground truncate">
                         {item.docType.replace(/_/g, " ")}
                       </span>
                     </div>
@@ -729,20 +729,20 @@ export const ClientDetailPage: React.FC = () => {
       {/* TAB 3: ITR */}
       {activeTab === "itr" && (
         <Card>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4">Client ITR Compliance Filings</h3>
+          <h3 className="text-sm font-bold text-foreground mb-4">Client ITR Compliance Filings</h3>
           <div className="space-y-2">
             {client.itrFilings?.length ? (
               client.itrFilings.map((itr: any) => (
-                <div key={itr.id} className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
+                <div key={itr.id} className="p-3 rounded-lg border border-border bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">{itr.assessmentYear} — {itr.itrFormType}</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Due: {new Date(itr.dueDate).toLocaleDateString()}</p>
+                    <h4 className="text-xs font-bold text-foreground">{itr.assessmentYear} — {itr.itrFormType}</h4>
+                    <p className="text-[11px] text-muted-foreground">Due: {new Date(itr.dueDate).toLocaleDateString()}</p>
                   </div>
                   <StatusBadge status={itr.status} />
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-400 dark:text-slate-500 italic py-3">No ITR filings registered for this client.</p>
+              <p className="text-xs text-muted-foreground italic py-3">No ITR filings registered for this client.</p>
             )}
           </div>
         </Card>
@@ -751,20 +751,20 @@ export const ClientDetailPage: React.FC = () => {
       {/* TAB 4: GST */}
       {activeTab === "gst" && (
         <Card>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4">GST Returns & Schedules</h3>
+          <h3 className="text-sm font-bold text-foreground mb-4">GST Returns & Schedules</h3>
           <div className="space-y-2">
             {client.gstReturns?.length ? (
               client.gstReturns.map((gst: any) => (
-                <div key={gst.id} className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
+                <div key={gst.id} className="p-3 rounded-lg border border-border bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">{gst.returnType} — {gst.period}</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Due: {new Date(gst.dueDate).toLocaleDateString()}</p>
+                    <h4 className="text-xs font-bold text-foreground">{gst.returnType} — {gst.period}</h4>
+                    <p className="text-[11px] text-muted-foreground">Due: {new Date(gst.dueDate).toLocaleDateString()}</p>
                   </div>
                   <StatusBadge status={gst.status} />
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-400 dark:text-slate-500 italic py-3">No GST return schedules registered for this client.</p>
+              <p className="text-xs text-muted-foreground italic py-3">No GST return schedules registered for this client.</p>
             )}
           </div>
         </Card>
@@ -773,20 +773,20 @@ export const ClientDetailPage: React.FC = () => {
       {/* TAB 5: TDS */}
       {activeTab === "tds" && (
         <Card>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4">TDS / TCS Reconciliation Records</h3>
+          <h3 className="text-sm font-bold text-foreground mb-4">TDS / TCS Reconciliation Records</h3>
           <div className="space-y-2">
             {client.tdsTcsEntries?.length ? (
               client.tdsTcsEntries.map((tds: any) => (
-                <div key={tds.id} className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
+                <div key={tds.id} className="p-3 rounded-lg border border-border bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">{tds.financialYear} • Deductor TAN: {tds.deductorTan}</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Amount: ₹{tds.amount?.toLocaleString("en-IN")}</p>
+                    <h4 className="text-xs font-bold text-foreground">{tds.financialYear} • Deductor TAN: {tds.deductorTan}</h4>
+                    <p className="text-[11px] text-muted-foreground">Amount: ₹{tds.amount?.toLocaleString("en-IN")}</p>
                   </div>
                   <StatusBadge status={tds.reconciliationStatus} />
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-400 dark:text-slate-500 italic py-3">No TDS/TCS entries recorded for this client.</p>
+              <p className="text-xs text-muted-foreground italic py-3">No TDS/TCS entries recorded for this client.</p>
             )}
           </div>
         </Card>
@@ -795,20 +795,20 @@ export const ClientDetailPage: React.FC = () => {
       {/* TAB 6: BILLING */}
       {activeTab === "billing" && (
         <Card>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4">Invoices & Fee Statements</h3>
+          <h3 className="text-sm font-bold text-foreground mb-4">Invoices & Fee Statements</h3>
           <div className="space-y-2">
             {client.invoices?.length ? (
               client.invoices.map((inv: any) => (
-                <div key={inv.id} className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
+                <div key={inv.id} className="p-3 rounded-lg border border-border bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Invoice #{inv.invoiceNo} — ₹{inv.total?.toLocaleString("en-IN")}</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Due: {new Date(inv.dueDate).toLocaleDateString()}</p>
+                    <h4 className="text-xs font-bold text-foreground">Invoice #{inv.invoiceNo} — ₹{inv.total?.toLocaleString("en-IN")}</h4>
+                    <p className="text-[11px] text-muted-foreground">Due: {new Date(inv.dueDate).toLocaleDateString()}</p>
                   </div>
                   <StatusBadge status={inv.status} />
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-400 dark:text-slate-500 italic py-3">No invoices generated for this client.</p>
+              <p className="text-xs text-muted-foreground italic py-3">No invoices generated for this client.</p>
             )}
           </div>
         </Card>
@@ -817,20 +817,20 @@ export const ClientDetailPage: React.FC = () => {
       {/* TAB 7: TASKS */}
       {activeTab === "tasks" && (
         <Card>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4">Associated Operational Tasks</h3>
+          <h3 className="text-sm font-bold text-foreground mb-4">Associated Operational Tasks</h3>
           <div className="space-y-2">
             {client.tasks?.length ? (
               client.tasks.map((task: any) => (
-                <div key={task.id} className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
+                <div key={task.id} className="p-3 rounded-lg border border-border bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">{task.title}</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Due: {new Date(task.dueDate).toLocaleDateString()}</p>
+                    <h4 className="text-xs font-bold text-foreground">{task.title}</h4>
+                    <p className="text-[11px] text-muted-foreground">Due: {new Date(task.dueDate).toLocaleDateString()}</p>
                   </div>
                   <StatusBadge status={task.status} />
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-400 dark:text-slate-500 italic py-3">No active tasks for this client.</p>
+              <p className="text-xs text-muted-foreground italic py-3">No active tasks for this client.</p>
             )}
           </div>
         </Card>
@@ -845,7 +845,7 @@ export const ClientDetailPage: React.FC = () => {
           maxWidth="md"
         >
           <form onSubmit={handleUpload} className="space-y-4 text-xs">
-            <div className="p-2.5 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 rounded-lg text-blue-900 dark:text-blue-200">
+            <div className="p-2.5 bg-primary-muted border border-primary/20 rounded-lg text-foreground">
               Files will be stored and strictly linked to <strong>{client.name}</strong> ({client.pan}).
             </div>
 
@@ -856,7 +856,7 @@ export const ClientDetailPage: React.FC = () => {
             )}
 
             <div>
-              <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block font-medium text-foreground/80 mb-1">
                 Document Name / Title
               </label>
               <Input
@@ -868,13 +868,13 @@ export const ClientDetailPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block font-medium text-foreground/80 mb-1">
                 Document Category
               </label>
               <select
                 value={docType}
                 onChange={(e) => setDocType(e.target.value as any)}
-                className="w-full border border-slate-300 dark:border-slate-700 rounded-lg p-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                className="w-full border border-border rounded-lg p-2 bg-card text-foreground"
               >
                 <option value="PAN">PAN Card</option>
                 <option value="BANK_STATEMENT">Bank Statement</option>
@@ -884,22 +884,22 @@ export const ClientDetailPage: React.FC = () => {
               </select>
             </div>
 
-            <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-5 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-smooth">
-              <Upload className="w-6 h-6 text-slate-400 mx-auto mb-1.5" />
+            <div className="border-2 border-dashed border-border rounded-xl p-5 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-smooth">
+              <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-1.5" />
               <input
                 type="file"
                 onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                className="text-xs text-slate-500 dark:text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 dark:file:bg-blue-950/50 file:text-blue-700 dark:file:text-blue-300"
+                className="text-xs text-muted-foreground file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 dark:file:bg-blue-950/50 file:text-primary dark:file:text-blue-300"
                 required
               />
               {selectedFile && (
-                <p className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-2 truncate">
+                <p className="text-xs font-bold text-foreground mt-2 truncate">
                   {selectedFile.name} ({(selectedFile.size / 1024).toFixed(0)} KB)
                 </p>
               )}
             </div>
 
-            <div className="flex justify-end space-x-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex justify-end space-x-2 pt-2 border-t border-border">
               <Button type="button" variant="outline" onClick={() => setIsUploadModalOpen(false)}>
                 Cancel
               </Button>
@@ -920,10 +920,10 @@ export const ClientDetailPage: React.FC = () => {
           maxWidth="sm"
         >
           <div className="space-y-3 text-xs">
-            <p className="text-slate-700 dark:text-slate-300">
+            <p className="text-foreground/80">
               Are you sure you want to permanently delete <strong>"{docToDelete.fileName}"</strong>? This will revoke verification.
             </p>
-            <div className="flex justify-end space-x-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex justify-end space-x-2 pt-2 border-t border-border">
               <Button variant="outline" onClick={() => setDocToDelete(null)}>
                 Cancel
               </Button>
@@ -966,7 +966,7 @@ export const ClientDetailPage: React.FC = () => {
             {/* Income Tax Return Specific Options */}
             {serviceType === "INCOME_TAX_RETURN" && (
               <div className="p-3 bg-blue-50/50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/60 rounded-xl space-y-3">
-                <h4 className="font-bold text-blue-900 dark:text-blue-200 text-xs">ITR Configuration</h4>
+                <h4 className="font-bold text-foreground text-xs">ITR Configuration</h4>
                 <Select
                   label="Select ITR Form"
                   value={itrFormType}
@@ -1018,8 +1018,8 @@ export const ClientDetailPage: React.FC = () => {
 
             {/* GST Registration Specific Options */}
             {serviceType === "GST_REGISTRATION" && (
-              <div className="p-3 bg-purple-50/50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/60 rounded-xl space-y-3">
-                <h4 className="font-bold text-purple-900 dark:text-purple-200 text-xs">GST Registration Configuration</h4>
+              <div className="p-3 bg-primary-muted/50 dark:bg-primary-muted/30 border border-primary/20 dark:border-primary/20 rounded-xl space-y-3">
+                <h4 className="font-bold text-primary dark:text-primary text-xs">GST Registration Configuration</h4>
                 <Select
                   label="Registration Category"
                   value={gstRegType}
@@ -1083,7 +1083,7 @@ export const ClientDetailPage: React.FC = () => {
               />
             </div>
 
-            <div className="flex justify-end space-x-2 pt-4 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex justify-end space-x-2 pt-4 border-t border-border">
               <Button type="button" variant="outline" onClick={() => setIsAddServiceModalOpen(false)}>
                 Cancel
               </Button>
@@ -1137,7 +1137,7 @@ export const ClientDetailPage: React.FC = () => {
               ]}
             />
 
-            <div className="flex justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex justify-end space-x-2 pt-3 border-t border-border">
               <Button type="button" variant="outline" onClick={() => setEditingService(null)}>
                 Cancel
               </Button>
@@ -1158,10 +1158,10 @@ export const ClientDetailPage: React.FC = () => {
           maxWidth="sm"
         >
           <div className="space-y-3 text-xs">
-            <p className="text-slate-700 dark:text-slate-300">
+            <p className="text-foreground/80">
               Are you sure you want to remove <strong>"{serviceToDelete.serviceName}"</strong>? This will remove this work item without affecting other services for this client.
             </p>
-            <div className="flex justify-end space-x-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex justify-end space-x-2 pt-2 border-t border-border">
               <Button variant="outline" onClick={() => setServiceToDelete(null)}>
                 Cancel
               </Button>

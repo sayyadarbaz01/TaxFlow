@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Bot,
   Send,
   Sparkles,
   Database,
@@ -15,6 +14,7 @@ import { AiSourceCitation } from "@ca-saas/shared-types";
 import { useAskAiMutation } from "../../lib/api";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
+import { PageHeader } from "../../components/ui/PageHeader";
 
 interface ChatMessage {
   id: string;
@@ -66,7 +66,7 @@ function renderInlineMarkdown(text: string): React.ReactNode[] {
       return (
         <code
           key={i}
-          className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-900 text-[11px] font-mono"
+          className="px-1 py-0.5 rounded bg-muted text-[11px] font-mono"
         >
           {part.slice(1, -1)}
         </code>
@@ -80,7 +80,7 @@ function renderInlineMarkdown(text: string): React.ReactNode[] {
           href={link[2]}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-600 dark:text-blue-400 underline"
+          className="text-primary underline"
         >
           {link[1]}
         </a>
@@ -114,11 +114,11 @@ function MarkdownContent({ content }: { content: string }) {
               <React.Fragment key={li}>
                 {li > 0 && <br />}
                 {line.startsWith("### ")
-                  ? <span className="font-bold text-[11px] uppercase tracking-wide text-slate-600 dark:text-slate-300">{renderInlineMarkdown(line.slice(4))}</span>
+                  ? <span className="font-bold text-[11px] uppercase tracking-wide text-muted-foreground">{renderInlineMarkdown(line.slice(4))}</span>
                   : line.startsWith("## ")
                     ? <span className="font-bold">{renderInlineMarkdown(line.slice(3))}</span>
                     : line === "---"
-                      ? <hr className="border-slate-200 dark:border-slate-700 my-1" />
+                      ? <hr className="border-border my-1" />
                       : renderInlineMarkdown(line)}
               </React.Fragment>
             ))}
@@ -205,47 +205,43 @@ export const AiAssistantPage: React.FC = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6 pb-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-            <Bot className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            AI Tax Assistant
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Gemini-powered guidance with RBAC-scoped practice data and cited web sources for current tax info.
-          </p>
-        </div>
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          Backend-only API key · Scoped to your clients
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Practice AI"
+        title="AI Tax Assistant"
+        description="Gemini-powered guidance with RBAC-scoped practice data and cited web sources."
+        actions={
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            Backend-only API key · Scoped to your clients
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 min-h-[560px] xl:h-[calc(100vh-12rem)]">
         <Card className="xl:col-span-2 flex flex-col h-full min-h-[480px] p-0 overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 bg-slate-50/50 dark:bg-slate-950/50">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 bg-muted/30">
             {messages.map((m) => (
               <div
                 key={m.id}
                 className={`flex gap-2.5 sm:gap-3 ${m.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 {m.role === "assistant" && (
-                  <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-1 shadow-xs">
+                  <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-1 shadow-xs">
                     AI
                   </div>
                 )}
                 <div
                   className={`p-3 sm:p-3.5 rounded-2xl max-w-[92%] sm:max-w-xl text-xs leading-relaxed ${
                     m.role === "user"
-                      ? "bg-blue-600 text-white rounded-br-none shadow-xs"
+                      ? "bg-primary text-white rounded-br-none shadow-xs"
                       : m.isError
                         ? "bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-900 rounded-bl-none"
-                        : "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-bl-none shadow-2xs"
+                        : "bg-card text-foreground border border-border rounded-bl-none shadow-2xs"
                   }`}
                 >
                   {m.role === "assistant" && m.sourceType && !m.isError && (
-                    <div className="flex items-center space-x-1 text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5 border-b border-slate-100 dark:border-slate-700 pb-1">
-                      <Database className="w-3 h-3 text-blue-500 dark:text-blue-400" />
+                    <div className="flex items-center space-x-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5 border-b border-border pb-1">
+                      <Database className="w-3 h-3 text-primary" />
                       <span>Source: {formatSourceLabel(m.sourceType)}</span>
                     </div>
                   )}
@@ -260,12 +256,12 @@ export const AiAssistantPage: React.FC = () => {
                   </div>
 
                   {m.sources && m.sources.length > 0 && (
-                    <div className="mt-3 pt-2 border-t border-slate-100 dark:border-slate-700 space-y-1.5">
-                      <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <div className="mt-3 pt-2 border-t border-border space-y-1.5">
+                      <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                         <Link2 className="w-3 h-3" />
                         Citations
                         {m.lastUpdated && (
-                          <span className="ml-auto normal-case font-medium flex items-center gap-1 text-slate-400">
+                          <span className="ml-auto normal-case font-medium flex items-center gap-1 text-muted-foreground">
                             <Clock3 className="w-3 h-3" />
                             Last updated {new Date(m.lastUpdated).toLocaleString()}
                           </span>
@@ -277,7 +273,7 @@ export const AiAssistantPage: React.FC = () => {
                           href={s.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-start gap-1.5 text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
+                          className="flex items-start gap-1.5 text-[11px] text-primary hover:underline"
                         >
                           <ExternalLink className="w-3 h-3 mt-0.5 flex-shrink-0" />
                           <span className="break-all">{s.title || s.url}</span>
@@ -293,7 +289,7 @@ export const AiAssistantPage: React.FC = () => {
                           key={action}
                           type="button"
                           onClick={() => handleSend(undefined, action)}
-                          className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-900/70 text-[10px] font-medium text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 dark:hover:text-blue-300 transition-smooth"
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-muted/70 text-[10px] font-medium text-muted-foreground hover:bg-primary-muted hover:text-primary dark:hover:text-primary transition-smooth"
                         >
                           <Lightbulb className="w-3 h-3 text-amber-500" />
                           {action}
@@ -303,7 +299,7 @@ export const AiAssistantPage: React.FC = () => {
                   )}
                 </div>
                 {m.role === "user" && (
-                  <div className="w-7 h-7 rounded-full bg-slate-800 dark:bg-slate-700 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-1">
+                  <div className="w-7 h-7 rounded-full bg-muted text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-1">
                     U
                   </div>
                 )}
@@ -312,15 +308,15 @@ export const AiAssistantPage: React.FC = () => {
 
             {isLoading && (
               <div className="flex gap-2.5 items-start">
-                <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 shadow-xs">
+                <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[10px] flex-shrink-0 shadow-xs">
                   AI
                 </div>
-                <div className="px-3.5 py-3 rounded-2xl rounded-bl-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400">
+                <div className="px-3.5 py-3 rounded-2xl rounded-bl-none bg-card border border-border text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-2">
                     <span className="flex gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse [animation-delay:150ms]" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse [animation-delay:300ms]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse [animation-delay:150ms]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse [animation-delay:300ms]" />
                     </span>
                     TaxFlow AI is thinking…
                   </span>
@@ -330,7 +326,7 @@ export const AiAssistantPage: React.FC = () => {
             <div ref={bottomRef} />
           </div>
 
-          <div className="px-3 sm:px-4 py-2 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 overflow-x-auto text-[11px]">
+          <div className="px-3 sm:px-4 py-2 bg-card border-t border-border flex items-center gap-2 overflow-x-auto text-[11px]">
             <Sparkles className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
             {QUICK_PROMPTS.map((p) => (
               <button
@@ -338,7 +334,7 @@ export const AiAssistantPage: React.FC = () => {
                 type="button"
                 disabled={isLoading}
                 onClick={() => handleSend(undefined, p)}
-                className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/50 hover:text-blue-700 dark:hover:text-blue-300 text-slate-600 dark:text-slate-300 font-medium whitespace-nowrap transition-smooth border border-slate-200 dark:border-slate-700 disabled:opacity-50"
+                className="px-2.5 py-1 rounded-full bg-muted hover:bg-primary-muted hover:text-primary dark:hover:text-primary text-muted-foreground font-medium whitespace-nowrap transition-smooth border border-border disabled:opacity-50"
               >
                 {p}
               </button>
@@ -347,7 +343,7 @@ export const AiAssistantPage: React.FC = () => {
 
           <form
             onSubmit={handleSend}
-            className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex gap-2"
+            className="p-3 bg-card border-t border-border flex gap-2"
           >
             <input
               type="text"
@@ -355,7 +351,7 @@ export const AiAssistantPage: React.FC = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               disabled={isLoading}
-              className="flex-1 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60"
+              className="flex-1 text-xs bg-muted border border-border text-foreground placeholder:text-muted-foreground rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
             />
             <Button type="submit" size="sm" isLoading={isLoading} leftIcon={<Send className="w-3.5 h-3.5" />}>
               Send
@@ -364,38 +360,38 @@ export const AiAssistantPage: React.FC = () => {
         </Card>
 
         <Card className="h-full space-y-4 overflow-y-auto">
-          <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 pb-2">
+          <h3 className="text-xs font-bold text-foreground uppercase tracking-wider border-b border-border pb-2">
             Assistant Capabilities
           </h3>
 
           <div className="space-y-3 text-xs">
-            <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700/60">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Model</span>
-              <p className="font-bold text-slate-900 dark:text-white mt-0.5">Google Gemini</p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
+            <div className="p-3 bg-muted/60 rounded-lg border border-border/60">
+              <span className="text-muted-foreground font-medium">Model</span>
+              <p className="font-bold text-foreground mt-0.5">Google Gemini</p>
+              <p className="text-[10px] text-muted-foreground mt-1">
                 Swappable provider adapter · key never sent to the browser
               </p>
             </div>
 
-            <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700/60">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Practice data</span>
-              <p className="font-bold text-slate-900 dark:text-white mt-0.5">RBAC-scoped live records</p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
+            <div className="p-3 bg-muted/60 rounded-lg border border-border/60">
+              <span className="text-muted-foreground font-medium">Practice data</span>
+              <p className="font-bold text-foreground mt-0.5">RBAC-scoped live records</p>
+              <p className="text-[10px] text-muted-foreground mt-1">
                 Clients, filings, documents, tasks, invoices — only your authorized scope
               </p>
             </div>
 
-            <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700/60">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Current tax info</span>
-              <p className="font-bold text-slate-900 dark:text-white mt-0.5">Google Search grounding</p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
+            <div className="p-3 bg-muted/60 rounded-lg border border-border/60">
+              <span className="text-muted-foreground font-medium">Current tax info</span>
+              <p className="font-bold text-foreground mt-0.5">Google Search grounding</p>
+              <p className="text-[10px] text-muted-foreground mt-1">
                 Citations + last-updated shown when external sources are used
               </p>
             </div>
 
-            <div className="p-3 bg-blue-50/50 dark:bg-blue-950/40 rounded-lg border border-blue-100 dark:border-blue-900/50 text-blue-900 dark:text-blue-200">
+            <div className="p-3 bg-primary-muted/50 rounded-lg border border-primary/20 text-foreground">
               <p className="font-semibold text-[11px]">Professional use notice</p>
-              <p className="text-[10px] text-blue-700 dark:text-blue-300 mt-1 leading-relaxed">
+              <p className="text-[10px] text-primary mt-1 leading-relaxed">
                 Always verify statutory dates, rates, and filings against official portals before submission. TaxFlow AI does not replace CA professional judgment.
               </p>
             </div>

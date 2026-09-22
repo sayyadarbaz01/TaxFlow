@@ -1,5 +1,5 @@
 import React from "react";
-import { clsx } from "clsx";
+import { cn } from "../../lib/cn";
 
 export interface TabItem {
   id: string;
@@ -16,32 +16,33 @@ export interface TabsProps {
 
 export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, className }) => {
   return (
-    <div className={clsx("border-b border-slate-200 dark:border-slate-800 flex space-x-4 sm:space-x-6 overflow-x-auto", className)}>
-      {tabs.map(tab => {
+    <div className={cn("border-b border-border flex gap-1 overflow-x-auto", className)}>
+      {tabs.map((tab) => {
         const isActive = tab.id === activeTab;
         return (
           <button
             key={tab.id}
             onClick={() => onChange(tab.id)}
-            className={clsx(
-              "py-3 text-xs font-semibold border-b-2 transition-smooth whitespace-nowrap flex items-center gap-2",
+            className={cn(
+              "relative px-3 py-2.5 text-xs font-semibold transition-smooth whitespace-nowrap flex items-center gap-2 rounded-t-lg",
               isActive
-                ? "border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400"
-                : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700"
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
             )}
           >
             <span>{tab.label}</span>
             {tab.badge !== undefined && (
               <span
-                className={clsx(
-                  "px-1.5 py-0.5 rounded-full text-[10px] font-bold",
-                  isActive
-                    ? "bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                className={cn(
+                  "px-1.5 py-0.5 rounded-md text-2xs font-bold tabular-nums",
+                  isActive ? "bg-primary-muted text-primary" : "bg-muted text-muted-foreground"
                 )}
               >
                 {tab.badge}
               </span>
+            )}
+            {isActive && (
+              <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-primary" />
             )}
           </button>
         );
@@ -49,4 +50,3 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, className
     </div>
   );
 };
-

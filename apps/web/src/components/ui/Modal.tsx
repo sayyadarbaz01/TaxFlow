@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { X } from "lucide-react";
-import { clsx } from "clsx";
+import { cn } from "../../lib/cn";
 
 export interface ModalProps {
   isOpen: boolean;
@@ -43,21 +43,28 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" onClick={onClose} />
-      <div className="flex min-h-full items-center justify-center p-3 sm:p-4">
+      <div
+        className="fixed inset-0 bg-slate-950/50 backdrop-blur-[2px] transition-opacity"
+        onClick={onClose}
+      />
+      <div className="flex min-h-full items-center justify-center p-4">
         <div
-          className={clsx(
-            "relative w-full bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 z-10 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150 text-slate-900 dark:text-slate-100",
+          className={cn(
+            "relative w-full bg-card text-card-foreground rounded-2xl shadow-elevated border border-border p-5 sm:p-6 z-10 max-h-[90vh] overflow-y-auto animate-fade-in",
             widthClasses[maxWidth]
           )}
+          role="dialog"
+          aria-modal="true"
+          aria-label={title}
         >
-          <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800 mb-4 sticky top-0 bg-white dark:bg-slate-900 z-10">
-            <h3 className="text-base font-semibold text-slate-900 dark:text-white">{title}</h3>
+          <div className="flex items-center justify-between pb-4 border-b border-border mb-5 sticky top-0 bg-card z-10">
+            <h3 className="text-sm font-semibold tracking-tight text-foreground">{title}</h3>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-smooth"
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-smooth focus-ring"
+              aria-label="Close"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
           <div>{children}</div>
@@ -66,4 +73,3 @@ export const Modal: React.FC<ModalProps> = ({
     </div>
   );
 };
-

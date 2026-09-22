@@ -5,167 +5,95 @@
 @layer base {
   :root {
     color-scheme: light;
+    --background: 248 250 252;
+    --foreground: 15 23 42;
+    --card: 255 255 255;
+    --card-foreground: 15 23 42;
+    --muted: 241 245 249;
+    --muted-foreground: 100 116 139;
+    --border: 226 232 240;
+    --ring: 13 148 136;
+    --primary: 13 148 136;
+    --primary-foreground: 255 255 255;
+    --primary-muted: 240 253 250;
+    --destructive: 225 29 72;
+    --destructive-foreground: 255 255 255;
+    --success: 5 150 105;
+    --success-foreground: 255 255 255;
+    --warning: 217 119 6;
+    --warning-foreground: 255 255 255;
+    --radius: 0.75rem;
   }
-  .dark, [data-theme="dark"] {
+
+  .dark {
     color-scheme: dark;
+    --background: 8 12 20;
+    --foreground: 248 250 252;
+    --card: 15 23 42;
+    --card-foreground: 248 250 252;
+    --muted: 30 41 59;
+    --muted-foreground: 148 163 184;
+    --border: 30 41 59;
+    --ring: 45 212 191;
+    --primary: 45 212 191;
+    --primary-foreground: 8 12 20;
+    --primary-muted: 19 78 74;
+    --destructive: 251 113 133;
+    --destructive-foreground: 8 12 20;
+    --success: 52 211 153;
+    --success-foreground: 8 12 20;
+    --warning: 251 191 36;
+    --warning-foreground: 8 12 20;
+  }
+
+  html {
+    @apply antialiased;
   }
 
   body {
-    background-color: #f8fafc;
-    color: #0f172a;
-    font-family: Inter, system-ui, -apple-system, sans-serif;
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "ss01" on, "cv11" on;
   }
-  .dark body, body.dark {
-    background-color: #090d16;
-    color: #f8fafc;
+
+  * {
+    @apply border-border;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-foreground;
   }
 }
 
-/* ==========================================================================
-   UNIVERSAL THEME ENGINE
-   Guarantees 100% Light & Dark Mode rendering across all pages & components
-   ========================================================================== */
+@layer components {
+  .transition-smooth {
+    @apply transition-all duration-200 ease-smooth;
+  }
 
-/* 1. Root & Body Backgrounds */
-html.dark,
-body.dark,
-.dark,
-[data-theme="dark"] {
-  background-color: #090d16 !important;
-  color: #f8fafc !important;
+  .page-title {
+    @apply text-title text-foreground tracking-tight;
+  }
+
+  .page-subtitle {
+    @apply text-subtitle text-muted-foreground mt-1;
+  }
+
+  .surface-card {
+    @apply bg-card text-card-foreground border border-border rounded-xl shadow-2xs;
+  }
+
+  .focus-ring {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
 }
 
-/* 2. Neutral Background Surfaces */
-.dark .bg-white,
-[data-theme="dark"] .bg-white,
-.dark [class*="bg-white"]:not([class*="text-white"]):not([class*="hover:bg-white"]):not([class*="ring-white"]) {
-  background-color: #0f172a !important;
-}
-
-.dark .bg-white\/90,
-[data-theme="dark"] .bg-white\/90 {
-  background-color: rgba(15, 23, 42, 0.92) !important;
-}
-
-.dark .bg-slate-50,
-[data-theme="dark"] .bg-slate-50 {
-  background-color: #090d16 !important;
-}
-
-.dark .bg-slate-100,
-[data-theme="dark"] .bg-slate-100 {
-  background-color: #172033 !important;
-}
-
-.dark .bg-slate-100\/70,
-[data-theme="dark"] .bg-slate-100\/70 {
-  background-color: rgba(15, 23, 42, 0.75) !important;
-}
-
-.dark .bg-slate-200,
-[data-theme="dark"] .bg-slate-200 {
-  background-color: #1e293b !important;
-}
-
-/* 3. Text Contrast */
-.dark .text-slate-900,
-[data-theme="dark"] .text-slate-900 {
-  color: #f8fafc !important;
-}
-
-.dark .text-slate-800,
-[data-theme="dark"] .text-slate-800,
-.dark .text-slate-700,
-[data-theme="dark"] .text-slate-700 {
-  color: #e2e8f0 !important;
-}
-
-.dark .text-slate-600,
-[data-theme="dark"] .text-slate-600 {
-  color: #94a3b8 !important;
-}
-
-.dark .text-slate-500,
-[data-theme="dark"] .text-slate-500 {
-  color: #64748b !important;
-}
-
-/* 4. Borders & Dividers */
-.dark .border-slate-100,
-[data-theme="dark"] .border-slate-100,
-.dark .border-slate-200,
-[data-theme="dark"] .border-slate-200,
-.dark .border-slate-300,
-[data-theme="dark"] .border-slate-300 {
-  border-color: #1e293b !important;
-}
-
-.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
-.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
-  border-color: #1e293b !important;
-}
-
-/* 5. Inputs, Selects, and Form Controls */
-.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
-.dark select,
-.dark textarea,
-[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
-[data-theme="dark"] select,
-[data-theme="dark"] textarea {
-  background-color: #1e293b !important;
-  border-color: #334155 !important;
-  color: #f8fafc !important;
-}
-
-.dark input::placeholder,
-.dark textarea::placeholder,
-[data-theme="dark"] input::placeholder,
-[data-theme="dark"] textarea::placeholder {
-  color: #64748b !important;
-}
-
-/* 6. Landing Page Hero Gradient in Dark Mode */
-.dark .from-white,
-[data-theme="dark"] .from-white {
-  --tw-gradient-from: #090d16 var(--tw-gradient-from-position) !important;
-  --tw-gradient-to: rgb(9 13 22 / 0) var(--tw-gradient-to-position) !important;
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
-}
-
-.dark .via-slate-50,
-[data-theme="dark"] .via-slate-50 {
-  --tw-gradient-to: rgb(15 23 42 / 0) var(--tw-gradient-to-position) !important;
-  --tw-gradient-stops: var(--tw-gradient-from), #0f172a var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
-}
-
-.dark .to-slate-100,
-[data-theme="dark"] .to-slate-100 {
-  --tw-gradient-to: #090d16 var(--tw-gradient-to-position) !important;
-}
-
-/* 7. Hover States in Dark Mode */
-.dark .hover\:bg-slate-50:hover,
-[data-theme="dark"] .hover\:bg-slate-50:hover,
-.dark .hover\:bg-slate-100:hover,
-[data-theme="dark"] .hover\:bg-slate-100:hover {
-  background-color: #1e293b !important;
-}
-
-.dark .hover\:text-slate-900:hover,
-[data-theme="dark"] .hover\:text-slate-900:hover {
-  color: #ffffff !important;
-}
-
-/* 8. Modern Custom Scrollbars */
+/* Scrollbars */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: rgb(203 213 225) transparent;
 }
 
-html.dark *,
-body.dark *,
-[data-theme="dark"] * {
-  scrollbar-color: #334155 transparent;
+.dark * {
+  scrollbar-color: rgb(51 65 85) transparent;
 }
 
 ::-webkit-scrollbar {
@@ -178,28 +106,18 @@ body.dark *,
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: rgb(203 213 225);
   border-radius: 9999px;
-  transition: background-color 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: rgb(148 163 184);
 }
 
-.dark ::-webkit-scrollbar-thumb,
-body.dark ::-webkit-scrollbar-thumb,
-[data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #334155;
+.dark ::-webkit-scrollbar-thumb {
+  background: rgb(51 65 85);
 }
 
-.dark ::-webkit-scrollbar-thumb:hover,
-body.dark ::-webkit-scrollbar-thumb:hover,
-[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
-
-/* 9. Smooth Transitions */
-.transition-smooth {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgb(71 85 105);
 }

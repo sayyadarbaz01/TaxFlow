@@ -1,13 +1,34 @@
 import React from "react";
-import { clsx } from "clsx";
+import { cn } from "../../lib/cn";
 
 export type StatusVariant =
-  | "ACTIVE" | "INACTIVE" | "ONBOARDING" | "LEAD"
-  | "NOT_STARTED" | "DOCUMENTS_PENDING" | "UNDER_PREPARATION" | "FILED" | "VERIFIED" | "PROCESSED" | "REFUND_ISSUED"
-  | "PENDING" | "OVERDUE" | "PAID" | "DRAFT" | "SENT"
-  | "TODO" | "IN_PROGRESS" | "DONE"
-  | "MATCHED" | "MISMATCH_UNDER" | "MISMATCH_OVER" | "UNRECONCILED"
-  | "HIGH" | "URGENT" | "MEDIUM" | "LOW";
+  | "ACTIVE"
+  | "INACTIVE"
+  | "ONBOARDING"
+  | "LEAD"
+  | "NOT_STARTED"
+  | "DOCUMENTS_PENDING"
+  | "UNDER_PREPARATION"
+  | "FILED"
+  | "VERIFIED"
+  | "PROCESSED"
+  | "REFUND_ISSUED"
+  | "PENDING"
+  | "OVERDUE"
+  | "PAID"
+  | "DRAFT"
+  | "SENT"
+  | "TODO"
+  | "IN_PROGRESS"
+  | "DONE"
+  | "MATCHED"
+  | "MISMATCH_UNDER"
+  | "MISMATCH_OVER"
+  | "UNRECONCILED"
+  | "HIGH"
+  | "URGENT"
+  | "MEDIUM"
+  | "LOW";
 
 export interface StatusBadgeProps {
   status: StatusVariant | string;
@@ -27,7 +48,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) =
       case "MATCHED":
       case "CLIENT_ACCEPTED":
       case "APPROVED_ISSUED":
-        return "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800";
+        return "bg-emerald-50 text-emerald-800 border-emerald-200/80 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60";
       case "UNDER_PREPARATION":
       case "IN_PROGRESS":
       case "SENT":
@@ -36,12 +57,12 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) =
       case "BOOKS_AUDIT":
       case "ARN_SUBMITTED":
       case "AADHAAR_AUTH":
-        return "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800";
+        return "bg-primary-muted text-teal-800 border-teal-200/80 dark:text-teal-200 dark:border-teal-800/60";
       case "LEAD":
       case "FORM_3CD_PREP":
       case "UDIN_GENERATED":
       case "PORTAL_FILED":
-        return "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800";
+        return "bg-sky-50 text-sky-800 border-sky-200/80 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800/60";
       case "DOCUMENTS_PENDING":
       case "MISMATCH_UNDER":
       case "MISMATCH_OVER":
@@ -49,33 +70,28 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) =
       case "HIGH":
       case "ENGAGEMENT":
       case "TRN_GENERATED":
-        return "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800";
+        return "bg-amber-50 text-amber-800 border-amber-200/80 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/60";
       case "OVERDUE":
       case "URGENT":
       case "REJECTED":
       case "UNRECONCILED":
       case "CLARIFICATION_PENDING":
-        return "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800";
+        return "bg-rose-50 text-rose-800 border-rose-200/80 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/60";
       default:
-        return "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700";
+        return "bg-muted text-muted-foreground border-border";
     }
-  };
-
-  const getLabel = (s: string) => {
-    return s.replace(/_/g, " ");
   };
 
   return (
     <span
-      className={clsx(
-        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border capitalize tracking-wide",
+      className={cn(
+        "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-2xs font-semibold border capitalize tracking-wide",
         getBadgeStyle(status),
         className
       )}
     >
-      <span className="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-75"></span>
-      {getLabel(status)}
+      <span className="w-1.5 h-1.5 rounded-full bg-current opacity-70" />
+      {status.replace(/_/g, " ")}
     </span>
   );
 };
-
